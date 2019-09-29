@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayListDownloadStatusMapper">
+    <select id="selectPaging"  resultType="com.example.passenger.entity.PlayListDownloadStatus">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Play_List_Download_Status
+        WHERE
+            PlaylistID=#{playListID}
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Play_List_Download_Status
+        WHERE
+            PlaylistID=#{playListID}
+    </select>
+    <select id="selectDownload" resultType="java.lang.Integer">
+        SELECT
+            id
+        FROM
+            Play_List_Download_Status
+        WHERE
+            PlaylistID =#{playlistID}
+            AND ClientID =#{clientID}
+            AND FileName =#{fileName}
+    </select>
+    <insert id="addDownload" parameterType="com.example.passenger.entity.PlayListDownloadStatus">
+        INSERT INTO Play_List_Download_Status
+        VALUES
+            (
+                #{playlistID},
+                #{clientID},
+                #{fileName},
+                #{status},
+                #{percen},
+                #{speed})
+    </insert>
+    <update id="updateDownload" parameterType="com.example.passenger.entity.PlayListDownloadStatus">
+        UPDATE Play_List_Download_Status SET Status =#{status}, Percen =#{percen},
+        Speed =#{speed}
+        WHERE
+            ID =#{id}
+    </update>
+</mapper>

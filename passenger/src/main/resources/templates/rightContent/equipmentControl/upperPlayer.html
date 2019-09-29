@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/css/rightByLeft.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+        #nextPage{margin-left: -32px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+</head>
+<body style="background-color: #006c96;">
+<div id="upperPlayer_volume_control">
+    <p>音量:<span id="upperPlayer_volume"  th:text="${volume}"></span>
+        <input id="range" type="range" min="0" max="100" value="0" onchange="change();">
+        <input type="checkbox" id="mute">静音
+        <input type="button" id="openPlayer" value="打开播发器">
+        <input type="button" id="closePlayer" value="关闭播放器">
+        <input type="button" id="restartPlayer" value="重启播放器">
+    </p>
+</div>
+<div id="upperPlayer_equipment_div">
+    <p id="upperPlayer_equipment_p">设备</p>
+    <div id="upperPlayer_player_div">
+        <input type="text" hidden="hidden" id="deviceID" th:value="${device.id}">
+        <p th:text="${device.name}"></p>
+    </div>
+</div>
+<p id="upperPlayer_control_title">控制状态</p>
+<div id="upperPlayer_control_state">
+    <table width="100%" border="0" id="upperPlayTable">
+        <thead>
+        <tr>
+            <th class="tips">设备名称</th>
+            <th class="tips">设备位置</th>
+            <th class="tips">IP</th>
+            <th class="tips">MAC</th>
+            <th class="tips">操作类型</th>
+            <th class="tips">操作时间</th>
+            <th class="tips">失败原因</th>
+        </tr>
+        </thead>
+        <tr>
+
+        </tr>
+    </table>
+    <div id="paging_div">
+        <ul id="paging_ul">
+
+        </ul>
+    </div>
+</div>
+</body>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    selectUpperPlayer();
+    if ($("#upperPlayer_volume").text()=='-1'){
+        $("#upperPlayer_volume").text(0);
+    }
+    $("#upperPlayTable tr").live("click",function(){
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+
+    $("#openPlayer").click(function () {
+        var deviceID=$("#deviceID").val();
+        var type=$(this).val();
+        $.ajax({
+            url:'/ctrlEvent/openPlayer',
+            type:"POST",
+            data:{deviceID:deviceID,type:type},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        selectUpperPlayer();
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            },
+            error:function (){
+                swal("OMG!", "请求失败!", "error");
+            }
+        });
+    });
+
+    $("#closePlayer").click(function () {
+        var deviceID=$("#deviceID").val();
+        var type=$(this).val();
+        $.ajax({
+            url:'/ctrlEvent/closePlayer',
+            type:"POST",
+            data:{deviceID:deviceID,type:type},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        selectUpperPlayer();
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            },
+            error:function (){
+                swal("OMG!", "请求失败!", "error");
+            }
+        });
+    });
+
+    $("#restartPlayer").click(function () {
+        var deviceID=$("#deviceID").val();
+        var type=$(this).val();
+        $.ajax({
+            url:'/ctrlEvent/restartPlayer',
+            type:"POST",
+            data:{deviceID:deviceID,type:type},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        selectUpperPlayer();
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            },
+            error:function (){
+                swal("OMG!", "请求失败!", "error");
+            }
+        });
+    });
+});
+
+function selectUpperPlayer(pageNum) {
+    var id=$("#deviceID").val();
+    $.ajax({
+        url:'/ctrlEvent/selectUpperPlayer',
+        type:"POST",
+        data:{id:id,pageNum:pageNum},
+        success:function (data) {
+            $("#upperPlayTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#upperPlayTable tbody").prepend('<tr><td>'+data.device.name+'</td>'+
+                    '<td>'+data.devicePos.name+'</td>'+
+                    '<td>'+data.device.ip+'</td>'+
+                    '<td>'+data.device.mac+'</td>'+
+                    '<td>'+item.ctrlType+'</td>'+
+                    '<td>'+item.ctrlTime+'</td>'+
+                    '<td>'+item.ctrlResult+'</td>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+    
+function change() {
+    var value = document.getElementById('range').value ;
+    document.getElementById('upperPlayer_volume').innerHTML = value;
+    var deviceID=$("#deviceID").val();
+    var type='设置音量';
+    $.ajax({
+        url:'/ctrlEvent/addEquipmentControl',
+        type:"POST",
+        data:{deviceID:deviceID,type:type,volume:value},
+        success:function (data) {
+            if(data.result=="success"){
+                if (data.para>0){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        document.getElementById('upperPlayer_volume').innerHTML=data.para;
+                        document.getElementById('range').value=data.para;
+                        selectUpperPlayer();
+                    });
+                }else{
+                    swal("OMG!", "设备连接不通!", "error");
+                    $(".confirm").click(function () {
+                        document.getElementById('upperPlayer_volume').innerHTML=0;
+                        document.getElementById('range').value=0;
+                        selectUpperPlayer();
+                    });
+                }
+
+            }else{
+                swal("OMG!", "操作错误!", "error");
+            }
+        },
+        error:function (){
+            swal("OMG!", "请求失败!", "error");
+        }
+    });
+}
+function nextPage(pageNum) {
+    var num=parseInt(pageNum)+1;
+    selectUpperPlayer(num);
+}
+function previousPage(pageNum) {
+    var num=parseInt(pageNum)-1;
+    selectUpperPlayer(num);
+}
+</script>
+</html>

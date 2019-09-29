@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #playList_left_div{width: 26%;height: 596px;background-color: white;
+            border: 1px solid wheat;float: left;}
+        #playList_centre_div{width: 50.5%;height: 596px;background-color: white;
+            border: 1px solid wheat;float: left;border-left: none;border-right: none;}
+        #playList_right_div{width: 23%;height: 596px;background-color: white;
+            border: 1px solid wheat;float: left;}
+        .planTD{width: 25%}
+        .para{width: 14%}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:350px;display: block;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {display: table;width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #playListTable tbody{height:507px;}
+        #planManageTable tbody{height:540px;}
+        #contentTable tbody {height:316px;}
+        #playStyleTable tbody{height:150px;}
+        ul{list-style: none;padding-left: 20px;margin: auto;}
+        li{float: left;width: 32%;height: 34px;}
+        p{font-size: 14px;font-weight: bolder;padding-left: 8px;
+            padding-top: 5px;color: white;margin: auto;}
+        textarea{overflow: auto;resize: none;height: 48px}
+        #planManage_top_div{height: 593px}
+        .title_div{margin: auto;height: 30px;background-color: #006c96;}
+        .cont {
+            display: none;
+            position: fixed;
+            top: 18%;
+            left: 18%;
+            width: 60%;
+            height: 61%;
+            border: 6px solid #d6b6dd47;
+            background-color: #f4f3f7d4;
+            z-index:1;
+            overflow: auto;
+        }
+        #contentTable select{width: 60%;height: 70%;}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 15px;padding-top: 7px;}
+        #paging_ul li{display: inline;float:left;width: 68px;}
+        #nextPage{margin-left: -32px;}
+    </style>
+</head>
+<body>
+<div id="playList_left_div">
+    <table width="100%" border="0" id="playListTable">
+        <thead>
+        <tr>
+            <th class="tips">播放日期</th>
+            <th class="tips">播表名称</th>
+            <th class="tips">操作</th>
+        </tr>
+        </thead>
+        <tr>
+        </tr>
+    </table>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<div id="playList_centre_div">
+    <input type="text" id="playListStyleID" hidden="hidden">
+    <table width="100%" border="0" id="addPlayStyleTable">
+        <thead>
+        <tr>
+            <th class="tips">开始时间</th>
+            <th class="tips">版式名称</th>
+        </tr>
+        </thead>
+        <tr>
+
+        </tr>
+    </table>
+    <input type="button" value="添加版式" id="addPlayStyle">
+    <input type="button" value="删除版式" id="deletePlayStyle">
+    <input type="text" id="playStyleID" hidden="hidden">
+    <input type="text" id="playStyleName" hidden="hidden">
+    <input type="text" id="playStylePath" hidden="hidden">
+    <table width="100%" border="0" id="playStyleTable">
+        <thead>
+        <tr>
+            <th class="tips">版式名称</th>
+        </tr>
+        </thead>
+        <tr>
+
+        </tr>
+    </table>
+</div>
+<div id="playList_right_div">
+    <div id="planManage_top_div">
+        <div class="title_div">
+            <p>播表属性</p>
+        </div>
+        <table width="100%" border="0" id="planManageTable">
+            <tr><td class="planTD">播表名称</td>
+                <td><input type="text" id="name" disabled="disabled"></td></tr>
+            <tr><td class="planTD">编辑者</td>
+                <td ><input type="text" id="editName" disabled="disabled"></td></tr>
+           <!-- <tr><td class="planTD">审核时间</td>
+                <td><input type="text"  disabled="disabled"></td></tr>-->
+            <tr><td class="planTD">编辑时间</td>
+                <td><input type="text" id="updateTime" disabled="disabled"></td></tr>
+            <tr><td class="planTD">主题名称</td>
+                <td><input type="text" id="playListSummary" disabled="disabled"></td></tr>
+          <!--  <tr><td class="planTD">排期描述</td>
+                <td><input type="text" disabled="disabled"></td></tr>-->
+            <tr><td class="planTD">开始日期</td>
+                <td><input type="text" id="playListStartDate" disabled="disabled"></td></tr>
+            <tr><td class="planTD">结束日期</td>
+                <td><input type="text" id="playListEndDate" disabled="disabled"></td></tr>
+            <tr><td class="planTD">播表状态</td>
+                <td><input type="text" id="playListState" disabled="disabled"></td></tr>
+            <tr><td class="planTD">播表类型</td>
+                <td><input type="text" id="playListType" disabled="disabled"></td></tr>
+            <tr><td class="planTD">起始年份</td>
+                <td><input type="text" class="summary" disabled="disabled"></td></tr>
+            <tr><td class="planTD">结束年份</td>
+                <td><input type="text" class="summary" disabled="disabled"></td></tr>
+            <tr><td class="planTD">起始星期</td>
+                <td><input type="text" class="summary" disabled="disabled"></td></tr>
+            <tr><td class="planTD">结束星期</td>
+                <td><input type="text" class="summary" disabled="disabled"></td></tr>
+            <tr><td class="planTD">审核意见</td>
+                <td><textarea id="note"></textarea></td></tr>
+            <tr><td class="planTD">排期描述</td>
+                <td><span>通过</span><input type="radio" value="1" name="state" checked="checked">&nbsp;&nbsp;&nbsp;
+                    <span>不通过</span><input type="radio" value="2" name="state"></td></tr>
+            <tr><td class="planTD"><input style="width: 55px" type="button" value="审核" id="audit"></td>
+                <td><input style="width: 55px" type="button" value="新建" id="addOperation"></td></tr>
+        </table>
+    </div>
+</div>
+
+<div id="cont_b" class="cont">
+    <div id="playList_content_div">
+        <input type="text" id="id" hidden="hidden">
+        <table width="100%" border="0" id="contentTable">
+            <tr>
+                <td class="para">播表名称</td>
+                <td><input type="text" id="playListName"></td>
+                <td class="para">播放方式</td>
+                <td class="planTD"><select id="type"><option value="1">轮播</option>
+                    <option value="2">点播</option>
+                    <option value="3">重复</option>
+                    <option value="4">插播</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">主题名称</td>
+                <td><input type="text" id="summary"></td>
+                <td class="para">插播时长</td>
+                <td class="planTD"><input style="width: 60%;" type="text" id="timeLength"></td>
+            </tr>
+            <tr>
+                <td class="para">排期描述</td>
+                <td><input type="text" id="description"></td>
+                <td class="para">全天播放</td>
+                <td class="planTD"><select><option value="1">非全天</option>
+                    <option value="4">全天</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">开始时间</td>
+                <td><input style="width: 64%;" type="datetime-local" step="1" id="startDate"></td>
+                <td class="para">起始年份</td>
+                <td class="planTD"><select><option>2018</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">结束时间</td>
+                <td><input style="width: 64%;" type="datetime-local" step="1" id="endDate"></td>
+                <td class="para">结束年份</td>
+                <td class="planTD"><select><option>2019</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">排期开始时间</td>
+                <td><input style="width: 64%;" type="datetime-local" step="1"></td>
+                <td class="para">月份</td>
+                <td class="planTD"><select><option>一月</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">排期结束时间</td>
+                <td><input style="width: 64%;" type="datetime-local" step="1"></td>
+                <td class="para">起始星期</td>
+                <td class="planTD"><select><option>星期一</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">执行表达式</td>
+                <td><input type="text" id="one"></td>
+                <td class="para">结束星期</td>
+                <td class="planTD"><select><option>星期一</option></select></td>
+            </tr>
+            <tr>
+                <td class="para">排期表达式</td>
+                <td><input type="text" id="two"></td>
+                <td class="para"></td>
+                <td class="planTD"></td>
+            </tr>
+        </table>
+    </div>
+    <div id="playList_operation_div">
+        <input id="addPlayList" type="button" value="新建保存">
+        <input id="updatePlayList" type="button" value="修改保存">
+        <input type="button" value="取消" onclick = "document.getElementById('cont_b').style.display='none'">
+    </div>
+</div>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    getPlayList();
+    getPlayStyle();
+    $("#playStyleTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#playStyleID").val($(this).closest("tr").find("td").eq(0).text());
+        $("#playStyleName").val($(this).closest("tr").find("td").eq(2).text());
+        $("#playStylePath").val($(this).closest("tr").find("td").eq(1).text());
+    });
+    $("#addPlayStyleTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#playListStyleID").val($(this).closest("tr").find("td").eq(0).text());
+    });
+    $("#playListTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#id").val($(this).closest("tr").find("td").eq(0).text());
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        $.ajax({
+            url:'/playStyle/selectPlayListStyle',
+            type:"POST",
+            data:{playListID:id},
+            success:function (data) {
+                $("#addPlayStyleTable tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    $("#addPlayStyleTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>'+
+                        '<td>'+item.playType+'</td>'+
+                        '<td>'+item.styleName+'</td></tr>');
+                });
+            }
+        });
+        $.ajax({
+            url:'/playList/getPlayList',
+            type:"POST",
+            data:{id:id},
+            success:function (data) {
+                $("#name").val(data.playList.name);
+                $("#editName").val(data.playList.editorID);
+                $("#updateTime").val(data.playList.updateTime);
+                $("#playListSummary").val(data.playList.summary);
+                $("#playListStartDate").val(data.playList.startDate);
+                $("#playListEndDate").val(data.playList.endDate);
+                var state=null;
+                if(data.playList.state==0){
+                    state="未审核";
+                }else if(data.playList.state==1){
+                    state="通过";
+                }else if(data.playList.state==2){
+                    state=="不通过";
+                }
+                $("#playListState").val(state);
+                var type=null;
+                if(data.playList.type==1){
+                    type="轮播";
+                }else if(data.playList.type==2){
+                    type="点播";
+                }else if(data.playList.type==3){
+                    type="重复";
+                }else if(data.playList.type==4){
+                    type="插播";
+                }
+                $("#playListType").val(type);
+            }
+        });
+    });
+
+    if( $("#type").val()==1){
+        $("#timeLength").attr("disabled",true);
+        $("#one").attr("disabled",true);
+        $("#two").attr("disabled",true);
+    }
+    $("#type").change(function () {
+        if($(this).val()==1 || $(this).val()==2){
+            $("#timeLength").attr("disabled",true);
+            $("#one").attr("disabled",true);
+            $("#two").attr("disabled",true);
+        }
+        if ($(this).val()==3){
+            $("#timeLength").attr("disabled",true);
+            $("#one").attr("disabled",true);
+            $("#two").attr("disabled",false);
+        }
+        if ($(this).val()==4){
+            $("#timeLength").attr("disabled",false);
+            $("#one").attr("disabled",true);
+            $("#two").attr("disabled",true);
+        }
+    });
+
+    $("#update").live("click",function () {
+        document.getElementById('cont_b').style.display='block';
+        $("#updatePlayList").attr("hidden",false);
+        $("#addPlayList").attr("hidden",true);
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        $.ajax({
+            url:'/playList/getPlayList',
+            type:"POST",
+            data:{id:id},
+            success:function (data) {
+                //编辑
+                $("#playListName").val(data.playList.name);
+                $("#summary").val(data.playList.summary);
+                $("#startDate").val(data.playList.startDate);
+                $("#endDate").val(data.playList.endDate);
+                $("#type").val(data.playList.type);
+            }
+        });
+    });
+
+    $("#addOperation").click(function () {
+        document.getElementById('cont_b').style.display='block';
+        $("#updatePlayList").attr("hidden",true);
+        $("#addPlayList").attr("hidden",false);
+    });
+
+    $("#addPlayList").click(function () {
+        var name=$("#playListName").val();
+        var timeLength=$("#timeLength").val();
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        var summary=$("#summary").val();
+        var description=$("#description").val();
+        var type=$("#type").val();
+        $.ajax({
+            url:'/playList/addPlayList',
+            type:"POST",
+            data:{name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,summary:summary,
+                description:description,type:type},
+            success:function (data) {
+               alert(data.result);
+               getPlayList();
+            }
+        });
+    });
+
+    $("#updatePlayList").click(function () {
+        var id=$("#id").val();
+        var name=$("#playListName").val();
+        var timeLength=$("#timeLength").val();
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        var summary=$("#summary").val();
+        /*var description=$("#description").val();*/
+        var type=$("#type").val();
+        $.ajax({
+            url:'/playList/updatePlay',
+            type:"POST",
+            data:{id:id,name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,
+                summary:summary,type:type},
+            success:function (data) {
+                alert(data.result);
+                getPlayList();
+            }
+        });
+    });
+
+    $("#audit").click(function () {
+        var id=$("#id").val();
+        var state=$('input[name="state"]:checked').val();
+        var note=$("#note").val();
+        $.ajax({
+            url:'/playList/auditPlayList',
+            type:"POST",
+            data:{id:id,note:note,state:state},
+            success:function (data) {
+                alert(data.result);
+            }
+        });
+    });
+    
+    $("#addPlayStyle").click(function () {
+        var playListID=$("#id").val();
+        var styleID=$("#playStyleID").val();
+        var styleName=$("#playStyleName").val();
+        var stylePath=$("#playStylePath").val();
+        $.ajax({
+            url:'/playStyle/addPlayListStyle',
+            type:"POST",
+            data:{playlistID:playListID,styleID:styleID,styleName:styleName,stylePath:stylePath},
+            success:function (data) {
+                alert(data.result);
+            }
+        });
+    });
+
+    $("#deletePlayStyle").click(function () {
+        var playListStyleID=$("#playListStyleID").val();
+        $.ajax({
+            url:'/playStyle/deletePlayListStyle',
+            type:"POST",
+            data:{id:playListStyleID},
+            success:function (data) {
+                alert(data.result);
+            }
+        });
+    });
+
+});
+
+
+function getPlayList(pageNum) {
+    var timeLength=" ";
+    $.ajax({
+        url:'/playList/selectPlayList',
+        type:"POST",
+        data:{timeLength:timeLength,pageNum:pageNum},
+        success:function (data) {
+            $("#playListTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#playListTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>'+
+                    '<td>'+item.startDate+'</td>'+
+                    '<td>'+item.name+'</td>' +
+                    '<td><input type="button" value="修改" id="update">' +
+                    '<input type="button" value="删除" id="delete"></td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li style="width: 40px;"><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function getPlayStyle() {
+    $.ajax({
+        url:'/playStyle/selectPlayStyle',
+        type:"POST",
+        data:{state:2},
+        success:function (data) {
+            $("#playStyleTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#playStyleTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>'+
+                    '<td hidden="hidden">'+item.path+'</td>'+
+                    '<td>'+item.name+'</td></tr>');
+            });
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var num=parseInt(pageNum)+1;
+    getPlayList(num);
+}
+function previousPage(pageNum) {
+    var num=parseInt(pageNum)-1;
+    getPlayList(num);
+}
+</script>
+</body>
+</html>

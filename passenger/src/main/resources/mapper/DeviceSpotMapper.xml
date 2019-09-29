@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DeviceSpotMapper">
+    <select id="selectDeviceSpot" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT
+        *
+        FROM
+        Device_Spot
+        <if test="type!=null">
+            WHERE
+            Type =#{type}
+        </if>
+    </select>
+    <select id="selectAllDeviceSpot" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT
+            *
+        FROM
+            Device_Spot
+    </select>
+    <select id="selectDeviceSpotPaging" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Device_Spot
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Device_Spot
+    </select>
+    <insert id="addDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        INSERT INTO Device_Spot
+        VALUES
+            (
+                #{name},
+                #{parameter},
+                #{type},
+                #{min},
+                #{max},
+                #{value},
+                #{deviceType},
+                #{isShow},
+            #{ctrlType})
+    </insert>
+    <update id="updateDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        UPDATE Device_Spot
+        SET name =#{name},
+        Parameter=#{parameter},
+        Type=#{type},
+        Min=#{min},
+        Max=#{max},
+        Value=#{value},
+        DeviceType=#{deviceType},
+        IsShow=#{isShow},
+        CtrlType=#{ctrlType}
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        DELETE
+        FROM
+            Device_Spot
+        WHERE
+            id =#{id}
+    </delete>
+</mapper>

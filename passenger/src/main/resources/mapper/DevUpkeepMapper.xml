@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DevUpkeepMapper">
+    <select id="selectDevUpkeepByEndTimeIsNull" resultType="com.example.passenger.entity.DevUpkeep">
+        SELECT
+            *
+        FROM
+            DevUpkeep
+        WHERE
+            EndTime IS NULL
+    </select>
+    <select id="selectDevUpkeepByEndTimeNotNull" resultType="com.example.passenger.entity.DevUpkeep">
+       SELECT TOP
+        (#{pageSize}) *
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                DevUpkeep
+			WHERE
+				EndTime IS NOT NULL
+            ) AS A
+        WHERE
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        	SELECT
+               count(*)
+            FROM
+                DevUpkeep
+			WHERE
+				EndTime IS NOT NULL
+    </select>
+    <insert id="addDevUpkeep" parameterType="com.example.passenger.entity.DevUpkeep">
+        INSERT INTO DevUpkeep
+        VALUES
+            (
+            #{deviceID},
+            #{accendant},
+            #{tel},
+            #{startTime},
+            #{endTime},
+            #{scheme},
+            #{upkeepState},
+            #{lineID},
+            #{stationID})
+    </insert>
+    <update id="updateDevUpkeep" parameterType="com.example.passenger.entity.DevUpkeep">
+        UPDATE DevUpkeep
+        SET EndTime =#{endTime},
+        UpkeepState =#{upkeepState}
+        WHERE
+            id =#{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.StyleContentMapper">
+    <select id="selectStyleContent" resultType="com.example.passenger.entity.StyleContent">
+        SELECT
+          *
+        FROM
+            Style_Content
+        WHERE
+            StyleID =#{id}
+        AND LayoutID=#{layoutID}
+    </select>
+    <select id="selectStyleContentVo" resultType="com.example.passenger.entity.vo.StyleContentVo">
+        SELECT
+            b.Name as fodderName,
+            b.ID as materialID,
+            a.StyleID ,
+            a.ID,
+            a.TimeLength
+        FROM
+            Style_Content a,
+            Fodder b
+        WHERE
+            a.MaterialID= b.id
+            AND a.StyleID= #{styleID}
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.StyleContent">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Style_Content
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Style_Content
+    </select>
+    <select id="StyleContentID" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Style_Content
+        WHERE
+            StyleID=#{styleID}
+    </select>
+    <insert id="addStyleContent" parameterType="com.example.passenger.entity.StyleContent">
+        INSERT INTO Style_Content
+        VALUES
+            (
+                #{styleID},
+                #{layoutID},
+                #{contentID},
+                #{materialID},
+                #{timeLength},
+                #{playtimes},
+                #{fileproterty},
+                #{getcontents})
+</insert>
+<update id="updateStyleContent" parameterType="com.example.passenger.entity.StyleContent">
+        UPDATE Style_Content SET MaterialID =#{materialID},TimeLength=#{timeLength}
+        WHERE
+            ID =#{id}
+</update>
+    <delete id="deleteStyleContent" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Style_Content
+        WHERE
+            id =#{id}
+</delete>
+    <delete id="deleteStyleContentByStyleID" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Style_Content
+        WHERE
+            StyleID = #{styleID}
+    </delete>
+</mapper>

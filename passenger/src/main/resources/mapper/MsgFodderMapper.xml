@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.MsgFodderMapper">
+    <select id="selectMsgFodder" resultType="com.example.passenger.entity.MsgFodder">
+        SELECT
+          *
+        FROM
+            Msg_Fodder
+        WHERE
+            id =#{id}
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.MsgFodder">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Msg_Fodder
+            WHERE
+				Type=#{type}
+				<if test="state!=null">
+                  AND  State=#{state}
+                </if>
+
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Msg_Fodder
+        WHERE
+        Type=#{type}
+        <if test="state!=null">
+           AND State=#{state}
+        </if>
+    </select>
+    <insert id="addMsgFodder" parameterType="com.example.passenger.entity.MsgFodder">
+        INSERT INTO Msg_Fodder ( Title, Type, State, Content_CN,Content_EN,Note )
+        VALUES
+            (
+                #{title},
+                #{type},
+                #{state},
+             #{contentCN},
+             #{contentEN},
+             #{note})
+    </insert>
+    <update id="updateState">
+        UPDATE Msg_Fodder SET State =#{state}
+        WHERE
+            ID =#{id}
+    </update>
+    <update id="updateMsgFodder" parameterType="com.example.passenger.entity.MsgFodder">
+        UPDATE Msg_Fodder SET Title =#{title},Content_CN =#{contentCN},Content_EN=#{contentEN}
+        WHERE
+            ID =#{id}
+    </update>
+    <delete id="deleteMsgFodder" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Msg_Fodder
+        WHERE
+            id =#{id}
+    </delete>
+</mapper>

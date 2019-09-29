@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayListMapper">
+    <select id="selectPlayList" resultType="com.example.passenger.entity.PlayList">
+        SELECT
+          *
+        FROM
+            Play_List
+        WHERE
+            id =#{id}
+    </select>
+    <select id="selectPlayListID" resultType="java.lang.Integer">
+        SELECT TOP
+            1 id
+        FROM
+            Play_List
+        ORDER BY
+            id DESC
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.PlayList">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Play_List
+        WHERE
+            TimeLength=#{timeLength}
+        <if test="state!=null">
+            AND State=#{state}
+        </if>
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Play_List
+        WHERE
+            TimeLength=#{timeLength}
+        <if test="state!=null">
+           AND State=#{state}
+        </if>
+
+    </select>
+    <insert id="addPlayList" parameterType="com.example.passenger.entity.PlayList">
+        INSERT INTO Play_List
+        VALUES
+            (
+                #{name},
+                #{state},
+                #{timeLength},
+                #{type},
+                #{updateTime},
+                #{startDate},
+                #{endDate},
+                #{level},
+                #{editorID},
+                #{editTime},
+                #{scopeEditTime},
+                #{auditLevel},
+                #{issync},
+                #{summary},
+                #{description},
+                #{contentText},
+                #{note})
+</insert>
+    <update id="updatePlayList" parameterType="com.example.passenger.entity.PlayList">
+        UPDATE Play_List SET Name =#{name}
+        <if test="description!=null">
+            ,Description=#{description}
+        </if>
+        <if test="level!=null">
+            ,Level=#{level}
+        </if>
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        <if test="timeLength!=null">
+            ,TimeLength=#{timeLength}
+        </if>
+        <if test="startDate!=null">
+            ,Start_Date=#{startDate}
+        </if>
+        <if test="endDate!=null">
+            ,End_Date=#{endDate}
+        </if>
+        <if test="summary!=null">
+            ,Summary=#{summary}
+        </if>
+        <if test="type!=null">
+            ,Type=#{type}
+        </if>
+        WHERE
+            ID =#{id}
+</update>
+    <update id="auditPlayList" parameterType="com.example.passenger.entity.PlayList">
+        UPDATE Play_List SET State=#{state}
+        <if test="summary!=null">
+            ,Summary=#{summary}
+        </if>
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        WHERE
+            ID =#{id}
+    </update>
+    <delete id="deletePlayList" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Play_List
+        WHERE
+            id =#{id}
+</delete>
+</mapper>
