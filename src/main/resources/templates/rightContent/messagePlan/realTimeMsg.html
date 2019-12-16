@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/css.css" />
+    <style>
+        #realTimeMsg_top_div{height: 95px;width: 99.8%;border: 1px solid wheat;margin: auto;float: left;}
+        #realTimeMsg_ul{list-style: none; padding-left: 60px;padding-top: 15px;}
+        #realTimeMsg_ul li{display: inline;float:left;width: 15%;font-size: 14px;height: 44px;}
+        #realTimeMsg_top_p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #realTimeMsg_left_div{width: 30%;height: 500px;background-color: white;
+            border: 1px solid wheat;float: left;border-left: none;border-right: none;}
+        #realTimeMsg_right_div{height: 500px;float: left;border: 1px solid wheat;width: 49.5%;}
+        #realTimeMsg_line_div{height: 500px;float: left;border: 1px solid wheat;width: 20%;overflow: auto;}
+        #realTimeMsg_right_ul{list-style: none;padding: 0px;float: left;margin-top: 10px;}
+        #realTimeMsg_right_ul li{width: 60%;font-size: 14px;margin-left: 3px;}
+        #realTimeMsg_right_ul li textarea{width: 480px;overflow: auto;resize: none;height: 310px;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        #realTimeMsgTable tbody {height:405px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #realTimeMsg_op_ul{list-style: none;padding-left: 15px;padding-top: 10px;}
+        #realTimeMsg_op_ul li{width: 17%;font-size: 14px;float: left;}
+        #realTimeMsg_op_ul li select{width: 70px;}
+        .f-treeList-old{ float: left;  width:14px; height:19px; cursor: pointer;margin-top: 7px;}
+        .f-treeList-titleImg{ float: left; margin-top: 4px;margin-left: 0px;}
+        .f-treeList-titleP{ display: block; float: left; line-height: 26px;}
+        .f-iconBi{width: 30px;margin-left: -6px}
+        .f-treeList-radio{display: block;margin-right: 2px;margin-top: 5px;}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 20px;padding-top: 7px;
+            text-align: center;font-size: 16px}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('realTimeMsgTable');
+        };
+    </script>
+</head>
+<body>
+<div id="realTimeMsg_top_div">
+    <p id="realTimeMsg_top_p">实时消息</p>
+    <ul id="realTimeMsg_ul">
+        <li><span>滚动消息:</span><input type="radio" name="type" value="0" checked="checked"></li>
+        <li><span>紧急消息:</span><input type="radio" name="type" value="1"></li>
+    </ul>
+</div>
+<div id="realTimeMsg_line_div">
+    <div>
+        <div class="f-maintenance"></div>
+    </div>
+</div>
+<div id="realTimeMsg_left_div">
+    <div style="height: 440px;overflow: auto">
+        <table width="100%" border="0" id="realTimeMsgTable">
+            <thead>
+            <tr>
+                <th class="tips" hidden="hidden"></th>
+                <th class="tips">名称</th>
+                <th class="tips">中文消息内容</th>
+                <th class="tips">英文消息内容</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<div id="realTimeMsg_right_div">
+   <!-- <input type="text" id="id" hidden="hidden">-->
+    <ul id="realTimeMsg_op_ul">
+        <li>消息级别</li>
+        <li><select id="msgID"></select></li>
+        <li>开始时间</li>
+        <li style="width: 49%;"><input style="width: 56%;" type="date" id="startDate">
+            &nbsp;<input type="time" step="1" id="startTime"></li>
+        <li>消息控件</li>
+        <li><select id="ctrIID"><option value="Txt1">Txt1</option>
+            <option value="Txt2">Txt2</option>
+            <option value="Txt3">Txt3</option></select></li>
+        <li>结束时间</li>
+        <li style="width: 49%;"><input style="width: 56%;" type="date" id="endDate">
+            &nbsp;<input type="time" step="1"  id="endTime"></li>
+    </ul>
+    <ul id="realTimeMsg_right_ul">
+        <li><textarea id="content"></textarea></li>
+        <li><input type="button" value="立即发送" id="send">&nbsp;
+            <input type="button" value="加入队列" id="addQueue"></li>
+    </ul>
+</div>
+<script type="text/javascript" src="/js/config.js" ></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    selectFodderMsgByState();
+    $.ajax({
+        url:'/Line/getMenu',
+        type:"POST",
+        data:{type:1},
+        success:function (data) {
+            var treeData = [
+                /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+            ];
+            var count=0;
+            $.each(data.lineVoList, function (i, item) {
+                count++;
+                var one=count;
+                treeData.push({id:count,title:item.name,oid:item.id,route:'javascript:void(0);',pid:0});
+                $.each(item.stationVoList, function (j, itemOne) {
+                    count++;
+                    var two=count;
+                    if(item.id==itemOne.lineID){
+                        treeData.push({id:count,title:itemOne.name,oid:itemOne.id,route:'javascript:void(0);',pid:one});
+                    }
+                    $.each(itemOne.deviceList, function (k, itemTwo) {
+                        count++;
+                        if(itemOne.id==itemTwo.stationID){
+                            treeData.push({id:count,title:itemTwo.name,oid:itemTwo.id,deviceNumber:itemTwo.id,route:'javascript:void(0);',pid:two});
+                        }
+                    });
+                });
+            });
+            config.tree({
+                type:1,//1有选择框，没有则不传type或传0
+                wrapper:'.f-maintenance',//容器
+                data:treeData,//数据
+            });
+        }
+    });
+
+    $("#realTimeMsgTable tbody").on("click",'tr',function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#content").val($(this).closest("tr").find("td").eq(2).text() +
+            $(this).closest("tr").find("td").eq(3).text());
+    });
+
+    getMsgLevel();
+
+    $(":radio").click(function () {
+        var type=$(this).val();
+        selectFodderMsgByState(type);
+        var code="11";
+        $("#addQueue").show();
+        $("#startDate").removeAttr("disabled");
+        $("#startTime").removeAttr("disabled");
+        $("#endDate").removeAttr("disabled");
+        $("#endTime").removeAttr("disabled");
+        if(type==1){
+            $("#addQueue").hide();
+            $("#startDate").attr("disabled","disabled");
+            $("#startTime").attr("disabled","disabled");
+            $("#endDate").attr("disabled","disabled");
+            $("#endTime").attr("disabled","disabled");
+            code="12";
+        }
+        getMsgLevel(code);
+    });
+
+    $("#addQueue").click(function () {
+        var msgID=$("#msgID").val();
+        var ctrIID=$("#ctrIID").val();
+        var startDate=$("#startDate").val();
+        var startTime=$("#startTime").val();
+        var endDate=$("#endDate").val();
+        var endTime=$("#endTime").val();
+        var content=$("#content").val();
+        if(content==""||content==null){
+            swal("请选择消息!");
+            return false;
+        }
+        if(startDate=="" || startTime==""){
+            swal("开始时间不能为空!!");
+            return false;
+        }
+        if(endDate=="" || endTime==""){
+            swal("结束时间不能为空!!");
+            return false;
+        }
+        if(endTime.length==5){
+            endTime=endTime+":00";
+        }
+        if(startTime.length==5){
+            startTime=startTime+":00";
+        }
+        var deviceID=null;
+        var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
+        for(var i=0;i<deviceList.length;i++){
+            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                deviceID=deviceList[i].value;
+                var type=11;
+                if($('input[name="type"]:checked').val()==1){
+                    type=12;
+                }
+                $.ajax({
+                    url:'/message/addQueueMessage',
+                    type:"POST",
+                    data:{msg:content,level:msgID,ctrlID:ctrIID,deviceID:deviceID,startDate:startDate,
+                        startTime:startTime,endDate:endDate,endTime:endTime,type:type,isPlanMsg:0},
+                    success:function (data) {
+                        if(data.result=="success"){
+                            swal("Good!", "操作成功!", "success");
+                        }else{
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        }
+        if(deviceID==null){
+            swal("请选择设备!");
+            return false;
+        }
+    });
+
+    $("#send").click(function () {
+        var msgID=$("#msgID").val();
+        var ctrIID=$("#ctrIID").val();
+        var content=$("#content").val();
+        if(content==""||content==null){
+            swal("请选择消息!");
+            return false;
+        }
+        var deviceID=null;
+        var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
+        for(var i=0;i<deviceList.length;i++){
+            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                deviceID=deviceList[i].value;
+                var type=11;
+                if($('input[name="type"]:checked').val()==1){
+                    type=12;
+                }
+                $.ajax({
+                    url:'/message/sendMessage',
+                    type:"POST",
+                    data:{msg:content,level:msgID,ctrlID:ctrIID,deviceID:deviceID,type:type,isPlanMsg:0},
+                    success:function (data) {
+                        if(data.result=="success"){
+                            swal("Good!", "操作成功!", "success");
+                        }else{
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        }
+        if(deviceID==null){
+            swal("请选择设备!");
+            return false;
+        }
+    });
+});
+
+function selectFodderMsgByState(type,pageNum) {
+    $.ajax({
+        url:'/msgFodder/getFodderMsgByState',
+        type:"POST",
+        data:{type:type,pageNum:pageNum},
+        success:function (data) {
+            $("#realTimeMsgTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#realTimeMsgTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
+                    '<td>'+item.title+'</td>' +
+                    '<td>'+item.contentCN+'</td>' +
+                    '<td>'+item.contentEN+'</td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function getMsgLevel(levelCode) {
+    $.ajax({
+        url:'/msgFodder/getMgsLevel',
+        type:"POST",
+        data:{levelCode:levelCode},
+        success:function (data) {
+            $("#msgID option").remove();
+            $.each(data.levelList, function (i, level) {
+                $("#msgID").append('<option value="'+level.levelCode+'">'+level.title+'</option>');
+            });
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)+1;
+    selectFodderMsgByState(type,num);
+}
+function previousPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)-1;
+    selectFodderMsgByState(type,num);
+}
+</script>
+</body>
+</html>

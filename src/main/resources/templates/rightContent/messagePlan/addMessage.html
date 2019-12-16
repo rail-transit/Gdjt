@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #msgFodder_top_div{height: 95px;width: 99%;border: 1px solid wheat;margin: auto}
+        #msgFodder_ul{list-style: none;}
+        #msgFodder_ul li{display: inline;float:left;width: 15%;font-size: 14px;height: 44px;}
+        #msgFodder li span{padding-right: 10px;}
+        #msgFodder li input{width: 20px;}
+        #msgFodder_top_p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #msgFodder_left_div{width: 68%;height: 415px;background-color: white;
+            border: 1px solid wheat;float: left;overflow-y: auto}
+        #msgFodder_right_div{height: 415px;float: left;border: 1px solid wheat;width: 31.5%;}
+        #msgFodder_right_ul{list-style: none;margin: 0px; padding: 0px;}
+        #msgFodder_right_div li{width: 100%;font-size: 14px;height: 157px;}
+        #msgFodder_right_div input{width: 313px}
+        #msgFodder_right_div li textarea{width: 311px;overflow: auto;resize: none;height: 145px;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:360px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #msgFodder_footer_div{border: 1px solid wheat;height: 54px;width: 99.8%;float: right;}
+        #msgFodder_footer_ul{list-style: none;}
+        #msgFodder_footer_ul li{float: left;width: 14%}
+        #msgFodder_footer_ul li input{width: 85px;height: 30px}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;
+            text-align: center}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('msgFodderTable');
+        };
+    </script>
+</head>
+<body>
+<div id="msgFodder_top_div">
+    <p id="msgFodder_top_p">消息录入</p>
+    <ul id="msgFodder_ul">
+        <li><span>滚动消息:</span><input type="radio" name="type" value="0" checked="checked"></li>
+        <li><span>紧急消息:</span><input type="radio" name="type" value="1"></li>
+    </ul>
+</div>
+<div id="msgFodder_left_div">
+    <table width="100%" border="0" id="msgFodderTable">
+        <thead>
+        <tr>
+            <th class="tips">名称</th>
+            <th class="tips">状态</th>
+            <th class="tips">中文消息内容</th>
+            <th class="tips">英文消息内容</th>
+            <th class="tips">审核原因</th>
+        </tr>
+        </thead>
+        <tr>
+        </tr>
+    </table>
+</div>
+<div id="msgFodder_right_div">
+    <input type="text" class="id" hidden="hidden">
+    <input type="text" class="title" placeholder="请输入标题">
+    <ul id="msgFodder_right_ul">
+        <li><textarea class="content_CN" placeholder="请输入中文内容"></textarea></li>
+        <li><textarea class="content_EN" placeholder="请输入英文内容"></textarea></li>
+        <li><span>审核原因:</span><textarea class="note" style="height: 50px"></textarea></li>
+    </ul>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+    </ul>
+</div>
+<div id="msgFodder_footer_div">
+    <ul id="msgFodder_footer_ul">
+        <li><input type="button" value="审核通过" class="examine"></li>
+        <li><input type="button" value="审核不通过" class="notExamine"></li>
+        <li><input type="button" value="删除消息" class="deleteFodder"></li>
+        <li><input type="button" value="增加" class="addMsgFodder"></li>
+        <li><input type="button" value="修改" class="updateFodder"></li>
+        <li><input type="button" value="重置" class="resetting"></li>
+        <li><input type="button" value="导出" onclick="tableToExcel()" class="te"></li>
+    </ul>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    selectFodderMsgByType();
+    $("#msgFodderTable tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $(".id").val($(this).closest("tr").find("td").eq(0).text());
+        $(".title").val($(this).closest("tr").find("td").eq(1).text());
+        $(".content_CN").val($(this).closest("tr").find("td").eq(3).text());
+        $(".content_EN").val($(this).closest("tr").find("td").eq(4).text());
+    });
+
+    $(".addMsgFodder").click(function () {
+        var title=$(".title").val();
+        var contentCN=$(".content_CN").val();
+        var contentEN=$(".content_EN").val();
+        var type=$('input[name="type"]:checked').val();
+        if(title.match(/^\s+$/g)||title==""){
+            swal("标题不能为空!");
+            return false;
+        }
+        if(contentCN.match(/^\s+$/g)||contentCN==""){
+            swal("中文内容不能为空!");
+            return false;
+        }
+        $.ajax({
+            url:'/msgFodder/addMsgFodder',
+            type:"POST",
+            data:{title:title,type:type,contentCN:contentCN,contentEN:contentEN},
+            success:function (data) {
+                if (data.result=="exists") {
+                    swal("该标题已存在!");
+                }else if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        location.href="/msgFodder/msgFodderManagement";
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+
+
+    $(":radio").click(function () {
+        var type=$(this).val();
+        selectFodderMsgByType(type);
+    });
+
+    $(".updateFodder").click(function () {
+        var id=$(".id").val();
+        var title=$(".title").val();
+        var contentCN=$(".content_CN").val();
+        var contentEN=$(".content_EN").val();
+        var type=$('input[name="type"]:checked').val();
+        if(id==null||id==""){
+            swal("请选择要修改的消息!");
+            return false;
+        }
+        if(title.match(/^\s+$/g)||title==""){
+            swal("标题不能为空!");
+            return false;
+        }
+        if(contentCN.match(/^\s+$/g)||contentCN==""){
+            swal("中文内容不能为空!");
+            return false;
+        }
+        $.ajax({
+            url:'/msgFodder/updateFodder',
+            type:"POST",
+            data:{id:id,title:title,contentCN:contentCN,contentEN:contentEN},
+            success:function (data) {
+                if (data.result=="exists") {
+                    swal("该标题已存在!");
+                }else if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        location.href="/msgFodder/msgFodderManagement";
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+
+    $(".resetting").click(function () {
+        $(".title").val("");
+        $(".content_CN").val("");
+        $(".content_EN").val("");
+    });
+
+    $(".deleteFodder").click(function () {
+        var id=$(".id").val();
+        var type=$('input[name="type"]:checked').val();
+        if(id==null||id==""){
+            swal("请选择要删除消息!");
+            return false;
+        }
+        swal({
+            title: "您确定要删除吗？",
+            text: "您确定要删除这条数据？",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "是的，我要删除",
+            confirmButtonColor: "#ec6c62"
+        }, function() {
+            $.ajax({
+                url:'/msgFodder/deleteFodder',
+                type:"POST",
+                data:{id:id},
+                success:function (data) {
+                    if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            selectFodderMsgByType(type);
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                }
+            });
+        });
+    });
+
+    $(".examine").click(function () {
+        var id=$(".id").val();
+        var state=1;
+        var type=$('input[name="type"]:checked').val();
+        var note=$(".note").val();
+        if(id==null||id==""){
+            swal("请选择要审核的消息!");
+            return false;
+        }
+        $.ajax({
+            url:'/msgFodder/updateStateFodder',
+            type:"POST",
+            data:{id:id,state:state,note:note},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        selectFodderMsgByType(type);
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+
+            }
+        });
+    });
+
+    $(".notExamine").click(function () {
+        var id=$(".id").val();
+        var state=-1;
+        var type=$('input[name="type"]:checked').val();
+        var note=$(".note").val();
+        if(id==null||id==""){
+            swal("请选择要审核的消息!");
+            return false;
+        }
+        if(note.match(/^\s+$/g)||note==""){
+            swal("审核原因不能为空!");
+            return false;
+        }
+        $.ajax({
+            url:'/msgFodder/updateStateFodder',
+            type:"POST",
+            data:{id:id,state:state,note:note},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        selectFodderMsgByType(type);
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+
+});
+
+function tableToExcel() {
+    var type=$('input[name="type"]:checked').val();
+    $.ajax({
+        url:'/msgFodder/selectMsgByType',
+        type:"POST",
+        data:{type:type},
+        success:function (data) {
+            const jsonData=data.msgFodderList;
+            //列标题，逗号隔开，每一个逗号就是隔开一个单元格
+            let str = `名称,状态,消息内容,英文消息内容,审核原因\n`;
+            //增加\t为了不让表格显示科学计数法或者其他格式
+            for(let i = 0 ; i < jsonData.length ; i++ ){
+                for(let item in jsonData[i]){
+                    if(item=='id' || item=='type'){
+
+                    }else if(item=='state'){
+                        if(jsonData[i][item]==0){
+                            str+=`未审核,`;
+                        }else if(jsonData[i][item]==1){
+                            str+=`审核通过,`;
+                        }else{
+                            str+=`审核不通过,`;
+                        }
+                    }else{
+                        str+=`${jsonData[i][item] + '\t'},`;
+                    }
+                }
+                str+='\n';
+            }
+            //encodeURIComponent解决中文乱码
+            let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+            //通过创建a标签实现
+            let link = document.createElement("a");
+            link.href = uri;
+            //对下载的文件命名
+            link.download =  "json数据表.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+}
+
+
+
+function selectFodderMsgByType(type,pageNum) {
+    $.ajax({
+        url:'/msgFodder/getFodderMsgByType',
+        type:"POST",
+        data:{type:type,pageNum:pageNum},
+        success:function (data) {
+            $("#msgFodderTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                var stateName;
+                if(item.state==0){
+                    stateName="未审核";
+                }else if(item.state==1){
+                    stateName="审核通过";
+                }else{
+                    stateName="审核不通过";
+                }
+                $("#msgFodderTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
+                    '<td>'+item.title+'</td>' +
+                    '<td>'+stateName+'</td>' +
+                    '<td>'+item.contentCN+'</td>' +
+                    '<td>'+item.contentEN+'</td>' +
+                    '<td>'+item.note+'</td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)+1;
+    selectFodderMsgByType(type,num);
+}
+function previousPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)-1;
+    selectFodderMsgByType(type,num);
+}
+</script>
+</body>
+</html>

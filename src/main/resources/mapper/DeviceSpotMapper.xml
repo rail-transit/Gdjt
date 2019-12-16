@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DeviceSpotMapper">
+    <select id="selectDeviceSpotById" resultType="com.example.passenger.entity.DeviceSpot">
+         SELECT
+        *
+        FROM
+        Device_Spot
+        WHERE
+            id=#{id}
+    </select>
+    <select id="selectDeviceSpot" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT
+        *
+        FROM
+        Device_Spot
+        WHERE
+        IsShow=1
+        and Type=2
+        <if test="type!=null">
+          AND DeviceType =#{type}
+        </if>
+        <if test="type==null">
+            and (Name='cpu利用率(%)' OR Name='硬盘大小' OR Name='内存大小(MB)')
+        </if>
+    </select>
+    <select id="selectAllDeviceSpot" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT
+            *
+        FROM
+            Device_Spot
+    </select>
+    <select id="selectDeviceSpotPaging" resultType="com.example.passenger.entity.vo.DeviceSpotVo">
+        SELECT TOP (#{pageSize}) a.*,b.Name as deviceTypeName
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Device_Spot
+        <if test="deviceType!=null">
+            WHERE
+            DeviceType =#{deviceType}
+        </if>
+        ) AS a
+        LEFT JOIN Device_Type b on a.DeviceType=b.ID
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Device_Spot
+        <if test="deviceType!=null">
+            WHERE
+            DeviceType =#{deviceType}
+        </if>
+    </select>
+    <select id="selectDeviceSpotByName" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Device_Spot
+        WHERE
+            DeviceType = #{deviceType}
+            AND Name = #{name}
+        <if test="id!=null">
+            and id !=#{id}
+        </if>
+    </select>
+    <insert id="addDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        INSERT INTO Device_Spot
+        VALUES
+            (
+                #{name},
+                #{parameter},
+                #{type},
+                #{min},
+                #{max},
+                #{value},
+                #{deviceType},
+                #{isShow},
+            #{ctrlType})
+    </insert>
+    <update id="updateDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        UPDATE Device_Spot
+        SET name =#{name},
+        Parameter=#{parameter},
+        Type=#{type},
+        Min=#{min},
+        Max=#{max},
+        Value=#{value},
+        DeviceType=#{deviceType},
+        IsShow=#{isShow},
+        CtrlType=#{ctrlType}
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteDeviceSpot" parameterType="com.example.passenger.entity.DeviceSpot">
+        DELETE
+        FROM
+            Device_Spot
+        WHERE
+            id =#{id}
+    </delete>
+</mapper>

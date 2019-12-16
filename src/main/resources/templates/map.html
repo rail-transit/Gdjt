@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset='utf-8'>
+    <title>地图制作</title>
+    <style type="text/css">
+        #big {
+            border: 1px solid #FF3300;
+            width: 99%;
+            height: 570px;
+            position: relative;
+            background-size: 100% 100%;
+        }
+        .small {
+            width: auto;
+            height: auto;
+            position: absolute;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .title{
+            position: relative;
+        }
+        .black_overlay{
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index:1001;
+            -moz-opacity: 0.8;
+            opacity:.80;
+            filter: alpha(opacity=88);
+        }
+        .white_content {
+            display: none;
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 55%;
+            height: 55%;
+            border: 1px solid orange;
+            background-color: white;
+            z-index:1002;
+            overflow: auto;
+        }
+        #exit{float: right;color: black;}
+        #to_configure{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 15px;padding-left: 10px;padding-top: 5px;padding-bottom: 10px;}
+        #configure_ul{list-style: none;padding-top: 23px;}
+        #configure_ul li{display: inline;float:left;width: 100%;font-size: 14px;height: 60px;}
+        #configure_ul li span{padding-right: 10px;}
+        form{float: right;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+</head>
+<body>
+<div id="light" class="white_content">
+    <a href = "javascript:void(0)" id="exit" onclick="exit();">关闭</a>
+    <p id="to_configure">配置属性</p>
+    <ul id="configure_ul">
+        <li><span>标题向左右移动:</span><input type="text" id="textLeft"></li>
+        <li><span>标题向上下移动:</span><input type="text" id="textTop"></li>
+        <li><input type="button" value="保存修改" id="addUpdate" onclick="addUpdate()">
+        <input type="button" value="删除站点" id="deleteStation"></li>
+    </ul>
+</div>
+<div id="fade" class="black_overlay"></div>
+
+<div id="menu">
+    <input type="text" hidden="hidden" id="id" th:value="${id}">
+    <input type="text" hidden="hidden" id="lineID" th:if="${line}!=null" th:value="${line.id}">
+    <input type="button" value="添加节点" id="addMenu">
+    <select id="stationID">
+        <option>选择节点</option>
+        <option th:each="menu:${menuList}" th:value="${menu.id}"
+                th:text="${menu.name}"></option>
+    </select>
+    <input type="button" value="保存绘制" id="addDraw">
+    <select id="baseMap"></select>
+    <input type="file" name="file" id="file" multiple="multiple">
+</div>
+<div id="big"></div>
+</body>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#file").change(function () {
+        var fileObj = document.getElementById("file").files; // js 获取文件对象
+        var formData=new FormData();
+        for (var i=0;i<fileObj.length;i++){
+            formData.append("file",fileObj[i]);
+        }
+        var oneID=$("#lineID").val();
+        if(oneID!=null){
+            formData.append("type","1");
+        }
+        $.ajax({
+            url:'/map/upload',
+            dataType:'json',
+            type:'POST',
+            async: false,
+            data: formData,
+            processData : false, // 使数据不做处理
+            contentType : false, // 不要设置Content-Type请求头
+            success: function(data){
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+
+    getMap();
+    //全局变量
+    var span = null;
+   $("#addMenu").click(function () {
+       var oneID=$("#lineID").val();
+       var stationID=$("#stationID").val();
+       var stationName=$("#stationID").find("option:selected").text();
+       if(stationID=="选择节点"){
+           swal("请选择节点");
+       }else{
+           var object=$(".id");
+           for(var i=0;i<object.length;i++){
+               if(object[i].value==stationID){
+                   swal("该节点已存在!");
+                   return false;
+               }
+           }
+           if(oneID!=null){
+               $("#big").append('<div class="small" onmousedown="small_down(event,this)">\n' +
+                   '<img src="/images/normal.png" width="90px" height="20px" class="img" ondblclick="attribute(this)">\n' +
+                   '<input class="id" hidden="hidden" value="'+stationID+'" type="text">\n' +
+                   '<span class="title" style="left: 3px;top: 4px;">'+stationName+'</span>\n' +
+                   '</div>');
+           }else{
+               $("#big").append('<div class="small" onmousedown="small_down(event,this)">\n' +
+                   '<img src="/images/normal.jpg" width="12px" height="12px" class="img" ondblclick="attribute(this)">\n' +
+                   '<input class="id" hidden="hidden" value="'+stationID+'" type="text">\n' +
+                   '<span class="title" style="left: 3px;top: 4px;">'+stationName+'</span>\n' +
+                   '</div>');
+           }
+       }
+   });
+
+   $("#addDraw").click(function () {
+       var list=new Array();
+       var object=$(".small");
+       var oneID=$("#lineID").val();
+       var twoID=$("#id").val();
+       var id=null;
+       if(oneID!=null){
+           id=oneID+"-"+twoID;
+       }else{
+           id=twoID;
+       }
+       for(var i=0;i<object.length;i++){
+           var textObject=$(object[i]).children("span");
+           var idObject=$(object[i]).children("input");
+           //获取名称坐标
+           var left=textObject[0].style.left;
+           var top=textObject[0].style.top;
+           //获取站点信息
+           var stationID=idObject.val();
+           var stationName=textObject[0].innerHTML;
+           //获取div坐标
+           var divLeft=object[i].style.left;
+           var divTop=object[i].style.top;
+
+           var back = $("#big").css('backgroundImage').split("\"")[1];
+
+           list.push({mapImg:back,divTop:divTop,divLeft:divLeft,stationID:stationID,
+               stationName:stationName,left:left,top:top});
+       }
+
+       $.ajax({
+           url:'/map/addMap',
+           type:"POST",
+           dataType: 'json',
+           //contentType : "application/json" ,
+           data:{list:JSON.stringify(list),id:id},
+           success:function (data) {
+               if(data.result=="success"){
+                   swal("Good!", "操作成功!", "success");
+                   $(".confirm").click(function () {
+                   });
+               }else{
+                   swal("OMG!", "操作错误!", "error");
+               }
+           },
+           error: function(data){
+               swal("OMG!", "请求失败!", "error");
+           }
+       });
+   });
+
+   $("#baseMap").change(function () {
+       $("#big").css("background-image","url("+$(this).val()+"");
+   });
+
+});
+
+function getMap() {
+    var oneID=$("#lineID").val();
+    var twoID=$("#id").val();
+    var stationID=$("#stationID").val();
+    var id=null;
+    if(oneID!=null){
+        id=oneID+"-"+twoID;
+        getMapImage(1);
+    }else{
+        id=twoID;
+        getMapImage(0);
+    }
+    $.ajax({
+        url:'/map/selectMap',
+        type:"POST",
+        data:{id:id},
+        success:function (data) {
+            $.each(data.list, function (i, item) {
+                if(oneID!=null){
+                    var images='<img src="/images/normal.png" width="90px" height="20px" class="img" ondblclick="attribute(this)">';
+                }else{
+                    var images='<img src="/images/normal.jpg" width="12px" height="12px" class="img" ondblclick="attribute(this)">';
+                }
+                $("#big").css("background-image","url("+item.mapImg+"");
+                $("#big").append('<div class="small" style="left: '+item.divLef+';top: '+item.divTop+';"' +
+                    ' onmousedown="small_down(event,this)">\n' +
+                    images+
+                    '<input class="id" hidden="hidden" value="'+item.equipmentID+'" type="text">\n' +
+                    '<span class="title" style="left: '+item.left+';top: '+item.top+';">'+
+                    item.equipmentName+'</span>\n' +
+                    '</div>');
+            });
+        }
+    });
+}
+
+function getMapImage(type) {
+    $.ajax({
+        url:'/map/getMapImage',
+        type:"POST",
+        data:{type:type},
+        success:function (data) {
+            $("#baseMap option").remove();
+            $.each(data.mapList, function (i, item) {
+                if(type==1){
+                    $("#baseMap").append('<option value="/Path/deviceMapImage/'+item+'">'+item+'</option>');
+                }else if(type==0){
+                    $("#baseMap").append('<option value="/Path/stationMapImage/'+item+'">'+item+'</option>');
+                }
+            });
+        }
+    });
+}
+
+function exit() {
+    document.getElementById('light').style.display='none';
+    document.getElementById('fade').style.display='none';
+}
+
+function attribute(object) {
+    document.getElementById('light').style.display='block';
+    document.getElementById('fade').style.display='block';
+    //获取父节点
+    var divObject=$(object).parent();
+    //获取兄弟节点
+    var textObject=$(object).parent().find("span");
+    //给全局变量赋值
+    span =$(object).parent().find("span");
+    //获取left,top
+    var left=parseInt(textObject[0].style.left);
+    var top=parseInt(textObject[0].style.top);
+    //赋值至input
+    document.getElementById('textLeft').value=left;
+    document.getElementById('textTop').value=top;
+    $("#deleteStation").on('click',function () {
+        divObject.remove();
+        exit();
+    });
+}
+
+function addUpdate(){
+    var left=$("#textLeft").val();
+    var top=$("#textTop").val();
+    if(left==null|| left==""||left.match(/^\s+$/g)||!(/^(\-?)\d+(\.\d+)?$/.test(left))){
+        swal("请输入合法数值");
+        return false;
+    }
+    if(top==null|| top==""||top.match(/^\s+$/g)||!(/^(\-?)\d+(\.\d+)?$/.test(top))){
+        swal("请输入合法数值");
+        return false;
+    }
+    if(left>100 || left<-100||top>100||top<-100){
+        swal("数值不能大于100 小于-100");
+        return false;
+    }
+    span[0].style.right
+    span[0].style.left=left+"px";
+    span[0].style.top=top+"px";
+    exit();
+}
+
+function small_down(e,osmall) {
+    var obig = document.getElementById("big");
+    //var osmall = document.getElementById("small");
+    var e = e || window.event;
+    /*用于保存小的div拖拽前的坐标*/
+    osmall.startX = e.clientX - osmall.offsetLeft;
+    osmall.startY = e.clientY - osmall.offsetTop;
+    /*鼠标的移动事件*/
+    document.onmousemove = function(e) {
+        var e = e || window.event;
+        osmall.style.left = e.clientX - osmall.startX + "px";
+        osmall.style.top = e.clientY - osmall.startY + "px";
+        /*对于大的DIV四个边界的判断*/
+        if (e.clientX - osmall.startX <= 0) {
+            osmall.style.left = 0 + "px";
+        }
+        if (e.clientY - osmall.startY <= 0) {
+            osmall.style.top = 0 + "px";
+        }
+        if (e.clientX - osmall.startX >= obig.offsetWidth-osmall.offsetWidth) {
+            osmall.style.left = obig.offsetWidth-osmall.offsetWidth + "px";
+        }
+        if (e.clientY - osmall.startY >= obig.offsetHeight-osmall.offsetHeight) {
+            osmall.style.top = obig.offsetHeight-osmall.offsetHeight + "px";
+        }
+    };
+    /*鼠标的抬起事件,终止拖动*/
+    document.onmouseup = function() {
+        document.onmousemove = null;
+        document.onmouseup = null;
+    };
+}
+</script>
+</html>

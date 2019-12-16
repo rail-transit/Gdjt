@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DepartmentMapper">
+    <select id="selectAllDepartment" resultType="com.example.passenger.entity.Department">
+        SELECT
+            *
+        FROM
+            Department
+    </select>
+    <select id="selectDepartmentById" resultType="com.example.passenger.entity.Department">
+        SELECT
+            *
+        FROM
+            Department
+        WHERE
+            id=#{id}
+    </select>
+    <select id="selectDepartment" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Department
+        WHERE
+            Name = #{name}
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+    </select>
+    <insert id="addDepartment" parameterType="com.example.passenger.entity.Department">
+        INSERT INTO Department
+        VALUES
+            (
+                #{name},
+                #{level},
+            #{parentID})
+    </insert>
+    <update id="updateDepartment" parameterType="com.example.passenger.entity.Department">
+        UPDATE Department
+        SET name = #{name}
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteDepartment" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Department
+        WHERE
+            id =#{id}
+    </delete>
+</mapper>

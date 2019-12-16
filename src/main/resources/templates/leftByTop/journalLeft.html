@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript" src="/js/jquery.js"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            //导航切换
+            $(".menuson li").click(function(){
+                $(".menuson li.active").removeClass("active")
+                $(this).addClass("active");
+            });
+
+            $('.title').click(function(){
+                var $ul = $(this).next('ul');
+                $('dd').find('ul').slideUp();
+                if($ul.is(':visible')){
+                    $(this).next('ul').slideUp();
+                }else{
+                    $(this).next('ul').slideDown();
+                }
+            });
+        })
+    </script>
+
+
+</head>
+
+<body style="background:#f0f9fd;">
+<div class="lefttop"><span></span>预案管理</div>
+<dl class="leftmenu">
+    <!--th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 51}"-->
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 51}">
+        <div class="title">
+            <span><img src="/images/leftico01.png" /></span>消息预案
+        </div>
+        <ul class="menuson">
+            <!--413--><!--414--><!--415--><!--416--><!--417--><!--418--><!--419-->
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 413}"><cite></cite><a href="/msgLevel/msgLevelManagement" target="rightFrame">优先级管理</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 414}"><cite></cite><a href="/msgFodder/msgFodderManagement" target="rightFrame">消息录入</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 415}"><cite></cite><a href="/msgFodder/realTimeMsgManagement" target="rightFrame">实时消息</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 416}"><cite></cite><a href="/msgFodder/timingMsgManagement" target="rightFrame">定时消息</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 417}"><cite></cite><a href="/message/auditManagement" target="rightFrame">消息审核</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 433}"><cite></cite><a href="/message/waitBoradcastMessage" target="rightFrame">待播消息</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 419}"><cite></cite><a href="/message/broadcastMessageManagement" target="rightFrame">在播消息</a><i></i></li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 418}"><cite></cite><a href="/message/historyManagement" target="rightFrame">历史消息</a><i></i></li>
+        </ul>
+    </dd>
+
+    <!--th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 401}"-->
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 401}">
+        <div class="title"><span><img src="/images/leftico04.png" /></span>多媒体预案</div>
+        <ul class="menuson">
+            <li><cite></cite><a href="/playList/planManagement" target="rightFrame">多媒体预案管理</a><i></i></li>
+            <li><cite></cite><a href="/playList/playReleaseManagement" target="rightFrame">多媒体预案发布</a><i></i></li>
+            <li><cite></cite><a href="/playList/playState" target="rightFrame">多媒体预案状态</a><i></i></li>
+        </ul>
+    </dd>
+</dl>
+</body>
+</html>

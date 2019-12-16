@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #sparePart_top{height: 100px;margin: auto;}
+        #sparePart_top div{float: left;padding-top: 32px;padding-left: 70px;}
+        #sparePart_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #sparePart_ul{list-style: none;}
+        #sparePart_ul li{display: inline;float:left;width: 25%;font-size: 14px;height: 35px;}
+        #sparePart_ul li span{padding-right: 10px;}
+        #sparePart_ul select{height: 24px;width: 135px;}
+        #sparePart_height{height: 440px;width: 99%;border: 1px solid #ebf2f5;
+            margin-top: 10px;margin-left: 5px;overflow-y: auto;}
+        #sparePart_height p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:370px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;text-align: center}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+    </style>
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('sparePartTable');
+        };
+    </script>
+</head>
+<body>
+<div id="sparePart_top">
+    <p id="sparePart_title">设备备件统计</p>
+    <ul id="sparePart_ul">
+        <li><span>线路名称:</span>
+            <select id="lineID">
+                <option>所有线路</option>
+                <option th:each="line:${lineList}" th:value="${line.id}"
+                        th:text="${line.name}"></option>
+            </select></li>
+        <li><input type="button" value="查询" id="select">&nbsp;&nbsp;
+            <input type="button" value="导出" id="export"></li>
+    </ul>
+</div>
+<div id="sparePart_height">
+    <table width="100%" border="0" id="sparePartTable">
+        <thead>
+        <tr>
+            <th class="tips">线路名称</th>
+            <th class="tips">备件名称</th>
+            <th class="tips">可用数量(只)</th>
+            <th class="tips">故障数量(只)</th>
+            <th class="tips">返修数量(只)</th>
+            <th class="tips">报废数量(只)</th>
+        </tr>
+        </thead>
+        <tr >
+
+        </tr>
+    </table>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+
+    </ul>
+</div>
+</body>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    selectMaintain();
+    $("#select").click(function () {
+        var lineID=$("#lineID").val();
+        selectMaintain(1,lineID);
+    });
+
+    $("#export").click(function () {
+        var lineID=$("#lineID").val();
+        $.ajax({
+            url:'/lineStandby/getSparePart',
+            type:"POST",
+            data:{lineID:lineID},
+            success:function (data) {
+                if(data.lineStandbyVoList.length!=0){
+                    const jsonData=data.lineStandbyVoList;
+                    //列标题，逗号隔开，每一个逗号就是隔开一个单元格
+                    let str = `所属线路,备件名称,可用数量(只),故障数量(只),返修数量(只),报废数量(只)\n`;
+                    //增加\t为了不让表格显示科学计数法或者其他格式
+                    for(let i = 0 ; i < jsonData.length ; i++ ){
+                        for(let item in jsonData[i]){
+                            str+=`${jsonData[i][item] + '\t'},`;
+                        }
+                        str+='\n';
+                    }
+                    //encodeURIComponent解决中文乱码
+                    let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+                    //通过创建a标签实现
+                    let link = document.createElement("a");
+                    link.href = uri;
+                    //对下载的文件命名
+                    link.download =  "json数据表.csv";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        });
+    });
+
+});
+function selectMaintain(pageNum,lineID) {
+    $.ajax({
+        url:'/lineStandby/selectStatistics',
+        type:"POST",
+        data:{pageNum:pageNum,lineID:lineID},
+        success:function (data) {
+            $("#sparePartTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#sparePartTable tbody").prepend('<tr><td>'+item.lineName+'</td>' +
+                    '<td>'+item.standbyName+'</td>' +
+                    '<td>'+item.availableNumber+'</td>' +
+                    '<td>'+item.faultNumber+'</td>' +
+                    '<td>'+item.reworkingNumber+'</td>' +
+                    '<td>'+item.scrapNumber+'</td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var num=parseInt(pageNum)+1;
+    var lineID=$("#lineID").val();
+    selectMaintain(num,lineID);
+}
+function previousPage(pageNum) {
+    var num=parseInt(pageNum)-1;
+    var lineID=$("#lineID").val();
+    selectMaintain(num,lineID);
+}
+</script>
+</html>

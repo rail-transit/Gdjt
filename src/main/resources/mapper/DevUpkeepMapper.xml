@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DevUpkeepMapper">
+    <select id="selectDevUpkeepByEndTimeIsNull" resultType="com.example.passenger.entity.DevUpkeep">
+        SELECT
+            *
+        FROM
+            DevUpkeep
+        WHERE
+            EndTime IS NULL
+        AND DeviceID=#{deviceID}
+    </select>
+    <select id="selectDevUpkeepByEndTimeNotNull" resultType="com.example.passenger.entity.DevUpkeep">
+       SELECT TOP
+        (#{pageSize}) *
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                DevUpkeep
+			WHERE
+				EndTime IS NOT NULL
+			AND DeviceID=#{deviceID}
+            ) AS A
+        WHERE
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer" parameterType="com.example.passenger.entity.DevUpkeep">
+        	SELECT
+               count(*)
+            FROM
+                DevUpkeep
+			WHERE
+				EndTime IS NOT NULL
+			AND DeviceID=#{deviceID}
+    </select>
+    <select id="getDevUpKeep" parameterType="com.example.passenger.entity.DevUpkeep" resultType="java.util.LinkedHashMap">
+        SELECT
+            b.Name AS lineName,
+            c.Name AS stationName,
+            d.Name AS deviceName,
+            a.Accendant,
+            a.Tel,
+            a.Scheme,
+            a.StartTime,
+            a.EndTime,
+            a.UpkeepState
+        FROM
+            DevUpkeep a
+            LEFT JOIN Device b ON a.DeviceID= b.ID
+            LEFT JOIN Station c ON a.StationID= c.ID
+            LEFT JOIN Line d ON a.LineID= d.id
+        WHERE
+            a.EndTime IS NOT NULL
+        AND convert(char(10),a.EndTime,20) between #{startTime} and #{endTime}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID =#{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    </select>
+    <select id="maintainPaging" resultType="com.example.passenger.entity.vo.DevUpkeepVo">
+        SELECT TOP
+        (#{pageSize})d.Name as lineName,c.Name as stationName,b.Name as deviceName,
+					 a.Accendant,a.Tel,a.Scheme,a.StartTime,a.EndTime,a.UpkeepState
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                DevUpkeep
+			WHERE
+				EndTime IS NOT NULL
+			AND convert(char(10),StartTime,20) between #{devUpkeep.startTime} and #{devUpkeep.endTime}
+            <if test="devUpkeep.lineID!=null and devUpkeep.lineID!=0">
+                AND LineID =#{devUpkeep.lineID}
+            </if>
+            <if test="devUpkeep.stationID!=null and devUpkeep.stationID!=0">
+                AND StationID =#{devUpkeep.stationID}
+            </if>
+            <if test="devUpkeep.deviceID!=null and devUpkeep.deviceID!=0">
+                AND DeviceID =#{devUpkeep.deviceID}
+            </if>
+            ) AS A
+            LEFT JOIN Device b on a.DeviceID=b.ID
+            LEFT JOIN Station c on a.StationID=c.ID
+            LEFT JOIN Line d on a.LineID=d.id
+        WHERE
+        <if test="devUpkeep.type!=null and devUpkeep.type!=0">
+            b.Type=#{devUpkeep.type} AND
+        </if>
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+    </select>
+    <select id="maintainCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            DevUpkeep a
+            LEFT JOIN Device b on a.DeviceID=b.ID
+        WHERE
+        EndTime IS NOT NULL
+        AND convert(char(10),a.StartTime,20) between #{startTime} and #{endTime}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID =#{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    </select>
+    <insert id="addDevUpkeep" parameterType="com.example.passenger.entity.DevUpkeep">
+        INSERT INTO DevUpkeep
+        VALUES
+            (
+            #{deviceID},
+            #{accendant},
+            #{tel},
+            #{startTime},
+            #{endTime},
+            #{scheme},
+            #{upkeepState},
+            #{lineID},
+            #{stationID})
+    </insert>
+    <update id="updateDevUpkeep" parameterType="com.example.passenger.entity.DevUpkeep">
+        UPDATE DevUpkeep
+        SET EndTime =#{endTime},
+        UpkeepState =#{upkeepState}
+        WHERE
+            id =#{id}
+    </update>
+
+</mapper>

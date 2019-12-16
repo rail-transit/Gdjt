@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.LineStandbyMapper">
+    <select id="selectPaging" resultType="com.example.passenger.entity.vo.LineStandbyVo">
+        SELECT TOP
+        (#{pageSize}) d.Name as lineName,c.StandbyName as standbyName,a.Available_Number,
+        a.Fault_Number,a.Reworking_Number,a.Scrap_Number,a.ID,a.LineID,
+        a.StandbyType
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        LineStandby
+        <if test="lineID!=null">
+            WHERE
+            LineID=#{lineID}
+        </if>
+        ) AS A
+        LEFT JOIN Line d on a.LineID=d.id
+        LEFT JOIN StandbyType c on a.StandbyType=c.id
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            LineStandby
+        <if test="lineID!=null">
+            WHERE
+            LineID=#{lineID}
+        </if>
+    </select>
+    <select id="getSparePart" parameterType="java.lang.Integer" resultType="java.util.LinkedHashMap">
+        SELECT
+            d.Name AS lineName,
+            c.StandbyName AS standbyName,
+            a.Available_Number,
+            a.Fault_Number,
+            a.Reworking_Number,
+            a.Scrap_Number
+        FROM
+            LineStandby a
+            LEFT JOIN Line d ON a.LineID= d.id
+            LEFT JOIN StandbyType c ON a.StandbyType= c.id
+        <if test="lineID!=null">
+            WHERE
+            LineID=#{lineID}
+        </if>
+    </select>
+    <select id="queryAllStandbyVo" resultType="com.example.passenger.entity.vo.LineStandbyVo">
+        SELECT
+            a.*,b.Name as lineName,c.StandbyName as standbyName
+        FROM
+            LineStandby a
+            LEFT JOIN Line b ON a.LineID= b.ID
+            LEFT JOIN StandbyType c ON a.StandbyType= c.ID
+        WHERE
+        a.Available_Number &lt; c.MinNumber
+    </select>
+    <select id="selectLineStandbyExist" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            LineStandby
+        WHERE
+            LineID = #{lineID}
+            AND StandbyType =#{standbyType}
+    </select>
+    <select id="getStandbyExistByType" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            LineStandby
+        WHERE
+            StandbyType =#{standbyType}
+    </select>
+    <insert id="addLineStandby" parameterType="com.example.passenger.entity.LineStandby">
+        INSERT INTO LineStandby
+        VALUES
+        (
+        #{lineID},
+        #{standbyType},
+        #{availableNumber},
+        #{faultNumber},
+        #{reworkingNumber},
+        #{scrapNumber})
+    </insert>
+    <update id="updateLineStandby" parameterType="com.example.passenger.entity.LineStandby">
+        UPDATE LineStandby
+        SET Available_Number =#{availableNumber},
+        Fault_Number =#{faultNumber},
+        Reworking_Number =#{reworkingNumber},
+        Scrap_Number =#{scrapNumber}
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteLineStandby" parameterType="java.lang.Integer">
+        DELETE FROM LineStandby WHERE id =#{id}
+    </delete>
+</mapper>

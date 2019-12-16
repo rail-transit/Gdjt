@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        .order_details{margin-top:25px;}
+        .order_details ul{margin:0px;padding:0px;border-bottom: 1px solid #b4b4b4;position: relative;}
+        .order_details ul li{float: left;display: block;width: 95px;position: absolute;top:-24px;text-align: center;font-size: 17px;color: #2077d6}
+        .order_details .checked{background-color: #fff;color: #636363;border:1px solid #b4b4b4;border-bottom:0 ;}
+        .prepaids{position: absolute;}
+        .prepaids2{position: absolute;left:95px;}
+        .hidedomdiv{display: none}
+        .showdomdiv{display: block;}
+        .showsss{margin: auto;padding: 0px;}
+        #playBack_top_div{width: 100%;height: 150px;margin: auto;}
+        #playBack_top_div p{font-size: 14px;color: white;font-weight: bolder;
+            padding-left: 10px;margin: auto;padding-top: 10px;padding-bottom: 10px;}
+        #playBack_right_div{width: 99%;height: 55px; background-color: white; margin: 0 auto;}
+        #playBack_right_div p{float: left;width: 10%;}
+        #playBack_right_div p {color: black}
+        #playBack_footer_div{width: 99%;height: 420px;background-color: white;margin: 0 auto;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:388px;display: block;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {display: table;width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr:hover{background-color:#ffc;}
+    </style>
+</head>
+<body style="background-color: #006c96;">
+<div class="order_details">
+    <ul>
+        <li class="fortab prepaids checked">播放器状态</li>
+        <li class="fortab prepaids2">播放器监控</li>
+    </ul>
+</div>
+<div>
+    <div class="tablelist showdomdiv showsss">
+        <div id="playBack_top_div">
+            <p>天山路站设备</p>
+            <div id="playBack_right_div">
+                <p>天山路站服务器</p>
+            </div>
+            <p style="margin-top: 10px">当前状态</p>
+        </div>
+        <div id="playBack_footer_div">
+            <table width="100%" border="0" >
+                <thead>
+                <tr>
+                    <th class="tips">设备位置</th>
+                    <th class="tips">IP</th>
+                    <th class="tips">MAC</th>
+                    <th class="tips">设备状态</th>
+                    <th class="tips">维护状态</th>
+                    <th class="tips">CPU使用率</th>
+                    <th class="tips">内存使用率</th>
+                    <th class="tips">硬盘使用率</th>
+                    <th class="tips">上报时间</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td >设备名称</td>
+                    <td >设备编号</td>
+                    <td >位置描述</td>
+                    <td >设备告警状态</td>
+                    <td >告警发生时间</td>
+                    <td >IP</td>
+                    <td >处理人</td>
+                    <td >处理日期</td>
+                    <td >处理日期</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="tablelist hidedomdiv showsss">
+        2
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // 改为鼠标移上的事件只需把click改为mousemove
+        $(".fortab").click(function(){
+            var number=$(".fortab").index(this);
+            $(this).addClass("checked");
+            $(this).siblings().removeClass("checked");
+            $(".tablelist:eq("+number+")").show();
+            $(".tablelist:eq("+number+")").siblings().hide();
+        });
+    });
+</script>
+</body>
+</html>

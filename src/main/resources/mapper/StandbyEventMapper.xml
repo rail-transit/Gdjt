@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.StandbyEventMapper">
+    <select id="selectAllStandbyEvent" resultType="com.example.passenger.entity.StandbyEvent">
+        SELECT
+            *
+        FROM
+            StandbyEvent
+        WHERE
+            LineID=#{lineID}
+    </select>
+    <insert id="addStandbyEvent" parameterType="com.example.passenger.entity.StandbyEvent">
+        INSERT INTO StandbyEvent
+        VALUES
+            (
+            #{lineID},
+            #{event}
+            ,#{timestamp})
+    </insert>
+    <update id="updateStandbyEvent" parameterType="com.example.passenger.entity.StandbyEvent">
+        UPDATE StandbyEvent
+        SET Event =#{event},
+        [Timestamp] =#{timestamp}
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteStandbyEvent" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            StandbyEvent
+        WHERE
+            id =#{id}
+    </delete>
+</mapper>

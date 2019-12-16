@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DevAlarmLogMapper">
+<select id="getWarning" resultType="java.util.LinkedHashMap" parameterType="com.example.passenger.entity.DevAlarmLog">
+    SELECT
+        max(d.Name) as lineName,
+        max(c.Name) as stationName,
+        a.DeviceName as deviceName,
+        a.Event,
+        count(*) as count
+    FROM
+        DevAlarmLog a
+        LEFT JOIN Device b ON a.DeviceID= b.ID
+        LEFT JOIN Station c ON a.StationID= c.ID
+        LEFT JOIN Line d ON a.LineID= d.ID
+    WHERE
+    convert(char(10),a.TimeStamp,20) between #{startDate} and #{endDate}
+    AND a.AlarmType=#{alarmType}
+    <if test="lineID!=null and lineID!=0">
+        AND a.LineID =#{lineID}
+    </if>
+    <if test="stationID!=null and stationID!=0">
+        AND a.StationID =#{stationID}
+    </if>
+    <if test="deviceID!=null and deviceID!=0">
+        AND a.DeviceID =#{deviceID}
+    </if>
+    <if test="type!=null and type!=0">
+        AND b.Type=#{type}
+    </if>
+    GROUP BY a.Event,a.DeviceName
+</select>
+<select id="warningPaging" resultType="com.example.passenger.entity.vo.DevAlarmLogVo">
+        SELECT
+            TOP (#{pageSize}) *
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY aa.count ) AS row1,*
+            FROM
+                (
+                SELECT
+                    d.Name AS LineName,
+                    c.Name AS StationName,
+                    a.DeviceName AS deviceName,
+                    a.Event,
+                    COUNT ( a.Event ) AS count
+                FROM
+                    [PIS].[dbo].[DevAlarmLog] a
+                    LEFT JOIN [PIS].[dbo].[Device] b ON a.DeviceID = b.ID
+                    LEFT JOIN [PIS].[dbo].[Station] c ON a.StationID = c.ID
+                    LEFT JOIN [PIS].[dbo].[Line] d ON a.LineID = d.ID
+                WHERE
+                    convert(char(10),a.TimeStamp,20) between #{startDate} and #{endDate}
+                    and a.AlarmType= #{alarmType}
+                    <if test="lineID!=null and lineID!=0">
+                        AND a.LineID =#{lineID}
+                    </if>
+                    <if test="stationID!=null and stationID!=0">
+                        AND a.StationID =#{stationID}
+                    </if>
+                    <if test="deviceID!=null and deviceID!=0">
+                        AND a.DeviceID =#{deviceID}
+                    </if>
+                    <if test="type!=null and type!=0">
+                        AND b.Type=#{type}
+                    </if>
+                GROUP BY
+                    a.Event,
+                    a.DeviceName,
+                    c.Name,
+                    d.Name
+                ) AS aa
+            ) AS bb
+        WHERE
+            bb.row1 > #{pageSize} * (
+            #{pageNum}-1)
+</select>
+<select id="warningCount" resultType="java.lang.Integer">
+    SELECT COUNT
+    (1)
+    FROM
+    ( SELECT Event FROM DevAlarmLog a
+        LEFT JOIN Device b on a.DeviceID=b.ID
+        WHERE
+        convert(char(10),a.TimeStamp,20) between #{startDate} and #{endDate}
+        AND a.AlarmType=#{alarmType}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID =#{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    GROUP BY Event,DeviceName ) aa;
+</select>
+<insert id="addDevAlarmLog" parameterType="com.example.passenger.entity.DevAlarmLog">
+    INSERT INTO DevAlarmLog
+    VALUES
+        (
+            #{deviceID},
+            #{deviceName},
+            #{alarmType},
+            #{spotID},
+            #{spotName},
+            #{value},
+            #{event},
+            #{timeStamp},
+            #{stationID},
+            #{lineID})
+</insert>
+</mapper>

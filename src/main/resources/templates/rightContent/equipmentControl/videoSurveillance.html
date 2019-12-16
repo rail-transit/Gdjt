@@ -1,0 +1,441 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0px;
+            padding: 0px;
+        }
+        #div1{
+            width: 80px;
+            height: 85px;
+            background: #e9e7e7;
+            /*opacity: 0;*/
+            position: absolute;
+            display: none;
+        }
+        #div1 ul li{
+            list-style: none;
+            height: 20px;
+            text-align: center;
+            line-height: 25px;
+            margin-top: 5px;
+            cursor:pointer;
+            -webkit-transition-duration: 0.5s;
+            transition-duration: 0.5s;
+            -moz-webkit-transition-duration:0.5s;
+        }
+        #div1 ul li:hover{
+            background: #d6e4d6;
+            color: #ffffff;
+        }
+        img{
+            width:100%;
+            height:91%;
+            max-width:100%;
+            max-height:91%;
+        }
+        .video{height: 33%;width: 33%;background-color: rebeccapurple;
+            border: 1px solid red;float: left}
+        .footer{width: 100%;height: 9%;margin: auto;padding: 0px;border: 1px solid red;
+            border-right: 0px;border-left: 0px;border-bottom: 0px;align-items: center;justify-content: center;
+            display: flex;}
+        .footer span{font-size: 12px;padding-right: 15px;color: white;}
+        .play{
+            width: 18px;
+            height: 16px;
+            background-image: url("/images/play1.png");
+            background-size: 18px 16px;
+            border: 0px;
+            border-radius: 8px;}
+        .del{
+            width: 17px;
+            height: 16px;
+            background-image: url("/images/play.jpg");
+            background-size: 120px 113px;
+            border: 0px;
+            background-position: -338px -50px;
+            border-radius: 8px;
+            margin-left: 11px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+</head>
+<body>
+<div id="div1">
+    <ul>
+        <li id="fullScreen">单屏</li>
+        <li id="fourScreen">4屏</li>
+        <li id="nineScreen">9屏</li>
+    </ul>
+</div>
+<div id="video1" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainOne">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video2" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainTwo">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video3" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainThree">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video4" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainFour">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video5" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainFive">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video6" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainSix">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video7" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainSeven">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video8" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainEight">
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+<div id="video9" class="video">
+    <img src="/images/timg (1).jpg" id="imageContainNine" >
+    <div class="footer">
+        <span class="lineName"></span>
+        <span class="stationName"></span>
+        <span class="deviceName"></span>
+        <input type="text" class="deviceID" hidden="hidden">
+        <input type="text" class="playStatus" hidden="hidden" value="1">
+        <input type="button" class="play">
+        <input type="button" class="del">
+    </div>
+</div>
+</body>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.video').click(function(){
+        var divObject=$(this);
+        $("#fullScreen").unbind('click').click(function () {
+            var divList=$(".video");
+            for(var i=0;i<divList.length;i++){
+               $(divList[i]).hide();
+            }
+            $(divObject).show();
+            $(divObject).attr("style","width:99.7%;height:99.7%;");
+        })
+    });
+
+
+    $("#fourScreen").click(function () {
+        $(".video").attr("style","width:49.7%;height:49%;");//设置宽度,高度
+        $("#video5,#video6,#video7,#video8,#video9").attr("style","display:none;");//隐藏div
+    });
+
+
+    $("#nineScreen").click(function () {
+        $(".video").attr("style","width:33%;");//设置宽度
+    });
+
+    $(".del").click(function () {
+        var deviceID=$(this).siblings(".deviceID").val();
+        var object=$(this);
+        if (deviceID==""){
+            swal("请先选择需要监看的设备");
+        }else{
+            $.ajax({
+                url:'/Device/deletePlaylist',
+                type:"POST",
+                data:{deviceID:deviceID},
+                success:function (data) {
+                    object.siblings(".playStatus").attr("value",'1');
+                    deviceStatuss[data.deviceListCount]=1;
+                }
+            });
+        }
+    });
+
+    $(".play").click(function () {
+        var deviceID=$(this).siblings(".deviceID").val();
+        var status=$(this).siblings(".playStatus").val();
+        var object=$(this);
+        if (deviceID==""){
+            swal("请先选择需要监看的设备");
+        }else{
+            $.ajax({
+                url:'/Device/openPlay',
+                type:"POST",
+                data:{deviceID:deviceID,state:status},
+                success:function (data) {
+                    if(data.result=="success"){
+                        var divObject=object.parent().parent().attr('id');
+                        var devicePara=divObject.substr(5,6);
+                        if(status=="1"){
+                            deviceStatuss[devicePara-1]=0;
+                            object.siblings(".playStatus").attr("value",'0');
+                            object.attr("style","background-image: url(\"/images/play2.png\")");
+                        }else{
+                            deviceStatuss[devicePara-1]=1;
+                            object.siblings(".playStatus").attr("value",'1');
+                            object.attr("style","background-image: url(\"/images/play1.png\")");
+                        }
+                        getVideo();
+                    }
+                }
+            });
+        }
+    });
+});
+
+//定义全局状态变量
+function getpos(ev){
+    var scrolltop=document.documentElement.scrollTop||document.body.scrollTop;
+    var scrollleft=document.documentElement.scrollLeft||document.body.scrollLeft;
+    return {x:ev.clientX+scrollleft,y:ev.clientY+scrolltop}
+
+}
+window.onload=function(){
+    var odiv1=document.getElementById("div1");
+    document.oncontextmenu=function(ev){
+        var eventr=ev||event;
+        var pos=getpos(eventr);
+        odiv1.style.top=pos.y+"px";
+        odiv1.style.left=pos.x+"px";
+        odiv1.style["display"]="block";
+        return false;
+    };
+    document.onclick=function(){
+        odiv1.style["display"]="none";
+    };
+};
+
+var devicePaths = new Array()
+var deviceTimers = new Array()
+var deviceStatuss = new Array()
+var imageContains = new Array()
+imageContains[0] =  "imageContainOne";
+imageContains[1] =  "imageContainTwo";
+imageContains[2] =  "imageContainThree";
+imageContains[3] =  "imageContainFour";
+imageContains[4] =  "imageContainFive";
+imageContains[5] =  "imageContainSix";
+imageContains[6] =  "imageContainSeven";
+imageContains[7] =  "imageContainEight";
+imageContains[8] =  "imageContainNine";
+
+for (i = 0; i < 9; i++) {
+    deviceTimers[i] = 0;
+    deviceStatuss[i] = 1;
+}
+
+function changeSrc(nIndex,deviceList){
+    var len = deviceList.length;
+    var j = 0;
+    if (len == 0) {
+        document.getElementById('video1').getElementsByTagName('img')[0].src = "/images/timg (1).jpg";
+        document.getElementById('video1').getElementsByTagName('input')[0].value = "";
+        document.getElementById('video1').getElementsByTagName('span')[0].innerHTML = "";
+        document.getElementById('video1').getElementsByTagName('span')[1].innerHTML = "";
+        document.getElementById('video1').getElementsByTagName('span')[2].innerHTML = "";
+        document.getElementById('video1').getElementsByTagName('input')[2].style.backgroundImage="url(/images/play1.png)";
+        return;
+    }
+    for (j = 0; j < len; j++) {
+        //nIndex++;
+        var nIndex = j + 1;
+        var keystr = "video" + nIndex;
+        if (document.getElementById(keystr) == undefined) {
+            break;
+        }
+        document.getElementById(keystr).getElementsByTagName('input')[0].value = deviceList[j].id;
+        document.getElementById(keystr).getElementsByTagName('span')[0].innerHTML = deviceList[j].lineName;
+        document.getElementById(keystr).getElementsByTagName('span')[1].innerHTML = deviceList[j].stationName;
+        document.getElementById(keystr).getElementsByTagName('span')[2].innerHTML = deviceList[j].name;
+        devicePaths[j] = deviceList[j].id;
+        if (deviceStatuss[j] === 0) {
+            if (deviceTimers[j] === 0) {
+                deviceTimers[j] = setInterval(wrapper(j), 500);
+                function wrapper(args) {
+                    return function () {
+                        var nIndex = args;
+                        console.log("nIndex:" + nIndex);
+                        deleteImage(document.getElementById(imageContains[nIndex]).src);
+                        if (deviceStatuss[nIndex] == 1) {
+                            clearInterval(deviceTimers[nIndex]);
+                            deviceTimers[nIndex] = 0;
+                            return;
+                        }
+                        getImage(devicePaths[nIndex], document.getElementById(imageContains[nIndex]));
+                    }
+                }
+            }
+        }
+    }
+    var keystr = "video" + (j + 1);
+    if (document.getElementById(keystr)) {
+        document.getElementById(keystr).getElementsByTagName('img')[0].src = "/images/timg (1).jpg";
+        document.getElementById(keystr).getElementsByTagName('input')[0].value = "";
+        document.getElementById(keystr).getElementsByTagName('span')[0].innerHTML = "";
+        document.getElementById(keystr).getElementsByTagName('span')[1].innerHTML = "";
+        document.getElementById(keystr).getElementsByTagName('span')[2].innerHTML = "";
+        document.getElementById(keystr).getElementsByTagName('input')[2].style.backgroundImage="url(/images/play1.png)";
+    }
+}
+
+function showVideo(deviceList) {
+    var nIndex = 0;
+    if(deviceList.length>9){
+        objTimer = window.setInterval(function(){
+            changeSrc(nIndex,deviceList);
+            nIndex++;
+        },2000);
+    }else{
+        changeSrc(nIndex,deviceList);
+    }
+}
+
+function deleteImage(path) {
+    if (path.indexOf("undefined") != -1 || path.indexOf("timg") != -1)
+    {
+        return;
+    }
+    console.log("deleteImage:" + typeof(path) + " " + path);
+    $.ajax({
+        url:'/Device/deleteImage',
+        type:"POST",
+        data:{imagePath:path},
+        success:function (data) {
+        }
+    });
+}
+
+function getImage(path,image) {
+    $.ajax({
+        url:'/Device/getImage',
+        type:"POST",
+        data:{imagePath:path},
+        success:function (data) {
+            if (typeof data.img != "undefined" && data.img!=null) {
+                image.src="/Path/"+path+"/"+data.img;
+                console.log(image.src);
+            }else if(data.result=="connectError"){
+                swal("设备("+data.alarmName+")连接异常!");
+                var divObjectId=image.parentElement.id;
+                var devicePara=divObjectId.substr(5,6);
+                deviceStatuss[devicePara-1]=1;
+                document.getElementById(divObjectId).getElementsByTagName('input')[1].value="1";
+                document.getElementById(divObjectId).getElementsByTagName('input')[2].style.backgroundImage="url(/images/play1.png)";
+            }else if (data.result=="interrupt") {
+                swal("设备("+data.alarmName+")连接中断!");
+                var divObjectId=image.parentElement.id;
+                var devicePara=divObjectId.substr(5,6);
+                deviceStatuss[devicePara-1]=1;
+                document.getElementById(divObjectId).getElementsByTagName('input')[1].value="1";
+                document.getElementById(divObjectId).getElementsByTagName('input')[2].style.backgroundImage="url(/images/play1.png)";
+            }
+        }
+    });
+}
+t=setInterval('getVideo()',1000);
+function getVideo() {
+    $.ajax({
+        url:'/Device/getVideo',
+        type:"POST",
+        data:{},
+        success:function (data) {
+            var deviceList=data.deviceList;
+            showVideo(deviceList);
+        }
+    });
+}
+
+window.onbeforeunload= function(event) {
+    $.ajax({
+        url:'/Device/closePrisonWatch',
+        type:"POST",
+        data:{},
+        success:function (data) {
+        }
+    });
+};
+window.onunload = function(event) {
+    $.ajax({
+        url:'/Device/closePrisonWatch',
+        type:"POST",
+        data:{},
+        success:function (data) {
+        }
+    });
+};
+</script>
+</html>
+
+

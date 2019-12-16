@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.OperationLogMapper">
+    <select id="selectPaging"  resultType="com.example.passenger.entity.OperationLog">
+        SELECT TOP (#{pageSize})  a.type,a.Content,a.[Time],b.Name as userName
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+            Operation_Log
+        WHERE
+            convert(char(10),[Time],20) between #{startTime} and #{endTime}
+        <if test="type!=null">
+            AND Type=#{type}
+        </if>
+        ) AS a
+        LEFT JOIN Users b on a.Operator=b.id
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Operation_Log
+        WHERE
+            convert(char(10),[Time],20) between #{startTime} and #{endTime}
+        <if test="type!=null">
+            AND Type=#{type}
+        </if>
+    </select>
+    <select id="getJournal" resultType="java.util.LinkedHashMap">
+        SELECT
+            a.type,
+            a.Content,
+            a.[Time],
+            b.Name as userName
+        FROM
+            Operation_Log a
+        LEFT JOIN Users b on a.Operator=b.id
+        WHERE
+        convert(char(10),[Time],20) between #{startTime} and #{endTime}
+        <if test="type!=null">
+            AND a.Type=#{type}
+        </if>
+    </select>
+    <insert id="addOperationLog">
+        INSERT INTO Operation_Log ( Operator, Type, Content, Time, Is_Exported,DeviceID,StationID,LineID )
+        VALUES
+            (
+                #{operator},
+                #{type},
+                #{content},
+             #{time},
+             #{isExported},
+             #{deviceID},
+             #{stationID},
+             #{lineID})
+    </insert>
+</mapper>

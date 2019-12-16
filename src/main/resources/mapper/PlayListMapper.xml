@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayListMapper">
+    <select id="selectPlayList" resultType="com.example.passenger.entity.PlayList">
+        SELECT
+          *
+        FROM
+            Play_List
+        WHERE
+            id =#{id}
+            and IsDelete=0
+    </select>
+    <select id="selectCountByName" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+          count(*)
+        FROM
+            Play_List
+        WHERE
+            Name =#{name}
+            and IsDelete=0
+        <if test="type==7">
+            and Type=#{type}
+        </if>
+        <if test="type==1">
+            and (Type=1 or Type=2 or Type=3 or Type=4)
+        </if>
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+    </select>
+    <select id="selectPlayListID" resultType="java.lang.Integer">
+        SELECT TOP
+            1 id
+        FROM
+            Play_List
+        ORDER BY
+            id DESC
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.PlayList">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+            ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+            Play_List
+        WHERE
+            <if test="type==7">
+                Type=#{type}
+            </if>
+            <if test="type==1">
+                (Type=1 or Type=2 or Type=3 or Type=4)
+            </if>
+            <if test="state!=null">
+                AND State=#{state}
+            </if>
+            and IsDelete=0
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Play_List
+        WHERE
+        <if test="type==7">
+            Type=#{type}
+        </if>
+        <if test="type==1">
+            (Type=1 or Type=2 or Type=3 or Type=4)
+        </if>
+        <if test="state!=null">
+           AND State=#{state}
+        </if>
+        and IsDelete=0
+    </select>
+    <insert id="addPlayList" parameterType="com.example.passenger.entity.PlayList">
+        INSERT INTO Play_List
+        VALUES
+            (
+                #{name},
+                #{state},
+                #{timeLength},
+                #{type},
+                #{updateTime},
+                #{startDate},
+                #{endDate},
+                #{level},
+                #{editorID},
+                #{editTime},
+                #{scopeEditTime},
+                #{auditLevel},
+                #{issync},
+                #{summary},
+                #{description},
+                #{contentText},
+                #{note},'')
+</insert>
+    <update id="updatePlayListByID" >
+         UPDATE Play_List SET
+         <if test="state!=null">
+             State =#{state}
+         </if>
+         <if test="endDate!=null">
+             End_Date=#{endDate}
+         </if>
+         WHERE
+            ID =#{id}
+    </update>
+    <update id="updatePlayList" parameterType="com.example.passenger.entity.PlayList">
+        UPDATE Play_List
+        SET Name =#{name}
+        <if test="description!=null">
+            ,Description=#{description}
+        </if>
+        <if test="level!=null">
+            ,Level=#{level}
+        </if>
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        <if test="timeLength!=null">
+            ,TimeLength=#{timeLength}
+        </if>
+        <if test="startDate!=null">
+            ,Start_Date=#{startDate}
+        </if>
+        <if test="endDate!=null">
+            ,End_Date=#{endDate}
+        </if>
+        <if test="summary!=null">
+            ,Summary=#{summary}
+        </if>
+        <if test="contentText!=null">
+            ,ContentText=#{contentText}
+        </if>
+        <if test="type!=null">
+            ,Type=#{type}
+        </if>
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+            ID =#{id}
+</update>
+    <update id="auditPlayList" parameterType="com.example.passenger.entity.PlayList">
+        UPDATE Play_List
+        SET State=#{state}
+        <if test="summary!=null">
+            ,Summary=#{summary}
+        </if>
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+            ID =#{id}
+    </update>
+    <delete id="deletePlayList" parameterType="com.example.passenger.entity.PlayList">
+        UPDATE Play_List
+        SET IsDelete=1
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+        ID =#{id}
+</delete>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayListDownloadStatusMapper">
+    <select id="selectDownload" resultType="java.lang.Integer">
+        SELECT
+            id
+        FROM
+            Play_List_Download_Status
+        WHERE
+            PlaylistID =#{playlistID}
+            AND ClientID =#{clientID}
+            AND FileName =#{fileName}
+    </select>
+    <select id="selectDownloadStatus" resultType="com.example.passenger.entity.PlayListDownloadStatus">
+        SELECT
+            *
+        FROM
+            Play_List_Download_Status
+        WHERE
+            <if test="playlistID!=null">
+                PlaylistID = #{playlistID}
+            </if>
+            <if test="clientID!=null">
+               and ClientID = #{clientID}
+            </if>
+    </select>
+    <insert id="addDownload" parameterType="com.example.passenger.entity.PlayListDownloadStatus">
+        INSERT INTO Play_List_Download_Status
+        VALUES
+            (
+                #{playlistID},
+                #{clientID},
+                #{fileName},
+                #{status},
+                #{percen},
+                #{speed})
+    </insert>
+    <update id="updateDownload" parameterType="com.example.passenger.entity.PlayListDownloadStatus">
+        UPDATE Play_List_Download_Status SET Status =#{status}, Percen =#{percen},
+        Speed =#{speed}
+        WHERE
+            ID =#{id}
+    </update>
+    <select id="deleteDownload" resultType="java.lang.Integer">
+        DELETE
+        FROM
+            Play_List_Download_Status
+        WHERE
+            id =#{id}
+    </select>
+</mapper>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/css.css" />
+    <style>
+        #timingMsg_top_p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-bottom: 10px;padding-top: 10px;}
+        #timingMsg_left_div{width: 30%;height: 555px;background-color: white;
+            border: 1px solid wheat;float: left;border-left: none;border-right: none;}
+        #timingMsg_right_div{height: 555px;float: left;border: 1px solid wheat;width: 49.5%;}
+        #timingMsg_line_div{height: 555px;float: left;border: 1px solid wheat;width: 20%;overflow: auto}
+        #timingMsg_right_ul{list-style: none;padding: 0px;float: left;}
+        #timingMsg_right_ul li{width: 60%;font-size: 14px;margin-left: 3px;}
+        #timingMsg_right_ul li textarea{width: 480px;overflow: auto;resize: none;height: 310px;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        #timingMsgTable tbody {height:405px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #timingMsg_op_ul{list-style: none;padding-left: 15px;padding-top: 10px;}
+        #timingMsg_op_ul li{width: 50%;font-size: 14px;float: left;line-height: 30px;}
+        #timingMsg_op_ul li select{width: 70px;}
+        .f-treeList-old{ float: left;  width:14px; height:19px; cursor: pointer;margin-top: 7px;}
+        .f-treeList-titleImg{ float: left; margin-top: 4px;margin-left: 0px;}
+        .f-treeList-titleP{ display: block; float: left; line-height: 26px;}
+        .f-iconBi{width: 30px;margin-left: -6px}
+        .f-treeList-radio{display: block;margin-right: 2px;margin-top: 5px;}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 20px;padding-top: 7px;
+            text-align: center;font-size: 16px}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('timingMsgTable');
+        };
+    </script>
+</head>
+<body>
+<p id="timingMsg_top_p">定时消息</p>
+<div id="timingMsg_line_div">
+    <div>
+        <div class="f-maintenance"></div>
+    </div>
+</div>
+<div id="timingMsg_left_div">
+    <div style="height: 500px;overflow: auto">
+        <table width="100%" border="0" id="timingMsgTable">
+            <thead>
+            <tr>
+                <th class="tips" hidden="hidden"></th>
+                <th class="tips">名称</th>
+                <th class="tips">中文消息内容</th>
+                <th class="tips">英文消息内容</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<div id="timingMsg_right_div">
+    <!-- <input type="text" id="id" hidden="hidden">-->
+    <ul id="timingMsg_op_ul">
+        <li style="width: 50%">消息控件&nbsp;
+            <select id="ctrIID"><option value="Txt1">Txt1</option>
+                <option value="Txt2">Txt2</option>
+                <option value="Txt3">Txt3</option></select></li>
+        <li>消息级别&nbsp;<select id="msgID"></select></li>
+        <li>开始日期&nbsp;<input type="date" id="startDate"></li>
+        <li>结束日期&nbsp;<input type="date" id="endDate"></li>
+        <li style="width: 100%;text-align: center">
+            自定义<input style="margin-left: 10px" type="radio" name="plType" value="0" checked="checked">
+            &nbsp;&nbsp;&nbsp;全天<input style="margin-left: 10px" type="radio" name="plType" value="1"></li>
+        <li>开始时间&nbsp;<input type="time" step="1" value="08:00:00" id="startTime"></li>
+        <li>结束时间&nbsp;<input type="time" step="1" value="12:00:00" id="endTime"></li>
+    </ul>
+    <ul id="timingMsg_right_ul">
+        <li><textarea id="content"></textarea></li>
+        <li><input type="button" value="新建计划" id="addPlan"></li>
+    </ul>
+</div>
+<script type="text/javascript" src="/js/config.js" ></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var time = new Date();
+    var day = ('0' + time.getDate()).slice(-2);
+    var month = ('0' + (time.getMonth() + 1)).slice(-2);
+    var today = time.getFullYear() + '-' + month + '-' + day;
+    $('#startDate').val(today);
+    $('#endDate').val(today);
+    selectFodderMsgByState();
+    $.ajax({
+        url:'/Line/getMenu',
+        type:"POST",
+        data:{type:1},
+        success:function (data) {
+            var treeData = [
+                /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+            ];
+            var count=0;
+            $.each(data.lineVoList, function (i, item) {
+                count++;
+                var one=count;
+                treeData.push({id:count,title:item.name,oid:item.id,route:'javascript:void(0);',pid:0});
+                $.each(item.stationVoList, function (j, itemOne) {
+                    count++;
+                    var two=count;
+                    if(item.id==itemOne.lineID){
+                        treeData.push({id:count,title:itemOne.name,oid:itemOne.id,route:'javascript:void(0);',pid:one});
+                    }
+                    $.each(itemOne.deviceList, function (k, itemTwo) {
+                        count++;
+                        if(itemOne.id==itemTwo.stationID){
+                            treeData.push({id:count,title:itemTwo.name,oid:itemTwo.id,deviceNumber:itemTwo.id,route:'javascript:void(0);',pid:two});
+                        }
+                    });
+                });
+            });
+            config.tree({
+                type:1,//1有选择框，没有则不传type或传0
+                wrapper:'.f-maintenance',//容器
+                data:treeData,//数据
+            });
+        }
+    });
+
+    $("#timingMsgTable tbody").on("click",'tr',function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#content").val($(this).closest("tr").find("td").eq(2).text() +
+            $(this).closest("tr").find("td").eq(3).text());
+    });
+
+    getMsgLevel();
+
+    $(":radio").click(function () {
+        var type=$(this).val();
+        if (type==1){
+            $("#startTime").attr("disabled","disabled");
+            $("#endTime").attr("disabled","disabled");
+        }else{
+            $("#startTime").removeAttr("disabled");
+            $("#endTime").removeAttr("disabled");
+        }
+    });
+
+    $("#addPlan").click(function () {
+        var msgID=$("#msgID").val();
+        var ctrIID=$("#ctrIID").val();
+        var startDate=$("#startDate").val();
+        var startTime=$("#startTime").val();
+        var endDate=$("#endDate").val();
+        var endTime=$("#endTime").val();
+        var content=$("#content").val();
+        if($('input[name="plType"]:checked').val()==1){
+            startTime="00:00:00";
+            endTime="23:59:59";
+        }
+        if(endTime.length==5){
+            endTime=endTime+":00";
+        }
+        var deviceID=null;
+        var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
+        for(var i=0;i<deviceList.length;i++){
+            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                deviceID=deviceList[i].value;
+                if(content==""){
+                    swal("请选择消息!");
+                    return false;
+                }
+                $.ajax({
+                    url:'/message/addQueueMessage',
+                    type:"POST",
+                    data:{msg:content,level:msgID,ctrlID:ctrIID,deviceID:deviceID,startDate:startDate,
+                        startTime:startTime,endDate:endDate,endTime:endTime,type:11,isPlanMsg:1},
+                    success:function (data) {
+                        if(data.result=="success"){
+                            swal("Good!", "操作成功!", "success");
+                        }else{
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        }
+        if(deviceID==null){
+            swal("请选择设备!");
+            return false;
+        }
+
+    });
+
+});
+function selectFodderMsgByState(type,pageNum) {
+    $.ajax({
+        url:'/msgFodder/getFodderMsgByState',
+        type:"POST",
+        data:{type:type,pageNum:pageNum},
+        success:function (data) {
+            $("#timingMsgTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#timingMsgTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
+                    '<td>'+item.title+'</td>' +
+                    '<td>'+item.contentCN+'</td>' +
+                    '<td>'+item.contentEN+'</td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function getMsgLevel(levelCode) {
+    $.ajax({
+        url:'/msgFodder/getMgsLevel',
+        type:"POST",
+        data:{levelCode:levelCode},
+        success:function (data) {
+            $("#msgID option").remove();
+            $.each(data.levelList, function (i, level) {
+                $("#msgID").append('<option value="'+level.levelCode+'">'+level.title+'</option>');
+            });
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)+1;
+    selectFodderMsgByState(type,num);
+}
+function previousPage(pageNum) {
+    var type=$('input[name="type"]:checked').val();
+    var num=parseInt(pageNum)-1;
+    selectFodderMsgByState(type,num);
+}
+</script>
+</body>
+</html>

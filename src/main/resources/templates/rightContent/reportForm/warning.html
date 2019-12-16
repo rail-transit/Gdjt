@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #warning_top{height: 125px;margin: auto;}
+        #warning_top div{float: left;padding-top: 32px;padding-left: 70px;}
+        #warning_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #warning_ul{list-style: none;}
+        #warning_ul li{display: inline;float:left;width: 24%;font-size: 14px;height: 35px;}
+        #warning_ul li span{padding-right: 10px;}
+        #warning_ul select{height: 24px;width: 135px;}
+        #warning_height{height: 420px;width: 99%;border: 1px solid #ebf2f5;
+            margin-top: 10px;margin-left: 5px;overflow-y: auto;}
+        #warning_height p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:370px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;text-align: center}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+    </style>
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('warningTable');
+        };
+    </script>
+</head>
+<body>
+<div id="warning_top">
+    <p id="warning_title">设备告警统计</p>
+    <ul id="warning_ul">
+        <li><span>线路名称:</span>
+            <select id="lineID">
+                <option>所有线路</option>
+                <option th:each="line:${lineList}" th:value="${line.id}"
+                        th:text="${line.name}"></option>
+            </select></li>
+        <li><span>车站名称:</span>
+            <select id="stationID">
+                <option>所有站点</option>
+                <option th:each="station:${stationList}" th:value="${station.id}"
+                        th:text="${station.name}"></option>
+            </select></li>
+        <li><span>设备类型:</span>
+            <select id="deviceType">
+                <option>所有类型</option>
+                <option th:each="deviceType:${deviceTypeList}" th:value="${deviceType.id}"
+                        th:text="${deviceType.name}"></option>
+            </select></li>
+        <li><input type="button" value="查询" id="select"></li>
+        <li style="padding-left: 4px"><span>开始时间:</span><input type="date" id="startDate"></li>
+        <li><span>结束时间:</span><input type="date" id="endDate"></li>
+        <li><span>设备名称:</span><select id="deviceID">
+            <option value="0">所有设备</option>
+            <option th:each="device:${deviceList}" th:value="${device.id}"
+                    th:text="${device.name}"></option></select></li>
+        <li style="margin-left: -4px"><input type="button" value="导出" id="export"></li>
+    </ul>
+</div>
+<div id="warning_height">
+    <table width="99.9%" border="0" id="warningTable">
+        <thead>
+        <tr>
+            <th class="tips">所属线路</th>
+            <th class="tips">所属车站</th>
+            <th class="tips">设备名称</th>
+            <th class="tips">报警描述</th>
+            <th class="tips">报警次数</th>
+        </tr>
+        </thead>
+        <tr >
+        </tr>
+    </table>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+    </ul>
+</div>
+</body>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var time = new Date();
+    var day = ('0' + time.getDate()).slice(-2);
+    var month = ('0' + (time.getMonth() + 1)).slice(-2);
+    var today = time.getFullYear() + '-' + month + '-' + day;
+    $('#startDate').val(today);
+    $('#endDate').val(today);
+      selectMaintain();
+      $("#select").click(function () {
+          var lineID=$("#lineID").val();
+          var stationID=$("#stationID").val();
+          var deviceID=$("#deviceID").val();
+          var type=$("#deviceType").val();
+          var startDate=$("#startDate").val();
+          var endDate=$("#endDate").val();
+          selectMaintain(1,startDate,endDate,type,lineID,stationID,deviceID);
+      });
+
+    $("#deviceType").change(function () {
+        var lineID=$("#lineID").val();
+        var stationID=$("#stationID").val();
+        var type=$(this).val();
+        getDevice(lineID,stationID,type);
+    });
+
+    $("#stationID").change(function () {
+        var lineID=$("#lineID").val();
+        var stationID=$(this).val();
+        var type=$("#deviceType").val();
+        getDevice(lineID,stationID,type);
+    });
+
+    $("#lineID").change(function () {
+        var lineID=$(this).val();
+        var stationID=$("#stationID").val();
+        var type=$("#deviceType").val();
+        getDevice(lineID,stationID,type);
+        $.ajax({
+            url:'/Station/selectAllStation',
+            type:"POST",
+            data:{lineID:lineID},
+            success:function (data) {
+                $("#stationID option").remove();
+                $("#stationID").prepend('<option>所有站点</option>');
+                $.each(data.stationList, function (i, station) {
+                    $("#stationID").append('<option value="'+station.id+'">'+station.name+'</option>');
+                });
+            }
+        })
+    });
+
+    $("#export").click(function () {
+        var lineID=$("#lineID").val();
+        var stationID=$("#stationID").val();
+        var deviceID=$("#deviceID").val();
+        var type=$("#deviceType").val();
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        var alarmType=1;
+        $.ajax({
+            url:'/devAlarmLog/getWarning',
+            type:"POST",
+            data:{alarmType:alarmType,lineID:lineID,stationID:stationID,deviceID:deviceID,
+                type:type,startDate:startDate,endDate:endDate},
+            success:function (data) {
+                if(data.devAlarmLogVoList.length!=0){
+                    const jsonData=data.devAlarmLogVoList;
+                    //列标题，逗号隔开，每一个逗号就是隔开一个单元格
+                    let str = `所属线路,所属车站,设备名称,报警描述,报警次数\n`;
+                    //增加\t为了不让表格显示科学计数法或者其他格式
+                    for(let i = 0 ; i < jsonData.length ; i++ ){
+                        for(let item in jsonData[i]){
+                            str+=`${jsonData[i][item] + '\t'},`;
+                        }
+                        str+='\n';
+                    }
+                    //encodeURIComponent解决中文乱码
+                    let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+                    //通过创建a标签实现
+                    let link = document.createElement("a");
+                    link.href = uri;
+                    //对下载的文件命名
+                    link.download =  "json数据表.csv";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        });
+    });
+});
+function selectMaintain(pageNum,startDate,endDate,type,lineID,stationID,deviceID) {
+    var alarmType=1;
+    $.ajax({
+        url:'/devAlarmLog/selectStatistics',
+        type:"POST",
+        data:{pageNum:pageNum,alarmType:alarmType,startDate:startDate,endDate:endDate,lineID:lineID,
+            type:type,stationID:stationID,deviceID:deviceID},
+        success:function (data) {
+            $("#warningTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                $("#warningTable tbody").append('<tr><td>'+item.lineName+'</td>' +
+                    '<td>'+item.stationName+'</td>' +
+                    '<td>'+item.deviceName+'</td>' +
+                    '<td>'+item.event+'</td>' +
+                    '<td>'+item.count+'</td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function getDevice(lineID,stationID,type) {
+    $.ajax({
+        url:'/Device/getDevice',
+        type:"POST",
+        data:{lineID:lineID,stationID:stationID,type:type},
+        success:function (data) {
+            $("#deviceID option").remove();
+            $("#deviceID").prepend('<option value="0">所有设备</option>');
+            $.each(data.deviceList, function (i, device) {
+                $("#deviceID").append('<option value="'+device.id+'">'+device.name+'</option>');
+            });
+        }
+    })
+}
+
+function nextPage(pageNum) {
+    var num=parseInt(pageNum)+1;
+    var lineID=$("#lineID").val();
+    var stationID=$("#stationID").val();
+    var deviceID=$("#deviceID").val();
+    var type=$("#deviceType").val();
+    var startDate=$("#startDate").val();
+    var endDate=$("#endDate").val();
+    selectMaintain(num,startDate,endDate,type,lineID,stationID,deviceID);
+}
+function previousPage(pageNum) {
+    var num=parseInt(pageNum)-1;
+    var lineID=$("#lineID").val();
+    var stationID=$("#stationID").val();
+    var deviceID=$("#deviceID").val();
+    var type=$("#deviceType").val();
+    var startDate=$("#startDate").val();
+    var endDate=$("#endDate").val();
+    selectMaintain(num,startDate,endDate,type,lineID,stationID,deviceID);
+}
+</script>
+</html>

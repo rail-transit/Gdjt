@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #audit_top_div{height: 110px;width: 100%;margin: auto}
+        #audit_top_ul{list-style: none;padding-top: 5px;}
+        #audit_top_ul li{display: inline;float:left;width: 22%;font-size: 14px;height: 44px;}
+        #audit_top_ul li span{padding-right: 10px;}
+        #audit_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #audit_height_div{width: 99%;height: 440px;border: 1px solid wheat;margin: 0 auto;overflow: auto}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:390px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+        #nextPage{margin-left: -32px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('auditTable');
+        };
+    </script>
+</head>
+<body>
+<div id="audit_top_div">
+    <p id="audit_title">消息审核</p>
+    <ul id="audit_top_ul">
+        <li><span>状态:</span><select id="state">
+            <option value="0">未审核</option>
+            <option value="1">审核通过</option>
+            <option value="-1">审核不通过</option>
+        </select></li>
+        <li><span>内容:</span><input type="text" id="content"></li>
+    </ul>
+</div>
+<div id="audit_height_div">
+    <table width="100%" border="0" id="auditTable">
+        <thead>
+        <tr>
+            <th class="tips" hidden="hidden"></th>
+            <th class="tips">消息类型</th>
+            <th class="tips">消息内容</th>
+            <th class="tips">目的地</th>
+            <th class="tips">开始日期</th>
+            <th class="tips">开始时间</th>
+            <th class="tips">结束日期</th>
+            <th class="tips">结束时间</th>
+            <th class="tips" style="width: 180px;">操作</th>
+        </tr>
+        </thead>
+        <tr>
+        </tr>
+    </table>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+    </ul>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    getMessage();
+    $("tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+
+    $("#state").change(function () {
+       var state=$(this).val();
+       var msg=$("#content").val();
+        getMessage(state,msg);
+    });
+
+    $("#content").bind('input propertychange',function () {
+       var msg=$(this).val();
+       var state=$("#state").val();
+        getMessage(state,msg);
+    });
+
+    $(".examine").live("click",function () {
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        var state=1;
+        $.ajax({
+            url:'/message/auditMessage',
+            type:"POST",
+            data:{id:id,state:state},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        getMessage();
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+
+            }
+        });
+    });
+
+    $(".notExamine").live("click",function () {
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        var state=-1;
+        $.ajax({
+            url:'/message/auditMessage',
+            type:"POST",
+            data:{id:id,state:state},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        getMessage();
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+});
+
+function getMessage(state,msg,pageNum) {
+    $.ajax({
+        url:'/message/getMessage',
+        type:"POST",
+        data:{state:state,msg:msg,pageNum:pageNum},
+        success:function (data) {
+            $("#auditTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                var stateName;
+                var name=item.lineName+"-"+item.stationName+"-"+item.deviceName;
+                if(item.isPlanMsg==0){
+                    stateName="实时消息";
+                }else if(item.isPlanMsg==1){
+                    stateName="定时消息";
+                }
+                $("#auditTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
+                    '<td>'+stateName+'</td>' +
+                    '<td>'+item.msg+'</td>' +
+                    '<td>'+name+'</td>' +
+                    '<td>'+item.startDate+'</td>' +
+                    '<td>'+item.startTime+'</td>' +
+                    '<td>'+item.endDate+'</td>' +
+                    '<td>'+item.endTime+'</td>' +
+                    '<td><input type="button" value="审核通过" class="examine">&nbsp;' +
+                    '<input type="button" value="审核不通过" class="notExamine"></td></tr>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var state=$("#state").val();
+    var msg=$("#content").val();
+    var num=parseInt(pageNum)+1;
+    getMessage(state,msg,num);
+}
+function previousPage(pageNum) {
+    var state=$("#state").val();
+    var msg=$("#content").val();
+    var num=parseInt(pageNum)-1;
+    getMessage(state,msg,num);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DeviceMapper">
+<select id="selectDevice"  resultType="com.example.passenger.entity.Device">
+        SELECT
+            *
+        FROM
+            Device
+        WHERE
+            ID =#{id}
+</select>
+<select id="selectDeviceByType"  resultType="com.example.passenger.entity.Device">
+        SELECT
+            *
+        FROM
+            Device
+        WHERE
+            StationID =#{stationID}
+            and Type=#{type}
+</select>
+<select id="getDeviceList"  resultType="com.example.passenger.entity.Device">
+    SELECT
+        *
+    FROM
+        Device a
+    LEFT JOIN Station b on a.StationID=b.ID
+   <where>
+        b.IsTrain=0
+       <if test="id!=null and id!=0">
+           AND a.id=#{id}
+       </if>
+       <if test="lineID!=null and lineID!=0">
+           AND a.LineID = #{lineID}
+       </if>
+       <if test="stationID!=null and stationID!=0">
+           AND a.StationID = #{stationID}
+       </if>
+   </where>
+</select>
+<select id="selectDeviceListByID" resultType="com.example.passenger.entity.Device">
+    SELECT
+        *
+    FROM
+        Device a
+    LEFT JOIN Station b on a.StationID=b.ID
+    WHERE
+        b.IsTrain=0
+        <if test="id!=null">
+            AND a.id =#{id}
+        </if>
+</select>
+<select id="queryAllDeviceVo" resultType="com.example.passenger.entity.vo.DeviceVo">
+    SELECT
+        a.*,
+        b.Name AS stationName,
+        c.Name AS lineName
+    FROM
+        device a
+        LEFT JOIN Station b ON a.StationID= b.ID
+        LEFT JOIN Line c ON a.LineID= c.ID
+    WHERE
+        b.IsTrain=0
+</select>
+<select id="selectDeviceByIp" parameterType="java.lang.String" resultType="com.example.passenger.entity.Device">
+        SELECT
+            *
+        FROM
+            Device
+        WHERE
+            IP =#{ip}
+</select>
+<select id="selectAllDevice" parameterType="java.lang.Integer" resultType="com.example.passenger.entity.Device">
+        SELECT
+            *
+        FROM
+            Device
+        WHERE
+            StationID =#{stationID}
+</select>
+<select id="selectDeviceById" resultType="com.example.passenger.entity.Device">
+    SELECT
+        *
+    FROM
+        Device a
+        LEFT JOIN Station b ON a.StationID= b.ID
+    WHERE
+        b.IsTrain= 0
+        <if test="lineID!=null and lineID!=0">
+          AND a.LineID=#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+          AND a.StationID=#{stationID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND a.Type =#{type}
+        </if>
+</select>
+<select id="queryAllDevice" resultType="com.example.passenger.entity.Device">
+    SELECT
+        *
+    FROM
+        Device a
+    LEFT JOIN Station b on a.StationID=b.ID
+    where b.IsTrain=0
+</select>
+<select id="selectDevicePaging"  resultType="com.example.passenger.entity.vo.DeviceVo">
+        SELECT TOP
+        (#{pageSize}) a.*,b.Name as lineName,c.Name as stationName,d.Name as devicePosName
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                Device
+            <where>
+                <if test="lineID!=null and lineID!=0">
+                    LineID=#{lineID}
+                </if>
+                <if test="stationID!=null and stationID!=0">
+                    and StationID=#{stationID}
+                </if>
+                <if test="type!=null and type!=0">
+                    and Type=#{type}
+                </if>
+                <if test="id!=null and id!=0">
+                    and id=#{id}
+                </if>
+            </where>
+            ) AS a
+            LEFT JOIN Line b on a.lineID=b.ID
+            LEFT JOIN Station c on a.StationID=c.ID
+            LEFT JOIN Device_Pos d on a.DevicePosID=d.ID
+        WHERE
+            c.IsTrain=0  and
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+</select>
+<select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( * )
+        FROM
+        Device a
+        LEFT JOIN Station b ON a.StationID= b.id
+        WHERE
+        b.IsTrain= 0
+        <if test="lineID!=null and lineID!=0">
+            and a.LineID=#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            and a.StationID=#{stationID}
+        </if>
+        <if test="type!=null and type!=0">
+            and a.Type=#{type}
+        </if>
+        <if test="id!=null and id!=0">
+            and a.id=#{id}
+        </if>
+</select>
+<select id="selectDeviceByName" resultType="java.lang.Integer">
+    SELECT COUNT
+        (*)
+    FROM
+        Device
+    WHERE
+       (DeviceID = #{deviceID} OR Name = #{name})
+        AND LineID = #{lineID}
+        AND StationID = #{stationID}
+    <if test="id!=null">
+        and id !=#{id}
+    </if>
+</select>
+<insert id="addDevice" parameterType="com.example.passenger.entity.Device">
+        INSERT INTO Device
+        VALUES
+            (
+                #{deviceID},
+                #{name},
+                #{des},
+                #{type},
+                #{devicePosID},
+                #{ip},
+                #{mac},
+                #{stationID},
+                #{lineID},
+                #{param},
+            #{resolution},
+            #{isBackups})
+</insert>
+<update id="updateDevice" parameterType="com.example.passenger.entity.Device">
+        UPDATE Device
+        SET DeviceID =#{deviceID},
+        Name =#{name},
+        Des =#{des},
+        Type =#{type},
+        DevicePosID =#{devicePosID},
+        IP =#{ip},
+        Mac =#{mac},
+        StationID =#{stationID},
+        LineID =#{lineID},
+        Param =#{param},
+        Resolution =#{resolution}
+        <if test="isBackups!=null">
+            ,IsBackups =#{isBackups}
+        </if>
+        WHERE
+            id =#{id}
+</update>
+<delete id="deleteDevice" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Device
+        WHERE
+            id =#{id}
+</delete>
+<delete id="deleteDeviceByLineId" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Device
+        WHERE
+            LineID =#{lineID}
+</delete>
+<delete id="deleteDeviceByStationId" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Device
+        WHERE
+            StationID =#{stationID}
+</delete>
+</mapper>

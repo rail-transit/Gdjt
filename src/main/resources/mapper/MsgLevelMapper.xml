@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.MsgLevelMapper">
+    <select id="selectMsgLevel" resultType="com.example.passenger.entity.MsgLevel">
+        SELECT
+          *
+        FROM
+            Msg_Level
+        WHERE
+            id =#{id}
+    </select>
+    <select id="selectLevelByID" resultType="java.lang.Integer">
+        SELECT
+          count(*)
+        FROM
+            Msg_Level
+        WHERE
+            Level =#{level}
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+    </select>
+    <select id="selectMsgLevelByLevel" resultType="com.example.passenger.entity.MsgLevel">
+        SELECT
+          *
+        FROM
+            Msg_Level
+        WHERE
+            <if test="level!=null">
+                Level=#{level}
+            </if>
+            <if test="levelCode!=null">
+                LevelCode =#{levelCode}
+            </if>
+    </select>
+    <select id="selectMsgLevelAll" resultType="com.example.passenger.entity.MsgLevel">
+        SELECT
+            *
+        FROM
+            Msg_Level
+    </select>
+    <select id="selectMsgLevelByCode" parameterType="java.lang.String" resultType="com.example.passenger.entity.MsgLevel">
+        SELECT
+            *
+        FROM
+            Msg_Level
+        WHERE
+            LevelCode LIKE CONCAT(CONCAT('%',#{levelCode}),'%')
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.MsgLevel">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY level DESC ) AS RowNumber,*
+        FROM
+        Msg_Level
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Msg_Level
+    </select>
+    <select id="getMaxLevel" resultType="java.lang.Integer">
+        SELECT MAX
+            ([Level])
+        FROM
+            Msg_Level
+    </select>
+    <insert id="addMsgLevel" parameterType="com.example.passenger.entity.MsgLevel">
+        INSERT INTO Msg_Level ( Title, Level, LevelCode, Note )
+        VALUES
+            (
+                #{title},
+                #{level},
+                #{levelCode},
+             #{note})
+</insert>
+    <update id="updateMsgLevel" parameterType="com.example.passenger.entity.MsgLevel">
+        UPDATE Msg_Level SET Title =#{title},Level=#{level}, LevelCode =#{levelCode}, Note =#{note}
+        WHERE
+            ID =#{id}
+</update>
+    <delete id="deleteMsgLevel" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Msg_Level
+        WHERE
+            id =#{id}
+</delete>
+</mapper>

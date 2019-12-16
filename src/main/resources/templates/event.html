@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #event_top_div{width: 99%;margin:  auto;}
+        #event_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #event_height_div{width: 99%;height: 205px;border: 1px solid wheat;margin: 0 auto;overflow: auto}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:460px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+        .nextPage{margin-left: -32px;}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('eventTable');
+        };
+    </script>
+</head>
+<body>
+<div id="event_top_div">
+    <p id="event_title">事件栏</p>
+</div>
+<div id="event_height_div">
+    <table width="100%" border="0" id="eventTable">
+        <thead>
+        <tr>
+            <th class="tips">线路名称</th>
+            <th class="tips">车站名称</th>
+            <th class="tips">设备名称</th>
+            <th class="tips">事件内容</th>
+            <th class="tips">事件时间</th>
+        </tr>
+        </thead>
+        <tr>
+
+        </tr>
+    </table>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#eventTable tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+    getTime();
+    getEventState()
+});
+
+function getTime(){
+    $.ajax({
+        url:'/ctrlEvent/getEventTime',
+        type:"POST",
+        data:{},
+        success:function (data) {
+            objTimer = window.setInterval(function(){
+                getEventState();
+            },data.time);
+        }
+    });
+}
+function getEventState() {
+    $.ajax({
+        url:'/ctrlEvent/getEventState',
+        type:"POST",
+        data:{},
+        success:function (data) {
+            if(data.eventStateVos!=null){
+                $("#eventTable tbody tr").remove();
+                $.each(data.eventStateVos, function (i, item) {
+                    $("#eventTable tbody").prepend('<tr><td>'+item.lineName+'</td>'+
+                        '<td>'+item.stationName+'</td>'+
+                        '<td>'+item.deviceName+'</td>' +
+                        '<td>'+item.eventContent+'</td>' +
+                        '<td>'+item.eventTime+'</td></tr>');
+                });
+                $.each(data.lineStandbyList, function (i, line) {
+                    $("#eventTable tbody").prepend('<tr><td>'+line.lineName+'</td>'+
+                        '<td>'+line.stationName+'</td>'+
+                        '<td>'+line.deviceName+'</td>' +
+                        '<td>'+line.eventContent+'</td>' +
+                        '<td>'+line.eventTime+'</td></tr>');
+                });
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>

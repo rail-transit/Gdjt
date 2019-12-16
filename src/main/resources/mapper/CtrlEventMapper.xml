@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.CtrlEventMapper">
+<select id="selectAllCtrlEvent"  resultType="com.example.passenger.entity.vo.CtrlEventVo">
+       	SELECT TOP
+        (#{pageSize}) a.*,b.Name as deviceName,b.IP,b.Mac,c.Name as devicePosName
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC ) AS RowNumber,*
+            FROM
+                Ctrl_Event
+			WHERE
+				DeviceID =#{deviceID}
+            ) AS A
+            LEFT JOIN Device b on a.DeviceID=b.ID
+            LEFT JOIN Device_Pos c on b.DevicePosID=c.ID
+        WHERE
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+</select>
+<select id="getEventTime" resultType="java.lang.String">
+    SELECT TOP
+        1 TIME
+    FROM
+        TiminG
+</select>
+<select id="count" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+            Ctrl_Event
+        WHERE
+            DeviceID =#{deviceID}
+</select>
+    <select id="getControl" resultType="java.util.LinkedHashMap">
+        SELECT
+            d.Name AS lineName,
+            c.Name AS stationName,
+            b.Name AS deviceName,
+            a.Ctrl_Type,
+            a.Ctrl_Time,
+            a.Ctrl_Result
+        FROM
+            Ctrl_Event a
+            LEFT JOIN Device b ON a.DeviceID= b.ID
+            LEFT JOIN Station c ON a.StationID= c.ID
+            LEFT JOIN Line d ON a.LineID= d.id
+        WHERE
+        convert(char(10),a.Ctrl_Time,20) between #{startDate} and #{endDate}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID =#{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    </select>
+<select id="controlPaging"  resultType="com.example.passenger.entity.vo.CtrlEventVo">
+       	SELECT TOP
+        (#{pageSize}) b.Name as lineName,c.Name as stationName,d.Name as deviceName,
+                      a.Ctrl_Type,a.Ctrl_Time,a.Ctrl_Result
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id ASC) AS RowNumber,*
+            FROM
+                Ctrl_Event
+            WHERE
+            convert(char(10),Ctrl_Time,20) between #{startDate} and #{endDate}
+            <if test="lineID!=null and lineID!=0">
+                AND LineID =#{lineID}
+            </if>
+            <if test="stationID!=null and stationID!=0">
+                AND StationID =#{stationID}
+            </if>
+            <if test="deviceID!=null and deviceID!=0">
+                AND DeviceID =#{deviceID}
+            </if>
+            ) AS A
+            LEFT JOIN Device b on a.DeviceID=b.ID
+            LEFT JOIN Station c on a.StationID=c.ID
+            LEFT JOIN Line d on a.LineID=d.id
+        WHERE
+        <if test="type!=null and type!=0">
+            b.Type=#{type} AND
+        </if>
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+
+</select>
+<select id="controlCount" parameterType="com.example.passenger.entity.CtrlEvent" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            Ctrl_Event a
+            LEFT JOIN Device b on a.DeviceID=b.ID
+        WHERE
+        convert(char(10),a.Ctrl_Time,20) between #{startDate} and #{endDate}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID =#{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+</select>
+<insert id="insertCtrlEvent" parameterType="com.example.passenger.entity.CtrlEvent">
+        INSERT INTO Ctrl_Event
+        VALUES
+            (
+                #{deviceID},
+                #{ctrlType},
+                #{ctrlTime},
+                #{ctrlResult},
+                #{note},
+            #{stationID},
+            #{lineID})
+</insert>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.DevRepairMapper">
+    <select id="selectDevRepairByEndTimeIsNull" resultType="com.example.passenger.entity.DevRepair">
+        SELECT
+            *
+        FROM
+            DevRepair
+        WHERE
+            EndTime IS NULL
+        AND DeviceID=#{deviceID}
+    </select>
+    <select id="selectDevRepairByEndTimeNotNull" resultType="com.example.passenger.entity.DevRepair">
+        SELECT TOP
+        (#{pageSize}) *
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                DevRepair
+			WHERE
+				EndTime IS NOT NULL
+			AND DeviceID=#{deviceID}
+            ) AS A
+        WHERE
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer" parameterType="com.example.passenger.entity.DevRepair">
+        SELECT
+            count(*)
+        FROM
+            DevRepair
+		WHERE
+			EndTime IS NOT NULL
+		AND DeviceID=#{deviceID}
+    </select>
+    <select id="getRepair" resultType="java.util.LinkedHashMap" parameterType="com.example.passenger.entity.vo.DevRepairVo">
+        SELECT
+            d.Name AS lineName,
+            c.Name AS stationName,
+            b.Name AS deviceName,
+            a.Accendant,
+            a.Tel,
+            a.Note,
+            a.Scheme,
+            a.StartTime,
+            a.EndTime,
+            a.RepairResult
+        FROM
+            DevRepair a
+            LEFT JOIN Device b ON a.DeviceID= b.ID
+            LEFT JOIN Station c ON a.StationID= c.ID
+            LEFT JOIN Line d ON a.LineID= d.id
+        WHERE
+            a.EndTime IS NOT NULL
+        AND convert(char(10),a.EndTime,20) between #{startTime} and #{endTime}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID = #{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID = #{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID = #{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    </select>
+    <select id="repairPaging" resultType="com.example.passenger.entity.vo.DevRepairVo">
+        SELECT TOP
+        (#{pageSize})  b.Name as deviceName,c.Name as stationName,d.Name as lineName,a.Accendant,
+        a.Tel,a.Note,a.Scheme,a.StartTime,a.EndTime,a.RepairResult
+        FROM
+            (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+            FROM
+                DevRepair
+			WHERE
+				EndTime IS NOT NULL
+			AND convert(char(10),StartTime,20) between #{devRepair.startTime} and #{devRepair.endTime}
+            <if test="devRepair.lineID!=null and devRepair.lineID!=0">
+                AND LineID = #{devRepair.lineID}
+            </if>
+            <if test="devRepair.stationID!=null and devRepair.stationID!=0">
+                AND StationID = #{devRepair.stationID}
+            </if>
+            <if test="devRepair.deviceID!=null and devRepair.deviceID!=0">
+                AND DeviceID = #{devRepair.deviceID}
+            </if>
+            ) AS A
+            LEFT JOIN Device b on a.DeviceID=b.ID
+            LEFT JOIN Station c on a.StationID=c.ID
+            LEFT JOIN Line d on a.LineID=d.id
+        WHERE
+            <if test="devRepair.type!=null and devRepair.type!=0">
+                b.Type=#{devRepair.type} AND
+            </if>
+            RowNumber > #{pageSize} * (
+            #{pageNum}-1)
+    </select>
+    <select id="repairCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            DevRepair a
+            LEFT JOIN Device b on a.DeviceID=b.ID
+		WHERE
+			a.EndTime IS NOT NULL
+        AND convert(char(16),a.StartTime,20) between #{startTime} and #{endTime}
+        <if test="lineID!=null and lineID!=0">
+            AND a.LineID = #{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=0">
+            AND a.StationID = #{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=0">
+            AND a.DeviceID = #{deviceID}
+        </if>
+        <if test="type!=null and type!=0">
+            AND b.Type=#{type}
+        </if>
+    </select>
+    <insert id="addDevRepair" parameterType="com.example.passenger.entity.DevRepair">
+        INSERT INTO DevRepair
+        VALUES
+            (
+            #{deviceID},
+            #{accendant},
+            #{tel},
+            #{startTime},
+            #{endTime},
+            #{note},
+            #{scheme},
+            #{repairResult},
+            #{stationID},
+            #{lineID})
+    </insert>
+    <update id="updateDevRepair" parameterType="com.example.passenger.entity.DevRepair">
+        UPDATE DevRepair
+        SET EndTime =#{endTime},
+        RepairResult =#{repairResult}
+        WHERE
+            id =#{id}
+    </update>
+
+</mapper>

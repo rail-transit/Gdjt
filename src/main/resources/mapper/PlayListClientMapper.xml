@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayListClientMapper">
+    <select id="selectPlayListClient" resultType="com.example.passenger.entity.PlayListClient">
+        SELECT
+          *
+        FROM
+            Playlist_Client
+        WHERE
+            id =#{id}
+    </select>
+    <select id="selectPlayListClientBySequence" resultType="com.example.passenger.entity.PlayListClient">
+        SELECT
+          *
+        FROM
+            Playlist_Client
+        WHERE
+            Sequence =0
+        AND ClientID=#{clientID}
+    </select>
+    <select id="selectPaging"  resultType="com.example.passenger.entity.PlayListClient">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Playlist_Client
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Playlist_Client
+    </select>
+    <select id="getVideoRelease" resultType="java.util.LinkedHashMap">
+        SELECT
+        h.Name as lineName,g.Name as stationName,f.Name as deviceName,
+        e.Name as fodderName,b.Start_Date,b.End_Date,a.Editor
+        FROM
+            Playlist_Client a
+            LEFT JOIN Play_List b on a.PlaylistID=b.ID
+            LEFT JOIN PlayList_Style c on b.ID=c.PlaylistID
+            LEFT JOIN Style_Content d on c.StyleID=d.StyleID
+            LEFT JOIN Fodder e on d.MaterialID=e.ID
+            LEFT JOIN Device f on a.ClientID=f.ID
+            LEFT JOIN Station g on f.StationID=g.ID
+            LEFT JOIN Line h on f.LineID=h.ID
+        WHERE
+        convert(char(10),b.Start_Date,20) between #{startDate} and #{endDate}
+        <if test="lineID!=null or stationID!=null or deviceID!=null">
+            and a.ClientID IN (
+            SELECT
+            id
+            FROM
+            Device
+            WHERE
+            <if test="lineID!=null">
+                LineID = #{lineID}
+            </if>
+            <if test="stationID!=null">
+                AND StationID = #{stationID}
+            </if>
+            <if test="deviceID!=null">
+                AND DeviceID = #{deviceID}
+            </if>
+            )
+        </if>
+    </select>
+    <select id="releasePaging" resultType="com.example.passenger.entity.vo.PlayListClientVo">
+        SELECT TOP (#{pageSize}) h.Name as lineName,g.Name as stationName,f.Name as deviceName,
+        e.Name as fodderName,b.Start_Date,b.End_Date,a.Editor
+        FROM
+        (
+            SELECT
+                ROW_NUMBER () OVER ( ORDER BY cl.id ASC) AS RowNumber,cl.*
+            FROM
+            Playlist_Client cl
+            LEFT JOIN Play_List pl on cl.PlaylistID=pl.ID
+            LEFT JOIN PlayList_Style st on pl.ID=st.PlaylistID
+            LEFT JOIN Style_Content co on st.StyleID=co.StyleID
+            where
+                convert(char(10),pl.Start_Date,20) between #{startDate} and #{endDate}
+                <if test="lineID!=null or stationID!=null or deviceID!=null">
+                    and cl.ClientID IN (
+                    SELECT
+                    id
+                    FROM
+                    Device
+                    WHERE
+                    <if test="lineID!=null">
+                        LineID = #{lineID}
+                    </if>
+                    <if test="stationID!=null">
+                        AND StationID = #{stationID}
+                    </if>
+                    <if test="deviceID!=null">
+                        AND DeviceID = #{deviceID}
+                    </if>
+                    )
+                </if>
+        ) AS a
+        LEFT JOIN Play_List b on a.PlaylistID=b.ID
+        LEFT JOIN PlayList_Style c on b.ID=c.PlaylistID
+        LEFT JOIN Style_Content d on c.StyleID=d.StyleID
+        LEFT JOIN Fodder e on d.MaterialID=e.ID
+        LEFT JOIN Device f on a.ClientID=f.ID
+        LEFT JOIN Station g on f.StationID=g.ID
+        LEFT JOIN Line h on f.LineID=h.ID
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="releaseCount" resultType="java.lang.Integer">
+        select  count(*) from Playlist_Client a
+        LEFT JOIN Play_List b on a.PlaylistID=b.ID
+        LEFT JOIN PlayList_Style c on b.ID=c.PlaylistID
+        LEFT JOIN Style_Content d on c.StyleID=d.StyleID
+        LEFT JOIN Fodder e on d.MaterialID=e.ID
+        LEFT JOIN Device f on a.ClientID=f.ID
+        LEFT JOIN Station g on f.StationID=g.ID
+        LEFT JOIN Line h on f.LineID=h.ID
+        WHERE
+        convert(char(10),b.Start_Date,20) between #{startDate} and #{endDate}
+        <if test="lineID!=null or stationID!=null or deviceID!=null">
+           and a.ClientID IN (
+            SELECT
+            id
+            FROM
+            Device
+            WHERE
+            <if test="lineID!=null">
+                LineID = #{lineID}
+            </if>
+            <if test="stationID!=null">
+                AND StationID = #{stationID}
+            </if>
+            <if test="deviceID!=null">
+                AND DeviceID = #{deviceID}
+            </if>
+            )
+        </if>
+    </select>
+    <select id="selectClientByPlayListID" resultType="java.lang.Integer">
+        SELECT COUNT (*) FROM Playlist_Client WHERE PlaylistID =#{playListID}
+        AND ClientID =#{clientID}
+    </select>
+    <select id="selectClientByPlayID" resultType="java.lang.Integer">
+        SELECT
+            id
+        FROM
+            Playlist_Client
+        WHERE
+            PlaylistID = #{playID}
+            AND ClientID =#{clientID}
+    </select>
+    <select id="getDownloadSpeed" resultType="com.example.passenger.entity.vo.PlayListClientVo">
+        SELECT TOP (#{pageSize})  a.*,b.Name as deviceName,
+        c.Name as stationName,d.Name as lineName
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Playlist_Client
+        WHERE
+            PlaylistID=#{playListID}
+        ) AS a
+        LEFT JOIN Device b on a.ClientID=b.id
+        LEFT JOIN Station c on b.StationID=c.ID
+		LEFT JOIN Line d on b.LineID=d.ID
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="DownloadSpeedCount" resultType="java.lang.Integer">
+        SELECT COUNT
+            ( * )
+        FROM
+            Playlist_Client
+        WHERE
+            PlaylistID=#{playListID}
+    </select>
+    <insert id="addPlayListClient" parameterType="com.example.passenger.entity.PlayListClient">
+        INSERT INTO Playlist_Client
+        VALUES
+            (
+                #{playlistID},
+                #{clientID},
+                #{sequence},
+                #{auditTime},
+                #{editor})
+</insert>
+<update id="updatePlayListClient" parameterType="com.example.passenger.entity.PlayListClient">
+        UPDATE Playlist_Client SET Sequence =#{sequence}
+        <if test="auditTime!=null">
+            ,AuditTime=#{auditTime}
+        </if>
+        <if test="editor!=null">
+            ,Editor=#{editor}
+        </if>
+        WHERE
+            ID =#{id}
+</update>
+    <delete id="deletePlayListClient" parameterType="java.lang.Integer">
+        DELETE
+        FROM
+            Playlist_Client
+        WHERE
+            id =#{id}
+</delete>
+</mapper>

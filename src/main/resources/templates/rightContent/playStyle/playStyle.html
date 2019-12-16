@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #playStyle_top_div{height: 95px;width: 99.9%;border: 1px solid wheat;margin: auto;
+            border-bottom: none;float: left;}
+        #playStyle_ul{list-style: none;}
+        #playStyle_ul li{display: inline;float:left;width: 25%;font-size: 14px;height: 44px;}
+        #playStyle_ul li span{padding-right: 10px;}
+        #playStyle_ul li textarea{overflow: auto;resize: none;height: 20px;vertical-align: middle;}
+        #playStyle_left_div{width: 31%;height: 500px;background-color: white;border: 1px solid wheat;float: left;}
+        #playStyle_left_ul{list-style: none;margin: auto;padding: 0px;padding-left: 10px;padding-top: 10px;}
+        #playStyle_left_ul li{height: 30px;font-size: 12px}
+        #playStyle_right_div{height: 500px;float: left;border: 1px solid wheat;width: 68.6%;
+            border-left: none;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {height:322px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
+        tr.on td{ background-color: #BFEFFF; / 背景颜色/}
+        #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
+        #paging_ul li{display: inline;float:left;width: 69px;}
+        #nextPage{margin-left: -32px;}
+        #playStyle_left_table{}
+        .cont {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 30%;
+            width: 35%;
+            height: 53%;
+            border: 6px solid #d6b6dd47;
+            background-color: white;
+            z-index:1;
+            overflow: auto;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            tabSize.init('playStyleTable');
+        };
+    </script>
+</head>
+<body>
+<div id="playStyle_top_div">
+    <input type="text" id="id" hidden="hidden">
+    <ul id="playStyle_ul">
+        <li><span>版式名称:</span><input type="text" id="name" disabled="disabled"></li>
+        <li><span>编辑者:</span><input type="text" id="editorID" disabled="disabled"></li>
+        <li><span>通过:</span><input type="radio" value="1" name="state" checked="checked">&nbsp;
+            <span>不通过:</span><input type="radio" value="-1" name="state">
+        <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 221}">
+            <input type="button" value="预览" id="preview"></li>
+        <li><span>版式状态:</span><input type="text" id="state" disabled="disabled"></li>
+        <li><span>编辑时间:</span><input type="text" id="editTime" disabled="disabled"></li>
+        <li><span>审核意见:</span><textarea id="note"></textarea></li>
+        <li style="width: 55px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 223}">
+            <input type="button" value="审核" id="audit"></li>
+        <li style="width: 55px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 436}">
+            <input type="button" value="删除" id="delete"></li>
+    </ul>
+</div>
+<div id="playStyle_left_div">
+    <ul id="playStyle_left_ul">
+        <li><span>版式名称:</span><input type="text" id="playName"></li>
+        <li><span>版式状态:</span><select id="playState">
+            <option value="2">待审核</option>
+            <option value="1">审核通过</option>
+            <option value="-1">审核不通过</option>
+        </select></li>
+    </ul>
+    <div id="playStyle_left_table" style="height: 380px;overflow: auto">
+        <table width="100%" border="0" id="playStyleTable">
+            <thead>
+            <tr>
+                <th class="tips">编号</th>
+                <th class="tips">名称</th>
+                <th class="tips">审核意见</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<div id="playStyle_right_div">
+    <input type="text" class="id" hidden="hidden">
+    <img src="">
+</div>
+<div id="cont_b" class="cont">
+
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    getPlayStyle();
+    $("#playStyleTable tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        $("#id").val($(this).closest("tr").find("td").eq(0).text());
+        $("#name").val($(this).closest("tr").find("td").eq(1).text());
+        $("#editorID").val($(this).closest("tr").find("td").eq(3).text());
+        var state=$(this).closest("tr").find("td").eq(5).text();
+        if(state==0){
+            $("#state").val("未提交");
+        }else if(state==1){
+            $("#state").val("审核通过");
+        }else if(state==2){
+            $("#state").val("待审核");
+        }else{
+            $("#state").val("审核不通过");
+        }
+        $("#editTime").val($(this).closest("tr").find("td").eq(4).text());
+    });
+
+    $("#audit").click(function () {
+        var id=$("#id").val();
+        var state=$('input[name="state"]:checked').val();
+        var note=$("#note").val();
+        if (state==-1){
+            if(note.match(/^\s+$/g) || note==null || note==""){
+                swal("请填写审核意见!");
+                return false;
+            }
+        }
+        $.ajax({
+            url:'/playStyle/auditPlayStyle',
+            type:"POST",
+            data:{id:id,state:state,note:note},
+            success:function (data) {
+                if (data.result=="exit"){
+                    swal("该版式已在使用!");
+                }else if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        location.href="/playStyle/playStyleManagement";
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            }
+        });
+    });
+
+    $("#delete").click(function () {
+        var id=$("#id").val();
+        if(id==null || id==""){
+            swal("请选择需要操作的版式");
+            return false;
+        }
+        swal({
+            title: "您确定要删除吗？",
+            text: "您确定要删除这条数据？",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "是的，我要删除",
+            confirmButtonColor: "#ec6c62"
+        }, function() {
+            $.ajax({
+                url:'/playStyle/deletePlayStyle',
+                type:"POST",
+                data:{id:id},
+                success:function (data) {
+                    if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/playStyle/playStyleManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                }
+            });
+        });
+    });
+
+    $("#playState").change(function () {
+        getPlayStyle($(this).val());
+    });
+
+    $("#playName").bind('input propertychange',function () {
+        var state=$("#playState").val();
+        var name=$(this).val();
+        getPlayStyle(state,1,name);
+    });
+
+    $("#preview").click(function () {
+        document.getElementById('cont_b').style.display='block';
+       /* $.ajax({
+            url:'/playStyle/auditPlayStyle',
+            type:"POST",
+            data:{},
+            success:function (data) {
+
+            }
+        });*/
+    });
+});
+
+function getPlayStyle(state,pageNum,playName) {
+    $.ajax({
+        url:'/playStyle/selectPlayStyle',
+        type:"POST",
+        data:{state:state,name:playName,pageNum:pageNum,isTemplate:0},
+        success:function (data) {
+            $("#playStyleTable tbody tr").remove();
+            $.each(data.pageUtil.pageData, function (i, item) {
+                var note="";
+                if(item.state==1 && item.note==""){
+                    note="审核通过";
+                }else if(item.note==null){
+                    note="";
+                }else{
+                    note=item.note;
+                }
+                $("#playStyleTable tbody").prepend('<tr><td>'+item.id+'</td>'+
+                    '<td>'+item.name+'</td>'+
+                    '<td>'+note+'</td>'+
+                    '<td hidden="hidden">'+item.editorID+'</td>'+
+                    '<td hidden="hidden">'+item.editTime+'</td>'+
+                    '<td hidden="hidden">'+item.state+'</td>');
+            });
+            $("#paging_ul li").remove();
+            $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+            if(data.pageUtil.pageNum>=2){
+                $(".notPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isPreviousPage").remove();
+                $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+            }
+
+            if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                $(".notNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+            }else{
+                $(".isNextPage").remove();
+                $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+            }
+        }
+    });
+}
+
+function nextPage(pageNum) {
+    var state=document.getElementById("playState").value;
+    var num=parseInt(pageNum)+1;
+    getPlayStyle(state,num);
+}
+function previousPage(pageNum) {
+    var state=document.getElementById("playState").value;
+    var num=parseInt(pageNum)-1;
+    getPlayStyle(state,num);
+}
+
+</script>
+</body>
+</html>

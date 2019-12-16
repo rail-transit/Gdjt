@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.FodderMapper">
+    <select id="selectAllFodder" resultType="com.example.passenger.entity.Fodder">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+            ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+            Fodder
+        WHERE
+            Type =4
+            and IsDelete=0
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Fodder
+        WHERE
+            type =4
+            and IsDelete=0
+    </select>
+    <select id="selectFodderByName" resultType="java.lang.Integer">
+        SELECT COUNT
+            (*)
+        FROM
+            Fodder
+        WHERE
+            Name =#{name}
+            and IsDelete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        <if test="type!=null">
+            and type=#{type}
+        </if>
+    </select>
+    <select id="selectAllFodderMaterial" resultType="com.example.passenger.entity.Fodder">
+        SELECT TOP (#{pageSize}) *
+        FROM
+        (
+        SELECT
+            ROW_NUMBER () OVER ( ORDER BY Edit_Time DESC) AS RowNumber,*
+        FROM
+            Fodder
+        WHERE
+            Type NOT IN ( 4 )
+            <if test="type!=null">
+                and Type=#{type}
+            </if>
+            <if test="state!=null">
+                and State=#{state}
+            </if>
+            <if test="name!=null and name!=''">
+                and Name like '%'+#{name}+'%'
+            </if>
+            and IsDelete=0
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="selectAllFodderMaterialCount"  resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        Fodder
+        WHERE
+        Type NOT IN (4)
+        <if test="type!=null">
+            and Type=#{type}
+        </if>
+        <if test="state!=null">
+            and State=#{state}
+        </if>
+        <if test="name!=null and name!=''">
+            and Name like '%'+#{name}+'%'
+        </if>
+        and IsDelete=0
+    </select>
+    <select id="selectFodderByType" resultType="com.example.passenger.entity.Fodder">
+        SELECT
+           *
+        FROM
+            Fodder
+        WHERE
+            Type=#{type}
+            and IsDelete=0
+    </select>
+    <select id="selectFodderByID" resultType="com.example.passenger.entity.Fodder">
+        SELECT
+           *
+        FROM
+            Fodder
+        WHERE
+            id=#{id}
+            and IsDelete=0
+    </select>
+    <insert id="addFodder" parameterType="com.example.passenger.entity.Fodder">
+        INSERT INTO Fodder
+        VALUES
+            (
+                #{name},
+                #{type},
+                #{path},
+                #{size},
+                #{state},
+                #{editorID},
+                #{editTime},
+                #{resolution},
+                #{timeLength},
+                #{note},
+                #{guid},
+            #{md5},'')
+    </insert>
+    <update id="updateFodder" parameterType="com.example.passenger.entity.Fodder">
+        UPDATE Fodder
+        SET name =#{name}
+        <if test="path!=null">
+            ,Path=#{path}
+        </if>
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+            id =#{id}
+    </update>
+    <update id="updateFodderState" parameterType="com.example.passenger.entity.Fodder">
+        UPDATE Fodder
+        SET State=#{state}
+        <if test="note!=null">
+            ,Note=#{note}
+        </if>
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+            id =#{id}
+    </update>
+    <delete id="deleteFodder" parameterType="com.example.passenger.entity.Fodder">
+        UPDATE Fodder
+        SET IsDelete=1
+        <if test="editorID!=null">
+            ,Editor_ID=#{editorID}
+        </if>
+        <if test="editTime!=null">
+            ,Edit_Time=#{editTime}
+        </if>
+        WHERE
+        id =#{id}
+    </delete>
+</mapper>
