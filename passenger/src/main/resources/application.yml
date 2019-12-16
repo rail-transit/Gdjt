@@ -1,5 +1,0 @@
-ftp.host: 10.10.30.145
-ftp.port: 210
-ftp.username: ftp
-ftp.password: ABCabc123
-ftp.filepath: /upload/
