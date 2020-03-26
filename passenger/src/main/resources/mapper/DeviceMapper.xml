@@ -37,6 +37,16 @@
        </if>
    </where>
 </select>
+<select id="selectIsBackups" resultType="com.example.passenger.entity.Device">
+    SELECT
+        *
+    FROM
+        Device
+    WHERE
+        StationID = #{stationID}
+        AND IsBackups = 1
+        OR ID= #{id}
+</select>
 <select id="selectDeviceListByID" resultType="com.example.passenger.entity.Device">
     SELECT
         *
@@ -169,6 +179,16 @@
         and id !=#{id}
     </if>
 </select>
+    <select id="getAllDeviceByLineId"  resultType="com.example.passenger.utils.VisitCount">
+        SELECT
+            d.ID AS deviceID
+        FROM
+            Device d
+            LEFT JOIN Station s ON d.StationID = s.ID
+            LEFT JOIN Device_Type dt ON d.Type = dt.ID
+        WHERE
+            s.LineID = #{lineId} AND dt.Name = '播放控制器'
+    </select>
 <insert id="addDevice" parameterType="com.example.passenger.entity.Device">
         INSERT INTO Device
         VALUES

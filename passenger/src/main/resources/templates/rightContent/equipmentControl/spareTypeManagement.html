@@ -22,7 +22,7 @@
         #spareType_operation_div input{height: 25px;width: 90px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:318px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -112,27 +112,20 @@
 </div>
 <script language="JavaScript" src="/js/jquery.js"></script>
 <script type="text/javascript">
-    $(document).ready(function(){
-        $("#addSpareType").click(function () {
-            var name=$(".name").val();
-            var minNumber=$(".minNumber").val();
-            var note=$(".note").val();
-            if(name.match(/^\s+$/g)||name==""){
-                swal("备件类型名称不能为空!");
-                return false;
-            }
-            if(minNumber.match(/^\s+$/g)||minNumber==""){
-                swal("预警数量不能为空!");
-                return false;
-            }
-            if(!(/^[0-9]+$/.test(minNumber))){
-                swal("预警数量只能为数字!");
-                return false;
-            }
-            if(note.match(/^\s+$/g)||note==""){
-                swal("备注不能为空");
-                return false;
-            }
+$(document).ready(function(){
+    $("#fodderTable tr").live("click",function(){
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+
+    $("#addSpareType").click(function () {
+        var name=$(".name").val();
+        var minNumber=$(".minNumber").val();
+        var note=$(".note").val();
+        if(isnull(name,minNumber,note)){
             $.ajax({
                 url:'/standbyType/addStandbyType',
                 type:"POST",
@@ -153,38 +146,24 @@
                     swal("OMG!", "请求失败!", "error");
                 }
             });
-        });
+        }
+    });
 
-        $("#updateButton").live("click",function () {
-            document.getElementById('cont_b').style.display='block';
-            //获取选中的值,传入输入框
-            $(".id").val($(this).closest("tr").find("td").eq(0).text());
-            $(".standbyName").val($(this).closest("tr").find("td").eq(1).text());
-            $(".standbyMinNumber").val($(this).closest("tr").find("td").eq(2).text());
-            $(".standbyNote").val($(this).closest("tr").find("td").eq(3).text());
-        });
+    $("#updateButton").live("click",function () {
+        document.getElementById('cont_b').style.display='block';
+        //获取选中的值,传入输入框
+        $(".id").val($(this).closest("tr").find("td").eq(0).text());
+        $(".standbyName").val($(this).closest("tr").find("td").eq(1).text());
+        $(".standbyMinNumber").val($(this).closest("tr").find("td").eq(2).text());
+        $(".standbyNote").val($(this).closest("tr").find("td").eq(3).text());
+    });
 
-        $("#updateSpareType").click(function () {
-            var id=$(".id").val();
-            var name=$(".standbyName").val();
-            var minNumber=$(".standbyMinNumber").val();
-            var note=$(".standbyNote").val();
-            if(name.match(/^\s+$/g)||name==""){
-                swal("备件类型名称不能为空!");
-                return false;
-            }
-            if(minNumber.match(/^\s+$/g)||minNumber==""){
-                swal("预警数量不能为空!");
-                return false;
-            }
-            if(!(/^[0-9]+$/.test(minNumber))){
-                swal("预警数量只能为数字!");
-                return false;
-            }
-            if(note.match(/^\s+$/g)||note==""){
-                swal("备注不能为空");
-                return false;
-            }
+    $("#updateSpareType").click(function () {
+        var id=$(".id").val();
+        var name=$(".standbyName").val();
+        var minNumber=$(".standbyMinNumber").val();
+        var note=$(".standbyNote").val();
+        if (isnull(name,minNumber,note)){
             $.ajax({
                 url:'/standbyType/updateStandbyType',
                 type:"POST",
@@ -203,57 +182,71 @@
                     swal("OMG!", "请求失败!", "error");
                 }
             });
-        });
+        }
+    });
 
-        $("#deleteButton").live("click",function () {
-            var id=$(this).closest("tr").find("td").eq(0).text();
-            var name=$(this).closest("tr").find("td").eq(1).text();
-            swal({
-                title: "您确定要删除吗？",
-                text: "您确定要删除这条数据？",
-                type: "warning",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "是的，我要删除",
-                confirmButtonColor: "#ec6c62"
-            }, function() {
-                $.ajax({
-                    url:'/standbyType/deleteStandbyType',
-                    type:"POST",
-                    data:{id:id,name:name},
-                    success:function (data) {
-                        if(data.result=="exit"){
-                            swal("该备件类型已经有备件信息,不能删除!");
-                        }else if(data.result=="success"){
-                            swal("Good!", "操作成功!", "success");
-                            $(".confirm").click(function () {
-                                window.location.href="/standbyType/standbyTypeManagement";
-                            });
-                        }else{
-                            swal("OMG!", "操作错误!", "error");
-                        }
-                    },
-                    error:function (){
-                        swal("OMG!", "请求失败!", "error");
+    $("#deleteButton").live("click",function () {
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        var name=$(this).closest("tr").find("td").eq(1).text();
+        swal({
+            title: "您确定要删除吗？",
+            text: "您确定要删除这条数据？",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "是的，我要删除",
+            confirmButtonColor: "#ec6c62"
+        }, function() {
+            $.ajax({
+                url:'/standbyType/deleteStandbyType',
+                type:"POST",
+                data:{id:id,name:name},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该备件类型已经有备件信息,不能删除!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/standbyType/standbyTypeManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
                     }
-                });
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
+                }
             });
         });
-
-        $("#fodderTable tr").live("click",function(){
-            var trs = $(this).parent().find('tr'); //获取所有tr
-            if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
-                trs.removeClass('on');//把class on 移除
-            }
-            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
-        });
     });
-    function nextPage(pageNum) {
-        location.href="/standbyType/standbyTypeManagement?pageNum="+pageNum;
+});
+
+function isnull(name,minNumber,note) {
+    if(name.match(/^\s+$/g)||name==""){
+        swal("备件类型名称不能为空!");
+        return false;
     }
-    function previousPage(pageNum) {
-        location.href="/standbyType/standbyTypeManagement?pageNum="+pageNum;
+    if(minNumber.match(/^\s+$/g)||minNumber==""){
+        swal("预警数量不能为空!");
+        return false;
     }
+    if(!(/^[0-9]+$/.test(minNumber))){
+        swal("预警数量只能为数字!");
+        return false;
+    }
+    if(note.match(/^\s+$/g)||note==""){
+        swal("备注不能为空");
+        return false;
+    }
+    return true;
+}
+
+function nextPage(pageNum) {
+    location.href="/standbyType/standbyTypeManagement?pageNum="+pageNum;
+}
+function previousPage(pageNum) {
+    location.href="/standbyType/standbyTypeManagement?pageNum="+pageNum;
+}
 </script>
 </body>
 </html>

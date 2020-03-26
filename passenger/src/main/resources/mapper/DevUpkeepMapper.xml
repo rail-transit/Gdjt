@@ -38,9 +38,10 @@
     </select>
     <select id="getDevUpKeep" parameterType="com.example.passenger.entity.DevUpkeep" resultType="java.util.LinkedHashMap">
         SELECT
-            b.Name AS lineName,
+            Row_Number()over(ORDER BY a.id DESC) as id,
+            d.Name AS lineName,
             c.Name AS stationName,
-            d.Name AS deviceName,
+            b.Name AS deviceName,
             a.Accendant,
             a.Tel,
             a.Scheme,
@@ -70,7 +71,7 @@
     </select>
     <select id="maintainPaging" resultType="com.example.passenger.entity.vo.DevUpkeepVo">
         SELECT TOP
-        (#{pageSize})d.Name as lineName,c.Name as stationName,b.Name as deviceName,
+        (#{pageSize}) RowNumber as id,d.Name as lineName,c.Name as stationName,b.Name as deviceName,
 					 a.Accendant,a.Tel,a.Scheme,a.StartTime,a.EndTime,a.UpkeepState
         FROM
             (

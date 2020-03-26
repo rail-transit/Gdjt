@@ -2,10 +2,12 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.OperationLog;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface OperationLogMapper {
 
     List<OperationLog> selectPaging(@Param("startTime") String startTime,

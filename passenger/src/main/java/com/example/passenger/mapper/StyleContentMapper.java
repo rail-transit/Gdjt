@@ -3,9 +3,11 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.StyleContent;
 import com.example.passenger.entity.vo.StyleContentVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface StyleContentMapper {
 
     StyleContent selectContentById(Integer id);

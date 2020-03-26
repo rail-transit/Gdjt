@@ -10,7 +10,7 @@
             border: 1px solid wheat;float: left;overflow: auto}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:500px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -107,6 +107,7 @@ $(document).ready(function(){
 var playID=null;
 
 stateTime=setInterval('getSate(playID)',5000);
+
 function getSate(id) {
     if(id!=null && id!=""){
         $.ajax({

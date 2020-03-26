@@ -18,53 +18,53 @@ public class DevicePosService {
     @Autowired
     DevicePosMapper devicePosMapper;
 
-    public List<DevicePos> selectAllDevicePos(){
+    public List<DevicePos> selectAllDevicePos() {
         return devicePosMapper.selectAllDevicePos();
     }
 
-    public Integer selectDevicePosByName(String name,Integer id){
-        return devicePosMapper.selectDevicePosByName(name,id);
+    public Integer selectDevicePosByName(String name, Integer id) {
+        return devicePosMapper.selectDevicePosByName(name, id);
     }
 
-    public DevicePos selectDevicePosById(Integer id){
+    public DevicePos selectDevicePosById(Integer id) {
         return devicePosMapper.selectDevicePosById(id);
     }
 
-    public PageUtil selectDevicePosPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectDevicePosPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(devicePosMapper.count());
-        pageUtil.setPageData(devicePosMapper.selectDevicePosPaging(pageNum,pageSize));
+        pageUtil.setPageData(devicePosMapper.selectDevicePosPaging(pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addDevicePos(DevicePos device_pos){
+    public Integer addDevicePos(DevicePos device_pos) {
         try {
             device_pos.setIsEdit(1);
             return devicePosMapper.addDevicePos(device_pos);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateDevicePos(DevicePos device_pos){
+    public Integer updateDevicePos(DevicePos device_pos) {
         try {
             return devicePosMapper.updateDevicePos(device_pos);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteDevicePos(Integer id){
+    public Integer deleteDevicePos(Integer id) {
         try {
             return devicePosMapper.deleteDevicePos(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

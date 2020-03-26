@@ -9,8 +9,8 @@ public class Users implements Serializable {
     private String tel;
     private Integer departmentID;
     private String email;
-    private String lastLogonTime;
-    private String des;
+    private String updateDate;
+    private String nickname;
     private Integer groupID;
     private String stationID;
     private String lineID;
@@ -65,24 +65,24 @@ public class Users implements Serializable {
         this.email = email;
     }
 
-    public String getLastLogonTime() {
-        return lastLogonTime;
-    }
-
-    public void setLastLogonTime(String lastLogonTime) {
-        this.lastLogonTime = lastLogonTime;
-    }
-
-    public String getDes() {
-        return des;
-    }
-
-    public void setDes(String des) {
-        this.des = des;
-    }
-
     public Integer getGroupID() {
         return groupID;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void setGroupID(Integer groupID) {

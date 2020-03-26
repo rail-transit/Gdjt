@@ -2,8 +2,9 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.MapEntity;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public interface MapEntityMapper {
     MapEntity selectMapByID(String id);
 

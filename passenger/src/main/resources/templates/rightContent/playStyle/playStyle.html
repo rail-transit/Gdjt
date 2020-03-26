@@ -7,9 +7,10 @@
         #playStyle_top_div{height: 95px;width: 99.9%;border: 1px solid wheat;margin: auto;
             border-bottom: none;float: left;}
         #playStyle_ul{list-style: none;}
-        #playStyle_ul li{display: inline;float:left;width: 25%;font-size: 14px;height: 44px;}
+        #playStyle_ul li{display: inline;float:left;width: 25%;font-size: 14px;height: 44px;text-align: right}
         #playStyle_ul li span{padding-right: 10px;}
         #playStyle_ul li textarea{overflow: auto;resize: none;height: 20px;vertical-align: middle;}
+        #playStyle_ul li input[type="radio"]{vertical-align: bottom;height: 15px;}
         #playStyle_left_div{width: 31%;height: 500px;background-color: white;border: 1px solid wheat;float: left;}
         #playStyle_left_ul{list-style: none;margin: auto;padding: 0px;padding-left: 10px;padding-top: 10px;}
         #playStyle_left_ul li{height: 30px;font-size: 12px}
@@ -17,7 +18,7 @@
             border-left: none;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:322px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -25,18 +26,49 @@
         #paging_ul li{display: inline;float:left;width: 69px;}
         #nextPage{margin-left: -32px;}
         #playStyle_left_table{}
-        .cont {
-            display: none;
-            position: fixed;
-            top: 20%;
-            left: 30%;
-            width: 35%;
-            height: 53%;
-            border: 6px solid #d6b6dd47;
-            background-color: white;
-            z-index:1;
-            overflow: auto;
-        }
+
+        /*.selectBox{display:none;position:fixed;width:1920px;height:1080px;border:3px solid black;background-color:white;z-index:1002}*/
+        /*.shelter{display:none;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:black;opacity:0.6;z-index:1001}*/
+
+
+        /*.black_overlay{*/
+        /*    display: none;*/
+        /*    position: absolute;*/
+        /*    top: 0%;*/
+        /*    left: 0%;*/
+        /*    width: 100%;*/
+        /*    height: 100%;*/
+        /*    background-color: black;*/
+        /*    z-index:1001;*/
+        /*    -moz-opacity: 0.8;*/
+        /*    opacity:.80;*/
+        /*    filter: alpha(opacity=80);*/
+        /*}*/
+        /*.white_content {*/
+        /*    display: none;*/
+        /*    position: absolute;*/
+        /*    top: 2%;*/
+        /*    left: 1%;*/
+        /*    width: 80%;*/
+        /*    height: 80%;*/
+        /*    !*border: 6px solid lightblue;*!*/
+        /*    background-color: white;*/
+        /*    z-index:1002;*/
+        /*    overflow: auto;*/
+        /*}*/
+        /*.white_content_small {*/
+        /*    display: none;*/
+        /*    position: absolute;*/
+        /*    top: 20%;*/
+        /*    left: 30%;*/
+        /*    width: 40%;*/
+        /*    height: 50%;*/
+        /*    border: 16px solid lightblue;*/
+        /*    background-color: white;*/
+        /*    z-index:1002;*/
+        /*    overflow: auto;*/
+        /*}*/
+
     </style>
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
@@ -53,17 +85,20 @@
     <ul id="playStyle_ul">
         <li><span>版式名称:</span><input type="text" id="name" disabled="disabled"></li>
         <li><span>编辑者:</span><input type="text" id="editorID" disabled="disabled"></li>
-        <li><span>通过:</span><input type="radio" value="1" name="state" checked="checked">&nbsp;
-            <span>不通过:</span><input type="radio" value="-1" name="state">
-        <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 221}">
-            <input type="button" value="预览" id="preview"></li>
+        <li><span>审核意见:</span><textarea id="note"></textarea></li>
+        <li style="width: 80px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 221}">
+            <input type="button" value="预览" id="preview">
+        </li>
         <li><span>版式状态:</span><input type="text" id="state" disabled="disabled"></li>
         <li><span>编辑时间:</span><input type="text" id="editTime" disabled="disabled"></li>
-        <li><span>审核意见:</span><textarea id="note"></textarea></li>
-        <li style="width: 55px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 223}">
-            <input type="button" value="审核" id="audit"></li>
+        <li style="text-align: center"><span>通过:</span><input type="radio" value="1" name="state" checked="checked">&nbsp;
+            <span>不通过:</span><input type="radio" value="-1" name="state"></li>
+        <li style="width: 80px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 223}">
+            <input type="button" value="审核" id="audit">
+        </li>
         <li style="width: 55px" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 436}">
-            <input type="button" value="删除" id="delete"></li>
+            <input type="button" value="删除" id="delete">
+        </li>
     </ul>
 </div>
 <div id="playStyle_left_div">
@@ -97,12 +132,37 @@
     <input type="text" class="id" hidden="hidden">
     <img src="">
 </div>
-<div id="cont_b" class="cont">
 
-</div>
+<!--<div id="cont_b" class="cont" style="display: none">-->
+<!--</div>-->
+<!--<div id="selectBox" class="selectBox">-->
+<!--    <p>请选择跳转的页面：</p>-->
+<!--    <p><input name="new" id="Radio1" value="new1" type="radio" />new1</p>-->
+<!--    <p><input name="new" id="Radio2" value="new2" type="radio" />new2</p>-->
+<!--    <a onclick="ok()">OK</a>&nbsp;&nbsp;&nbsp;<a onclick="cancel()">Cancel</a>-->
+<!--</div>-->
+<!--<div id="shelter" class="shelter"></div>-->
+<!--&lt;!&ndash;弹出层时背景层DIV&ndash;&gt;-->
+<!--<div id="backgroundDiv" class="black_overlay">-->
+<!--</div>-->
+<!--<div id="contentDiv" class="white_content">-->
+<!--&lt;!&ndash;    内容&ndash;&gt;-->
+<!--</div>-->
+
 <script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.thooClock.min.js"></script>
 <script type="text/javascript">
+    //全局变量
+    var timeoutID = 0;//用于定时退出全屏的定时器编号 timeoutID是一个正整数，表示定时器的编号。这个值可以传递给clearTimeout()来取消该定时器。
+    //待完善 创建定时器编号数组，记录每个layout的定时器，可用于取消定时
+    var intervalIds = new Array();//定时器编号数组，记录每个layout的setInterval定时器，可用于取消定时
+    var timeoutIds = new Array();//定时器编号数组，记录每个layout的setTimeout定时器，可用于取消定时
 $(document).ready(function() {
+    //未选择版式时预览按钮不可点击
+    var playId=$("#id").val();
+    if (playId == null || playId == ""){
+        $("#preview").attr('disabled',true);
+    }
     getPlayStyle();
     $("#playStyleTable tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
         var trs = $(this).parent().find('tr'); //获取所有tr
@@ -113,6 +173,8 @@ $(document).ready(function() {
         $("#id").val($(this).closest("tr").find("td").eq(0).text());
         $("#name").val($(this).closest("tr").find("td").eq(1).text());
         $("#editorID").val($(this).closest("tr").find("td").eq(3).text());
+        //选择版式后预览按钮可点击
+        $("#preview").attr('disabled',false);
         var state=$(this).closest("tr").find("td").eq(5).text();
         if(state==0){
             $("#state").val("未提交");
@@ -130,6 +192,10 @@ $(document).ready(function() {
         var id=$("#id").val();
         var state=$('input[name="state"]:checked').val();
         var note=$("#note").val();
+        if(id==null || id==""){
+            swal("请选择需要审核的版式!!");
+            return false;
+        }
         if (state==-1){
             if(note.match(/^\s+$/g) || note==null || note==""){
                 swal("请填写审核意见!");
@@ -158,7 +224,7 @@ $(document).ready(function() {
     $("#delete").click(function () {
         var id=$("#id").val();
         if(id==null || id==""){
-            swal("请选择需要操作的版式");
+            swal("请选择需要删除的版式");
             return false;
         }
         swal({
@@ -180,6 +246,8 @@ $(document).ready(function() {
                         $(".confirm").click(function () {
                             location.href="/playStyle/playStyleManagement";
                         });
+                    }else if(data.result=="exit"){
+                        swal("该版式已在使用!");
                     }else{
                         swal("OMG!", "操作错误!", "error");
                     }
@@ -198,8 +266,12 @@ $(document).ready(function() {
         getPlayStyle(state,1,name);
     });
 
+    //预览
     $("#preview").click(function () {
-        document.getElementById('cont_b').style.display='block';
+        // document.getElementById('cont_b').style.display='block';
+        // document.getElementById("selectBox").style.display = "block";
+        // document.getElementById("shelter").style.display = "block";
+        // ShowDiv('backgroundDiv','contentDiv');
        /* $.ajax({
             url:'/playStyle/auditPlayStyle',
             type:"POST",
@@ -208,13 +280,1395 @@ $(document).ready(function() {
 
             }
         });*/
+       // var xmlString="<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+       //     "<root>" +
+       //     "<programmes>" +
+       //     "<id>3180</id>" +
+       //     "<thumbnailimage/>" +
+       //     "<title>1</title>" +
+       //     "<width>1920</width>" +
+       //     "<height>1080</height>" +
+       //     "<fullimage>ftp://ftp:FTPmedia@10.1.9.11/fodder/81680fb4-bf87-480f-819e-32dc3a2e0949.jpg</fullimage>" +
+       //     "<starttime/>" +
+       //     "<endtime/>" +
+       //     "<bgimage>ftp://ftp:FTPmedia@10.1.9.11/fodder/81680fb4-bf87-480f-819e-32dc3a2e0949.jpg</bgimage>" +
+       //     "<layout>" +
+       //     "<id>BtnS1</id>" +
+       //     "<contents>" +
+       //     "<id>1</id>" +
+       //     "<materialid>2159</materialid>" +
+       //     "<fileproterty>video</fileproterty>" +
+       //     "<fsize>0</fsize>" +
+       //     "<timelength>86400</timelength>" +
+       //     "<playtimes>1</playtimes>" +
+       //     "<contentsname>1</contentsname>" +
+       //     "<getcontents>udp://225.1.1.40:4000</getcontents>" +
+       //     "</contents>" +
+       //     "<contents>" +
+       //     "<id>2</id>" +
+       //     "<materialid>2158</materialid>" +
+       //     "<fileproterty>video</fileproterty>" +
+       //     "<fsize>206043839</fsize>" +
+       //     "<timelength>30</timelength>" +
+       //     "<playtimes>5</playtimes>" +
+       //     "<contentsname>天津北海宣传片.mp4</contentsname>" +
+       //     "<getcontents>ftp://ftp:FTPmedia@10.1.9.11/fodder/0a688617-3dcd-4619-af8a-450e9a9f6f17.mp4</getcontents>" +
+       //     "</contents>" +
+       //     "<contents>" +
+       //     "<id>3</id>" +
+       //     "<materialid>2159</materialid>" +
+       //     "<fileproterty>video</fileproterty>" +
+       //     "<fsize>2060438</fsize>" +
+       //     "<timelength>20</timelength>" +
+       //     "<playtimes>5</playtimes>" +
+       //     "<contentsname>test.avi</contentsname>" +
+       //     "<getcontents>ftp://ftp:FTPmedia@10.1.9.11/fodder/b7fbddb7-d082-412b-853e-e0d8ba537c1e.avi</getcontents>" +
+       //     "</contents>" +
+       //     "<layoutname>BtnS1</layoutname>" +
+       //     "<width>1370</width>" +
+       //     "<height>914</height>" +
+       //     "<x>42</x>" +
+       //     "<y>40</y>" +
+       //     "<type>0</type>" +
+       //     "<fillColor>0xC0C0C0</fillColor>" +
+       //     "<borderColor>0xFFFFFF</borderColor>" +
+       //     "<LineStyleWidth>1</LineStyleWidth>" +
+       //     "<LineStyle>0</LineStyle>" +
+       //     "<LineWidth>1</LineWidth>" +
+       //     "<Transparent>0</Transparent>" +
+       //     "<fillType>-1</fillType>" +
+       //     "<borderType>0</borderType>" +
+       //     "<textAlignType>1</textAlignType>" +
+       //     "</layout>" +
+       //     "<layout>" +
+       //     "<id>Rct1</id>" +
+       //     "<contents>" +
+       //     "<id>1</id>" +
+       //     "<fileproterty>date</fileproterty>" +
+       //     "<fsize>28</fsize>" +
+       //     "<timelength>0</timelength>" +
+       //     "<playtimes>0</playtimes>" +
+       //     "<getcontents>" +
+       //     "<opacity>0</opacity>" +
+       //     "<backgroundcolor>0xFFFFFF</backgroundcolor>" +
+       //     "<fontcolor>0xFF0000</fontcolor>" +
+       //     "<fontsize>28</fontsize>" +
+       //     "<txtfont>宋体</txtfont>" +
+       //     "<txtspeed>0</txtspeed>" +
+       //     "<fontweight>bold</fontweight>" +
+       //     "<fontstyle/>" +
+       //     "<txtcontents>" +
+       //     "<date>1</date>" +
+       //     "<datestyle>3</datestyle>" +
+       //     "<week>1</week>" +
+       //     "<weekstyle>0</weekstyle>" +
+       //     "<time>0</time>" +
+       //     "<timestyle>0</timestyle>" +
+       //     "<multirow>0</multirow>" +
+       //     "</txtcontents>" +
+       //     "</getcontents>" +
+       //     "</contents>" +
+       //     "<layoutname>Rct1</layoutname>" +
+       //     "<width>430</width>" +
+       //     "<height>72</height>" +
+       //     "<x>1440</x>" +
+       //     "<y>44</y>" +
+       //     "<type>3</type>" +
+       //     "<fillColor>0xC0C0C0</fillColor>" +
+       //     "<borderColor>0xFFFFFF</borderColor>" +
+       //     "<LineStyleWidth>1</LineStyleWidth>" +
+       //     "<LineStyle>0</LineStyle>" +
+       //     "<LineWidth>1</LineWidth>" +
+       //     "<Transparent>1</Transparent>" +
+       //     "<fillType>-1</fillType>" +
+       //     "<borderType>1</borderType>" +
+       //     "<textAlignType>1</textAlignType>" +
+       //     "</layout>" +
+       //     "<layout>" +
+       //     "<id>Rct2</id>" +
+       //     "<contents>" +
+       //     "<id>1</id>" +
+       //     "<fileproterty>date</fileproterty>" +
+       //     "<fsize>28</fsize>" +
+       //     "<timelength>0</timelength>" +
+       //     "<playtimes>0</playtimes>" +
+       //     "<getcontents>" +
+       //     "<opacity>0</opacity>" +
+       //     "<backgroundcolor>0xFFFFFF</backgroundcolor>" +
+       //     "<fontcolor>0xFF0000</fontcolor>" +
+       //     "<fontsize>28</fontsize>" +
+       //     "<txtfont>宋体</txtfont>" +
+       //     "<txtspeed>0</txtspeed>" +
+       //     "<fontweight>bold</fontweight>" +
+       //     "<fontstyle/>" +
+       //     "<txtcontents>" +
+       //     "<date>0</date>" +
+       //     "<datestyle>3</datestyle>" +
+       //     "<week>0</week>" +
+       //     "<weekstyle>0</weekstyle>" +
+       //     "<time>1</time>" +
+       //     "<timestyle>0</timestyle>" +
+       //     "<multirow>0</multirow>" +
+       //     "</txtcontents>" +
+       //     "</getcontents>" +
+       //     "</contents>" +
+       //     "<layoutname>Rct2</layoutname>" +
+       //     "<width>270</width>" +
+       //     "<height>42</height>" +
+       //     "<x>1510</x>" +
+       //     "<y>130</y>" +
+       //     "<type>3</type>" +
+       //     "<fillColor>0xC0C0C0</fillColor>" +
+       //     "<borderColor>0xFFFFFF</borderColor>" +
+       //     "<LineStyleWidth>1</LineStyleWidth>" +
+       //     "<LineStyle>0</LineStyle>" +
+       //     "<LineWidth>1</LineWidth>" +
+       //     "<Transparent>1</Transparent>" +
+       //     "<fillType>-1</fillType>" +
+       //     "<borderType>1</borderType>" +
+       //     "<textAlignType>1</textAlignType>" +
+       //     "</layout>" +
+       //     "<layout>" +
+       //     "<id>Image1</id>" +
+       //     "<contents>" +
+       //     "<id>1</id>" +
+       //     "<materialid>2155</materialid>" +
+       //     "<fileproterty>image</fileproterty>" +
+       //     "<fsize>780831</fsize>" +
+       //     "<timelength>10</timelength>" +
+       //     "<playtimes>1</playtimes>" +
+       //     "<contentsname>Koala.jpg</contentsname>" +
+       //     "<getcontents>ftp://ftp:FTPmedia@10.1.9.11/fodder/1552fca5-c777-4411-8737-791ffd4b9618.jpg</getcontents>" +
+       //     "</contents>" +
+       //     "<contents>" +
+       //     "<id>2</id>" +
+       //     "<materialid>2156</materialid>" +
+       //     "<fileproterty>image</fileproterty>" +
+       //     "<fsize>155861</fsize>" +
+       //     "<timelength>10</timelength>" +
+       //     "<playtimes>1</playtimes>" +
+       //     "<contentsname>人像.jpg</contentsname>" +
+       //     "<getcontents>ftp://ftp:FTPmedia@10.1.9.11/fodder/98d5ae5f-36ec-4792-b533-ece982cb671c.jpg</getcontents>" +
+       //     "</contents>" +
+       //     "<layoutname>Image1</layoutname>" +
+       //     "<width>418</width>" +
+       //     "<height>582</height>" +
+       //     "<x>1444</x>" +
+       //     "<y>236</y>" +
+       //     "<type>1</type>" +
+       //     "<fillColor>0xC0C0C0</fillColor>" +
+       //     "<borderColor>0xFFFFFF</borderColor>" +
+       //     "<LineStyleWidth>1</LineStyleWidth>" +
+       //     "<LineStyle>0</LineStyle>" +
+       //     "<LineWidth>1</LineWidth>" +
+       //     "<Transparent>0</Transparent>" +
+       //     "<fillType>-1</fillType>" +
+       //     "<borderType>2</borderType>" +
+       //     "<textAlignType>0</textAlignType>" +
+       //     "</layout>" +
+       //     "<layout>" +
+       //     "<id>Txt1</id>" +
+       //     "<contents>" +
+       //     "<id>1</id>" +
+       //     "<fileproterty>rollmsg</fileproterty>" +
+       //     "<fsize>18</fsize>" +
+       //     "<timelength>16</timelength>" +
+       //     "<playtimes>1</playtimes>" +
+       //     "<getcontents>" +
+       //     "<opacity>0</opacity>" +
+       //     "<backgroundcolor>0xC0C0C0</backgroundcolor>" +
+       //     "<fontcolor>0xFF0000</fontcolor>" +
+       //     "<fontsize>24</fontsize>" +
+       //     "<txtfont>宋体</txtfont>" +
+       //     "<txtspeed>20</txtspeed>" +
+       //     "<txtmarquee>1</txtmarquee>" +
+       //     "<fontweight>bold</fontweight>" +
+       //     "<fontstyle/>" +
+       //     "<txtcontents>深圳欢迎你</txtcontents>" +
+       //     "</getcontents>" +
+       //     "</contents>" +
+       //     "<layoutname>Txt1</layoutname>" +
+       //     "<width>1384</width>" +
+       //     "<height>90</height>" +
+       //     "<x>38</x>" +
+       //     "<y>956</y>" +
+       //     "<type>2</type>" +
+       //     "<fillColor>0xC0C0C0</fillColor>" +
+       //     "<borderColor>0xFF0000</borderColor>" +
+       //     "<LineStyleWidth>1</LineStyleWidth>" +
+       //     "<LineStyle>0</LineStyle>" +
+       //     "<LineWidth>1</LineWidth>" +
+       //     "<Transparent>0</Transparent>" +
+       //     "<fillType>-1</fillType>" +
+       //     "<borderType>0</borderType>" +
+       //     "<textAlignType>0</textAlignType>" +
+       //     "</layout>" +
+       //     "</programmes>" +
+       //     "</root>";
+
+       // 根据id得到版式(xml)信息
+        var playId=$("#id").val();
+        var xmlString = "";
+        $.ajax({
+            url:'/schedules/getPlayStyleXMLById',
+            type:"POST",
+            async:false,//不异步加载，否则在success回调函数里xmlString = data.playStyleXMLStr无效，并且会导致IE按F12显示内容，不按会闪不显示内容问题
+            data:{playStyleId:playId},
+            success:function (data) {
+                xmlString = data.playStyleXMLStr;
+            }
+        });
+
+        //test
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        // console.log("xmlString");
+        // console.log(xmlString);
+        // console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        if (xmlString != ""){
+
+            // $(window.parent.document.getElementById("contentDiv"))
+            // window.parent.document.getElementById("contentDiv").innerHTML = "test";
+            //获取父窗口的元素
+            // $("#contentDiv",window.parent.document)
+            //第一种解析方法：解析xml字符串
+            var xmlSDoc = loadXmlString(xmlString);
+            if(xmlSDoc.getElementsByTagName("contents") == null || xmlSDoc.getElementsByTagName("contents").length == 0){
+                swal("当前版式没有内容");
+                return;
+            }
+            if(xmlSDoc.getElementsByTagName("contents").length > 0){
+                //弹出(父窗口)隐藏层(弹出显示界面)
+                window.parent.document.getElementById("backgroundDiv").style.display='block';
+                window.parent.document.getElementById("contentDiv").style.display='block' ;
+                // //test
+                // //convert string to xml object (将字符串转换成xml对象)
+                // var parser = new DOMParser();
+                // var xmlObject = parser.parseFromString(xmlString, "text/xml");
+                // //convert xml object to string (将xml对象转换成字符串)
+                // var xmlObjectStr = (new XMLSerializer()).serializeToString(xmlObject);
+
+                //根据解析内容设置相应显示
+                var contentDiv = window.parent.document.getElementById("contentDiv");
+                // contentDiv.empty();
+                $("#contentDiv",window.parent.document).empty();
+                contentDiv.style.width = xmlSDoc.getElementsByTagName("width")[0].textContent+"px";
+                contentDiv.style.height = xmlSDoc.getElementsByTagName("height")[0].textContent+"px";
+
+                if (xmlSDoc.getElementsByTagName("bgcolor").length != 0){//有背景颜色
+                    contentDiv.style.backgroundColor = (xmlSDoc.getElementsByTagName("bgcolor")[0].textContent).replace("0x", "#");
+                } else if(xmlSDoc.getElementsByTagName("bgimage").length != 0) {//有背景图片
+
+                    var bgimagePatheStr = xmlSDoc.getElementsByTagName("bgimage")[0].textContent;
+                    var startIndex = bgimagePatheStr.lastIndexOf("\/");
+                    var bgimageName = bgimagePatheStr.substring(startIndex+1,bgimagePatheStr.length);
+
+
+                    contentDiv.style["background-image"] = "url(/Path/fodder/"+bgimageName+")";
+                    // xmlSDoc.getElementsByTagName("bgimage")[0].textContent;
+                    contentDiv.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+                    // contentDiv.style.backgroundSize = "100% 100%";
+                    contentDiv.style.backgroundSize = "cover";
+                }
+
+                //layout xml片段
+                var layoutXmlDoc;
+
+                //layout div id
+                var layoutDivId;
+
+                //显示xml字符串所存储的数据内容字符串
+                var appendLayoutDivStr = "";
+
+                //添加关闭按钮
+                // appendLayoutDivStr = appendLayoutDivStr + "<div style=\"text-align: left; cursor: default; height: 40px;\">" +
+                // "<input type=\"button\" style=\"font-size: 16px;\" onclick=\"closeDiv('backgroundDiv','contentDiv')\" value=\"关闭\">" +
+                // "</div>";
+
+                //最长播放显示时长
+                var maxSumTimeLength = 0;
+                //记录最长播放显示时长
+                for (var i = 0; i < xmlSDoc.getElementsByTagName("layout").length; i++) {
+                    //将整个xml以layout分割成若干个layout xml片段
+                    //convert xml object to string (将xml对象转换成字符串)
+                    var layoutXmlDocStr = (new XMLSerializer()).serializeToString(xmlSDoc.getElementsByTagName("layout")[i]);
+                    // layoutXmlDoc = loadXmlString("<layout>" + xmlSDoc.getElementsByTagName("layout")[i].textContent + "</layout>");
+                    // layoutXmlDoc = loadXmlString(xmlSDoc.getElementsByTagName("layout")[i].textContent);
+                    var layoutXmlDoc = loadXmlString(layoutXmlDocStr);
+
+                    //当前layout需要播放显示的总时长（非ftp链接的视频内容播放时长除外）
+                    var sumTimeLength = 0;
+                    for (var j = 0; j < layoutXmlDoc.getElementsByTagName("contents").length; j++) {
+                        if(layoutXmlDoc.getElementsByTagName("fileproterty")[j].textContent == "video"){//视频内容
+                            var videoPatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[j].textContent;
+                            var endIndex = videoPatheStr.indexOf(":");
+                            var protocolName = videoPatheStr.substring(0,endIndex);
+                            if(protocolName != "ftp") { //只取ftp 视频文件
+                                continue;
+                            }
+                        }
+                        sumTimeLength = sumTimeLength + parseInt(layoutXmlDoc.getElementsByTagName("timelength")[j].textContent,10) * parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[j].textContent,10);
+                    }
+                    if (sumTimeLength > maxSumTimeLength) {
+                        //记录最大播放显示总时长
+                        maxSumTimeLength = sumTimeLength;
+                    }
+                    //初始化定时器编号数组，记录每个layout的定时器，可用于取消定时
+                    intervalIds[i] = 0;//定时器编号数组，记录每个layout的setInterval定时器，可用于取消定时
+                    timeoutIds[i] = 0;//定时器编号数组，记录每个layout的setTimeout定时器，可用于取消定时
+                }
+                if(maxSumTimeLength == 0){
+                    swal("当前版式播放显示时长为0，请选择其他版式！");
+                    return;
+                }
+                //显示xml所有 layout 首个contents内容
+                for (var i = 0; i < xmlSDoc.getElementsByTagName("layout").length; i++) {
+                    //将整个xml以layout分割成若干个layout xml片段
+                    //convert xml object to string (将xml对象转换成字符串)
+                    var layoutXmlDocStr = (new XMLSerializer()).serializeToString(xmlSDoc.getElementsByTagName("layout")[i]);
+                    // layoutXmlDoc = loadXmlString("<layout>" + xmlSDoc.getElementsByTagName("layout")[i].textContent + "</layout>");
+                    // layoutXmlDoc = loadXmlString(xmlSDoc.getElementsByTagName("layout")[i].textContent);
+                    var layoutXmlDoc = loadXmlString(layoutXmlDocStr);
+                    var layoutIndex = i;//当前layout 在xml中的位置，即第几个layout
+                    //div id设置为layout id
+                    layoutDivId = layoutXmlDoc.getElementsByTagName("id")[0].textContent;
+
+                    //layout div
+                    appendLayoutDivStr = appendLayoutDivStr + "<div id='"+layoutDivId+"'></div>";
+                    //根据layout xml片段显示相关数据内容
+                    //同个layout存在多个contents时循环显示
+                    //记录最长视频播放时长，当该时间段过后结束预览，关闭显示窗口
+                    //先显示同个layoout中第一个contents内容
+
+                    // appendLayoutDivStr = appendLayoutDivStr + "</div>";
+                    //显示控件
+                    $("#contentDiv",window.parent.document).append(appendLayoutDivStr);
+                    appendLayoutDivStr = "";
+
+                    //设置layout控件共同属性
+                    window.parent.document.getElementById(layoutDivId).style.position = "absolute";
+                    window.parent.document.getElementById(layoutDivId).style.width = layoutXmlDoc.getElementsByTagName("width")[0].textContent + "px";
+                    window.parent.document.getElementById(layoutDivId).style.height = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+                    //坐标
+                    window.parent.document.getElementById(layoutDivId).style.left = layoutXmlDoc.getElementsByTagName("x")[0].textContent + "px";
+                    window.parent.document.getElementById(layoutDivId).style.top = layoutXmlDoc.getElementsByTagName("y")[0].textContent + "px";
+
+                    if(layoutXmlDoc.getElementsByTagName("contents") != null){
+                        //显示layout内容
+                        if(layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "image")//图片内容
+                        {
+                            if (parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[0].textContent,10) != 0
+                                && parseInt(layoutXmlDoc.getElementsByTagName("timelength")[0].textContent,10) != 0)
+                            {
+
+                                //显示当前layout第一张图片
+                                if (window.parent.document.getElementById(layoutDivId) != null){
+                                    var contentsIndex = 0;
+                                    var imagePatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+                                    var startIndex = imagePatheStr.lastIndexOf("\/");
+                                    var imageName = imagePatheStr.substring(startIndex+1,imagePatheStr.length);
+
+                                    $("#"+layoutDivId,window.parent.document).append("<img src=\"/Path/fodder/"+imageName+ "\" id=\""+layoutDivId+"imageId\""
+                                        +" alt=\""+layoutXmlDoc.getElementsByTagName("contentsname")[contentsIndex].textContent+"\" width=\"100%\" height=\"100%\"/>"
+                                    );
+                                    //循环切换显示
+                                    cutoverImage(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[0].textContent,10));
+                                }
+                            }
+                        } else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "video") //视频内容
+                        {
+                            //显示当前layout第一个ftp链接视频内容
+                            for(var contentsIndex = 0; contentsIndex < layoutXmlDoc.getElementsByTagName("contents").length; contentsIndex++) {
+                                var videoPatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+                                var endIndex = videoPatheStr.indexOf(":");
+                                var protecolName = videoPatheStr.substring(0, endIndex);
+                                if (protecolName == "ftp") { //只显示ftp协议的contents视频内容
+                                    if (parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex].textContent, 10) != 0 && parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent, 10) != 0)
+                                    {
+                                        //接入vlc插件
+                                        var startIndex = videoPatheStr.lastIndexOf("\/");
+                                        var videoName = videoPatheStr.substring(startIndex + 1, videoPatheStr.length);
+                                        $("#" + layoutDivId, window.parent.document).append("<object type=\"application/x-vlc-plugin\" id=\"vlc\" width=\"100%\" height=\"100%\" >"
+                                            // +"<param name=\"mrl\" value=\""+layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent+"\"/>"
+                                            + "<param name=\"mrl\" value=\"\"/>"                        //指定要加载的视频的源位置（URL）
+                                            + "<param name=\"volume\" value=\"100\" />"                  //以百分比指定初始音频音量。默认值：100
+                                            + "<param name=\"autoplay\" value=\"true\"/>"               //插件是否在加载时开始播放。默认值：true
+                                            + "<param name=\"loop\" value=\"false\" />"                 //指定视频是否在最后循环。默认值：false
+                                            + "<param name=\"fullscreen\" value=\"false\" />"           //指定用户是否可以切换到全屏模式。默认值：true
+                                            + "<param name=\"branding\" value=\"false\" />"             //指定是否应在Web插件的绘图上下文中显示VLC商标。默认值：true
+                                            + "</object>"
+                                        );
+
+                                        //设置vlc宽高,否则可能不显示
+                                        // window.parent.document.getElementById("vlc").width = "100%";
+                                        // window.parent.document.getElementById("vlc").height = "100%";
+
+                                        window.parent.document.getElementById("vlc").width = layoutXmlDoc.getElementsByTagName("width")[0].textContent + "px";
+                                        window.parent.document.getElementById("vlc").height = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+
+                                        //获取vlc插件DOM对象
+                                        var vlc = window.parent.document.getElementById("vlc");
+                                        // //停止播放当前视频
+                                        // vlc.playlist.stop();
+                                        // //清空视频播放列表
+                                        // vlc.playlist.items.clear();
+                                        //将视频添加到播放列表
+                                        var videoNumber = vlc.playlist.add("/Path/fodder/" + videoName);
+                                        //播放该视频
+                                        vlc.playlist.playItem(videoNumber);
+
+                                        //视频拉伸满div容器播放
+                                        //获取并设置要在视频屏幕中使用的纵横比。该属性将字符串作为输入值
+                                        // vlc.video.aspectRatio = layoutXmlDoc.getElementsByTagName("width")[0].textContent +":" + layoutXmlDoc.getElementsByTagName("height")[0].textContent;
+                                        // window.parent.document.getElementById("vlc").mrl = "/Path/fodder/" + videoName;
+
+                                        //循环切换视频
+                                        cutoverVideo(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex].textContent,10));
+                                        break;
+                                    }
+                                }
+                            }
+                        } else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "text") //静态文本内容
+                        {
+                            cutoverStaticText(layoutDivId,layoutXmlDoc,0,maxSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[0].textContent,10));
+
+                        }else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "rollmsg") //滚动文本内容
+                        {
+                            cutoverRollmsg(layoutDivId,layoutXmlDoc,layoutIndex,0,maxSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[0].textContent,10));
+
+                        }else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "date")//数字时钟 显示当前时间
+                        {
+                            showLocalDateTime(layoutDivId,layoutXmlDoc,layoutIndex,0,maxSumTimeLength);
+                        }else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "anaogclock")//模拟时钟 显示当前时间
+                        {
+                            showAnaogclock(layoutDivId,layoutXmlDoc,0,maxSumTimeLength);
+                        }/*else if (layoutXmlDoc.getElementsByTagName("fileproterty")[0].textContent == "flash")//flash内容  后期不打算支持
+                        {
+                            cutoverFlash(layoutDivId,layoutXmlDoc,0,maxSumTimeLength);
+                        }*/
+                    }
+                }
+                toggleFullScreen(window.parent.document.getElementById("contentDiv"));
+                // 定时器 设置延迟多少毫秒后执行某函数  最大播放显示时长maxSumTimeLength秒后关闭预览窗口
+                timeoutID = setTimeout(function(){
+                    // $("#contentDiv",window.parent.document).empty();
+                    // closeDiv("backgroundDiv","contentDiv");
+                    //最大播放显示时长后，若仍处于全屏状态则退出全屏
+                    if (!((window.parent.document.fullScreenElement !== undefined && window.parent.document.fullScreenElement === null)
+                        || (window.parent.document.msFullscreenElement !== undefined && window.parent.document.msFullscreenElement === null)
+                        || (window.parent.document.mozFullScreenElement !== undefined && !window.parent.document.mozFullScreenElement === null)
+                        || (window.parent.document.webkitFullscreenElement !== undefined && window.parent.document.webkitFullscreenElement === null))) {
+                        toggleFullScreen(window.parent.document.getElementById("contentDiv"));
+                        swal("当前版式预览结束");
+                    }
+                }, (maxSumTimeLength)*1000);
+            }
+
+        }
     });
 });
+
+//切换全屏状态
+function toggleFullScreen(elem) {
+    // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    if ((window.parent.document.fullScreenElement !== undefined && window.parent.document.fullScreenElement === null) || (window.parent.document.msFullscreenElement !== undefined && window.parent.document.msFullscreenElement === null) || (window.parent.document.mozFullScreenElement !== undefined && !window.parent.document.mozFullScreenElement === null) || (window.parent.document.webkitFullscreenElement !== undefined && window.parent.document.webkitFullscreenElement === null)) {
+        if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    } else {
+        if (window.parent.document.cancelFullScreen) {
+            window.parent.document.cancelFullScreen();
+        } else if (window.parent.document.mozCancelFullScreen) {
+            window.parent.document.mozCancelFullScreen();
+        } else if (window.parent.document.webkitCancelFullScreen) {
+            window.parent.document.webkitCancelFullScreen();
+        } else if (window.parent.document.msExitFullscreen) {
+            window.parent.document.msExitFullscreen();
+        }
+        //退出全屏 取消定时器
+        clearTimeout(timeoutID);
+        for(var i = 0; i < intervalIds.length; i ++){
+            if(intervalIds[i] != 0){
+                clearInterval(intervalIds[i]);
+            }
+        }
+        for(var i = 0; i < timeoutIds.length; i ++){
+            if(timeoutIds[i] != 0){
+                clearTimeout(timeoutIds[i]);
+            }
+        }
+    }
+}
+//双击退出全屏
+//给父窗体中的内容div contentDiv 绑定一个双击的监听事件
+window.parent.document.getElementById('contentDiv').addEventListener('dblclick', function() {
+    toggleFullScreen(window.parent.document.getElementById("contentDiv"));
+    swal("当前版式预览已退出");
+});
+
+    //全屏与退出全屏都会触发fullscreenchange/webkitfullscreenchange/mozfullscreenchange事件，
+    // fullscreenchange、webkitfullscreenchange以及mozfullscreenchange 对应谷歌、火狐等浏览器的全屏相关事件，但对于IE无效
+    //为全屏的元素绑定fullscreenchange/webkitfullscreenchange/mozfullscreenchange的监听事件
+    $(window.parent.document).bind(
+        'fullscreenchange webkitfullscreenchange mozfullscreenchange',
+        function(){
+            // 可以在这里添加监听全屏的方法
+            if ((window.parent.document.fullScreenElement !== undefined && window.parent.document.fullScreenElement === null)
+                || (window.parent.document.msFullscreenElement !== undefined && window.parent.document.msFullscreenElement === null)
+                || (window.parent.document.mozFullScreenElement !== undefined && !window.parent.document.mozFullScreenElement === null)
+                || (window.parent.document.webkitFullscreenElement !== undefined && window.parent.document.webkitFullscreenElement === null))
+            {
+                //获取vlc插件DOM对象
+                var vlc = window.parent.document.getElementById("vlc");
+                //停止播放当前视频
+                vlc.playlist.stop();
+                //清空视频播放列表
+                vlc.playlist.items.clear();
+
+                //退出全屏后清空并隐藏内容
+                if (!window.parent.document.cancelFullScreen) {
+                    $("#contentDiv",window.parent.document).empty();
+                    closeDiv("backgroundDiv","contentDiv");
+                } else if (!window.parent.document.mozCancelFullScreen) {
+                    $("#contentDiv",window.parent.document).empty();
+                    closeDiv("backgroundDiv","contentDiv");
+                } else if (!window.parent.document.webkitCancelFullScreen) {
+                    $("#contentDiv",window.parent.document).empty();
+                    closeDiv("backgroundDiv","contentDiv");
+                } else if (!window.parent.document.msExitFullscreen) {
+                    $("#contentDiv",window.parent.document).empty();
+                    closeDiv("backgroundDiv","contentDiv");
+                }
+
+                //退出全屏 取消定时器
+                clearTimeout(timeoutID);
+                for(var i = 0; i < intervalIds.length; i ++){
+                    if(intervalIds[i] != 0){
+                        clearInterval(intervalIds[i]);
+                    }
+                }
+                for(var i = 0; i < timeoutIds.length; i ++){
+                    if(timeoutIds[i] != 0){
+                        clearTimeout(timeoutIds[i]);
+                    }
+                }
+            }
+        }
+    );
+    //IE 生效 监听退出全屏
+    window.onresize = function() {
+        // ie使用这个来判断
+        if(!!window.ActiveXObject || "ActiveXObject" in window){
+            var fullScreen = parent.document.webkitIsFullScreen || parent.document.fullscreen || parent.document.mozFullScreen || parent.document.msFullscreenElement;
+
+            if(fullScreen == null) {
+                // 退出全屏后执行这里
+
+                //获取vlc插件DOM对象
+                var vlc = window.parent.document.getElementById("vlc");
+                if(vlc != null){
+                    //停止播放当前视频
+                    vlc.playlist.stop();
+                    //清空视频播放列表
+                    vlc.playlist.items.clear();
+                }
+
+                //退出全屏 取消定时器
+                clearTimeout(timeoutID);
+                for(var i = 0; i < intervalIds.length; i ++){
+                    if(intervalIds[i] != 0){
+                        clearInterval(intervalIds[i]);
+                    }
+                }
+                for(var i = 0; i < timeoutIds.length; i ++){
+                    if(timeoutIds[i] != 0){
+                        clearTimeout(timeoutIds[i]);
+                    }
+                }
+                $("#contentDiv",window.parent.document).empty();
+                closeDiv("backgroundDiv","contentDiv");
+            }
+        }
+    }
+
+/*function toggleFullScreen(elem) {
+    // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+        if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    } else {
+        // debugger;
+        //test
+        $("#contentDiv",window.parent.document).empty();
+        $("#contentDiv",window.parent.document).hide();
+        closeDiv("backgroundDiv","contentDiv");
+
+        if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+
+    }
+}*/
+
+
+/*
+循环切换显示图片
+layoutDivId : 当前layout的容器div的id
+layoutXmlDoc : 当前layout的xml片段对象
+layoutIndex : 当前layout在xml文件中的位置，即当前是第几个layout
+contentsIndex : 当前layout显示的内容contents的下标(从零开始计)
+maxSumTimeLength : 当前版式播放显示最长时长
+playTimes : 当前contents播放显示次数
+*/
+//循环切换显示图片  考虑播放次数
+function cutoverImage(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength,playTimes) {
+    //在最大播放显示时长内切换显示
+    //当前版式剩余总显示时长
+    var reSumTimeLength = maxSumTimeLength;
+    //当前contents内容剩余显示次数
+    var rePlayTimes = playTimes;
+    if (reSumTimeLength > 0){
+        //清空内容
+        // $("#"+layoutDivId,window.parent.document).empty();
+        if (window.parent.document.getElementById(layoutDivId) != null) {
+            //循环切换显示
+            timeoutIds[layoutIndex] = window.setTimeout(function () {
+                //剩余最大播放显示时长
+                reSumTimeLength -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent, 10);
+                //显示一次，则剩余显示次数减少一次
+                rePlayTimes--;
+                //判断当前显示的是否为最后一个的contents内容，且播放次数是否为0，如果是，则下一个显示的内容切换到第一个contents内容
+                if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length - 1 && rePlayTimes == 0) {
+                    contentsIndex = -1;
+                }
+
+                var imagePatheStr, startIndex, imageName;
+                if (rePlayTimes == 0) {//当前播放次数为0时切换显示下一个contents
+                    var nextContentsIndex = contentsIndex + 1;
+                    imagePatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[nextContentsIndex].textContent;
+                    startIndex = imagePatheStr.lastIndexOf("\/");
+                    imageName = imagePatheStr.substring(startIndex + 1, imagePatheStr.length);
+                    window.parent.document.getElementById(layoutDivId + "imageId").src = "/Path/fodder/" + imageName;
+                    cutoverImage(layoutDivId, layoutXmlDoc, layoutIndex, nextContentsIndex, reSumTimeLength, parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[nextContentsIndex].textContent, 10));
+                } else {//当前播放次数不为0时显示当前contents
+                    imagePatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+                    startIndex = imagePatheStr.lastIndexOf("\/");
+                    imageName = imagePatheStr.substring(startIndex + 1, imagePatheStr.length);
+                    window.parent.document.getElementById(layoutDivId + "imageId").src = "/Path/fodder/" + imageName;
+                    cutoverImage(layoutDivId, layoutXmlDoc, layoutIndex, contentsIndex, reSumTimeLength, rePlayTimes);
+                }
+            }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent, 10) * 1000);
+        }
+
+        // if (window.parent.document.getElementById(layoutDivId) != null){
+        //
+        //     // $("#"+layoutDivId,window.parent.document).append("<img src=\""+layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent+ "\""
+        //     //     +" alt=\""+layoutXmlDoc.getElementsByTagName("contentsname")[contentsIndex].textContent+"\" width=\"100%\" height=\"100%\"/>"
+        //     // );
+        //
+        //     var imagePatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+        //     var startIndex = imagePatheStr.lastIndexOf("\/");
+        //     var imageName = imagePatheStr.substring(startIndex+1,imagePatheStr.length);
+        //
+        //     $("#"+layoutDivId,window.parent.document).append("<img src=\"/Path/fodder/"+imageName+ "\""
+        //         +" alt=\""+layoutXmlDoc.getElementsByTagName("contentsname")[contentsIndex].textContent+"\" width=\"100%\" height=\"100%\"/>"
+        //     );
+        //
+        //
+        //
+        //     //循环切换显示
+        //     timeoutIds[layoutIndex] = window.setTimeout(function(){
+        //         //剩余最大播放显示时长
+        //         reSumTimeLength  -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10);
+        //         //显示一次，则剩余显示次数减少一次
+        //         rePlayTimes--;
+        //         //判断当前显示的是否为最后一个的contents内容，且播放次数是否为0，如果是，则下一个显示的内容切换到第一个contents内容
+        //         if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length-1 && rePlayTimes == 0){
+        //             contentsIndex = -1;
+        //         }
+        //
+        //         if (rePlayTimes == 0) {//当前播放次数为0时切换显示下一个contents
+        //             cutoverImage(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex+1,reSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex+1].textContent,10));
+        //         }else {//当前播放次数不为0时显示当前contents
+        //             cutoverImage(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,reSumTimeLength,rePlayTimes);
+        //         }
+        //     }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10)*1000);
+        // }
+
+    }
+}
+
+//循环切换显示视频
+function cutoverVideo(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength,playTimes) {
+    //在最大播放显示时长内切换显示
+    //当前版式剩余总显示时长
+    var reSumTimeLength = maxSumTimeLength;
+    //当前contents内容剩余显示次数
+    var rePlayTimes = playTimes;
+    if (reSumTimeLength > 0){
+        //显示内容
+        if (window.parent.document.getElementById(layoutDivId) != null) {
+            //定时循环切换显示
+            timeoutIds[layoutIndex] = window.setTimeout(function () {
+                if (window.parent.document.getElementById(layoutDivId) != null) {
+                    //减去当前视频已播放时长，剩余最大播放显示时长
+                    reSumTimeLength -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent, 10);
+                    //当前视频剩余显示次数减少一次
+                    rePlayTimes--;
+
+                    //获取vlc插件DOM对象
+                    var vlc = window.parent.document.getElementById("vlc");
+                    //停止播放当前视频
+                    vlc.playlist.stop();
+                    //清空视频播放列表
+                    vlc.playlist.items.clear();
+
+                    //判断当前显示的是否为最后一个的contents内容，且播放次数是否为0，如果是，则下一个显示的内容切换到第一个contents内容为ftp协议的视频
+                    if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length - 1 && rePlayTimes == 0) {
+                        contentsIndex = -1;
+                    }
+                    var videoPatheStr, startIndex, videoName, videoNumber;
+                    if (rePlayTimes == 0) {//当前播放次数为0时切换显示下一个contents
+                        for (var nextContentsIndex = contentsIndex + 1; nextContentsIndex < layoutXmlDoc.getElementsByTagName("contents").length; nextContentsIndex++) {
+                            videoPatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[nextContentsIndex].textContent;
+                            var endIndex = videoPatheStr.indexOf(":");
+                            var protecolName = videoPatheStr.substring(0, endIndex);
+                            if (protecolName == "ftp") { //只显示ftp协议的contents视频内容
+                                if (parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[nextContentsIndex].textContent, 10) != 0 && parseInt(layoutXmlDoc.getElementsByTagName("timelength")[nextContentsIndex].textContent, 10) != 0) {
+                                    //显示下一个ftp协议的contents视频内容
+                                    startIndex = videoPatheStr.lastIndexOf("\/");
+                                    videoName = videoPatheStr.substring(startIndex + 1, videoPatheStr.length);
+                                    //将视频添加到播放列表
+                                    videoNumber = vlc.playlist.add("/Path/fodder/" + videoName);
+                                    //播放该视频
+                                    vlc.playlist.playItem(videoNumber);
+                                    //循环切换
+                                    cutoverVideo(layoutDivId, layoutXmlDoc, layoutIndex, nextContentsIndex, reSumTimeLength, parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[nextContentsIndex].textContent, 10));
+                                    break;
+                                }
+                            }
+                        }
+                    } else {//当前播放次数不为0时显示当前contents
+                        videoPatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+                        //显示下一个ftp协议的contents视频内容
+                        startIndex = videoPatheStr.lastIndexOf("\/");
+                        videoName = videoPatheStr.substring(startIndex + 1, videoPatheStr.length);
+                        //将视频添加到播放列表
+                        videoNumber = vlc.playlist.add("/Path/fodder/" + videoName);
+                        //播放该视频
+                        vlc.playlist.playItem(videoNumber);
+                        //循环切换
+                        cutoverVideo(layoutDivId, layoutXmlDoc, layoutIndex, contentsIndex, reSumTimeLength, rePlayTimes);
+                    }
+                }
+            }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent, 10) * 1000);
+        }
+        // //清空内容
+        // // $("#"+layoutDivId,window.parent.document).empty();
+        // // $("#"+layoutDivId,window.parent.document).load();
+        //
+        // //显示内容
+        // if (window.parent.document.getElementById(layoutDivId) != null){
+        //     if (layoutXmlDoc.getElementsByTagName("contents")[contentsIndex] != null){
+        //         var videoPatheStr = layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent;
+        //         var endIndex = videoPatheStr.indexOf(":");
+        //         var protecolName = videoPatheStr.substring(0,endIndex);
+        //         if(protecolName == "ftp"){ //只显示ftp协议的contents视频内容
+        //             if (parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex].textContent,10) != 0 && parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10) != 0){
+        //                 //接入vlc插件
+        //                 var startIndex = videoPatheStr.lastIndexOf("\/");
+        //                 var videoName = videoPatheStr.substring(startIndex+1,videoPatheStr.length);
+        //                 $("#"+layoutDivId,window.parent.document).append("<object type=\"application/x-vlc-plugin\" id=\"vlc\" width=\"100%\" height=\"100%\" >"
+        //                     // +"<param name=\"mrl\" value=\""+layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent+"\"/>"
+        //                     +"<param name=\"mrl\" value=\"/Path/fodder/"+videoName+"\"/>"
+        //                     +"<param name=\"volume\" value=\"50\" />"
+        //                     +"<param name=\"autoplay\" value=\"true\"/>"
+        //                     +"<param name=\"loop\" value=\"false\" />"
+        //                     +"<param name=\"fullscreen\" value=\"false\" />"
+        //                     +"</object>"
+        //                 );
+        //                 console.log("vlc.volume:"+window.parent.document.getElementById('vlc').volume);
+        //                 window.parent.document.getElementById('vlc').volume = "100";
+        //                 console.log("vlc.volume:"+window.parent.document.getElementById('vlc').volume);
+        //
+        //                 // if(window.parent.document.getElementById('vlc').mrl != "/Path/fodder/b90dd586-14e6-4d2e-af18-69a239cd2075.mp4"){
+        //                 //     window.parent.document.getElementById('vlc').mrl = "/Path/fodder/b90dd586-14e6-4d2e-af18-69a239cd2075.mp4";
+        //                 // }else{
+        //                 window.parent.document.getElementById('vlc').mrl = "/Path/fodder/" + videoName;
+        //                 // }
+        //                 // $("#"+layoutDivId,window.parent.document).append(
+        //                 //     "<embed type=\"application/x-vlc-plugin\" id=\"vlc2\" name=\"vlc\" width=\"100%\" height=\"100%\" autoplay=\"true\" src=\"/Path/fodder/"+videoName+"\"/>"
+        //                 // );
+        //                 // window.parent.document.getElementById("vlc").video.toggleFullscreen();
+        //                 //设置vlc宽高,否则可能不显示
+        //                 // window.parent.document.getElementById("vlc").width = "100%";
+        //                 // window.parent.document.getElementById("vlc").height = "100%";
+        //                 // window.parent.document.getElementById("vlc").playlist.clear();
+        //                 // var emp = window.parent.document.getElementById("vlc").playlist.add("/Path/fodder/b90dd586-14e6-4d2e-af18-69a239cd2075.mp4");
+        //                 // window.parent.document.getElementById("vlc").playlist.playItem(emp);
+        //                 // console.log(window.parent.document.getElementById("vlc").video.height);
+        //                 // console.log("window.parent.document.getElementById(\"vlc\").playlist.items:");
+        //
+        //                 // console.log(window.parent.document.getElementById("vlc").playlist.items);
+        //                 window.parent.document.getElementById("vlc").width = layoutXmlDoc.getElementsByTagName("width")[0].textContent + "px";
+        //                 window.parent.document.getElementById("vlc").height = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+        //
+        //                 // window.parent.document.getElementById(layoutDivId).style.top = layoutXmlDoc.getElementsByTagName("y")[0].textContent + "px";
+        //
+        //             }
+        //         }else{
+        //             //跳到下一个contents显示
+        //             cutoverVideo(layoutDivId,layoutXmlDoc,contentsIndex+1,reSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex+1].textContent,10));
+        //         }
+        //     }
+        // }
+    }
+}
+
+//循环切换显示静态文本
+function cutoverStaticText(layoutDivId,layoutXmlDoc,contentsIndex,maxSumTimeLength,playTimes) {
+    //在最大播放显示时长内切换显示
+    //当前版式剩余总显示时长
+    var reSumTimeLength = maxSumTimeLength;
+    //当前contents内容剩余显示次数
+    var rePlayTimes = playTimes;
+    if (reSumTimeLength > 0){
+        // //换行符替换成br标签 xml文件中没有换行符
+        // var replaceRegex = /(\r|\r|\r|)/g;
+        // var text = layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent;
+        // text = text || '';
+
+        //清空内容
+        $("#"+layoutDivId,window.parent.document).empty();
+        //设置contents的样式
+        setContentsStyle(layoutDivId,layoutXmlDoc,contentsIndex);
+        //显示内容
+        if (window.parent.document.getElementById(layoutDivId) != null){
+            // $("#"+layoutDivId,window.parent.document).append("<p id=\""+layoutDivId+"StaticText\">" + text.replace(replaceRegex, "<br/>") + "</p>");
+            // $("#"+layoutDivId,window.parent.document).append("<p id=\""+layoutDivId+"StaticText\">" + layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent + "</p>");
+            $("#"+layoutDivId,window.parent.document).append("<label>" + layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent + "</label>");
+
+
+            //设置 div p标签中的内容换行，label标签自动换行
+            // window.parent.document.getElementById(layoutDivId+"StaticText").style["white-space"] = " pre-wrap"; /*只对中文起作用，强制换行*/
+            // window.parent.document.getElementById(layoutDivId+"StaticText").style["word-wrap"] = " break-word"; /*--只对英文起作用，以单词作为换行依据*/
+            //循环切换显示
+            // window.setTimeout(function () {
+            //     //剩余最大播放显示时长
+            //     reSumTimeLength  -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10);
+            //     //显示一次，则剩余显示次数减少一次
+            //     rePlayTimes--;
+            //     //判断当前显示的是否为最后一个的contents内容，且播放次数是否为0，如果是，则下一个显示的内容切换到第一个contents内容
+            //     if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length-1 && rePlayTimes == 0){
+            //         contentsIndex = -1;
+            //     }
+            //     if (rePlayTimes == 0) {//当前播放次数为0时切换显示下一个contents
+            //         cutoverStaticText(layoutDivId,layoutXmlDoc,contentsIndex+1,reSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex+1].textContent,10));
+            //     }else {//当前播放次数不为0时显示当前contents
+            //         cutoverStaticText(layoutDivId,layoutXmlDoc,contentsIndex,reSumTimeLength,rePlayTimes);
+            //     }
+            // }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10)*1000);
+        }
+
+    }
+}
+
+//循环切换显示滚动文本
+function cutoverRollmsg(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength,playTimes) {
+    //在最大播放显示时长内切换显示
+    //当前版式剩余总显示时长
+    var reSumTimeLength = maxSumTimeLength;
+    //当前contents内容剩余显示次数
+    var rePlayTimes = playTimes;
+    if (reSumTimeLength > 0){
+        //清空内容
+        $("#"+layoutDivId,window.parent.document).empty();
+        //设置contents的样式
+        setContentsStyle(layoutDivId,layoutXmlDoc,contentsIndex);
+        //显示内容
+        if (window.parent.document.getElementById(layoutDivId) != null){
+            // if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 3) {//3 从下到上滚动
+            //     //上下滚动 多行文字label自动换行
+            //     $("#"+layoutDivId,window.parent.document).append("<marquee  id =\""+layoutDivId+"rollmsgId\" width = \"100%\"  height = \"100%\"  scrollamount = \""+layoutXmlDoc.getElementsByTagName("txtspeed")[contentsIndex].textContent+"\">"
+            //         +"<label>"+layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent+"</label>"+"</marquee>"
+            //     );
+            // }else{//左右滚动
+            //     //单行文字
+            //     window.parent.document.getElementById(layoutDivId).style["line-height"] = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+            //
+            //     $("#"+layoutDivId,window.parent.document).append("<marquee  id =\""+layoutDivId+"rollmsgId\" width = \"100%\"  height = \"100%\" scrolldelay=\"20\" scrollamount = \""+"1"+"\">"
+            //         +layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent+"</marquee>"
+            //     );
+            // }
+            //
+            // if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 1){//1 从右到左滚动
+            //     window.parent.document.getElementById(layoutDivId+"rollmsgId").direction = "left";
+            // }else if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 2) {//2 从左到右滚动
+            //     window.parent.document.getElementById(layoutDivId+"rollmsgId").direction = "right";
+            // }else if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 3) {//3 从下到上滚动
+            //     window.parent.document.getElementById(layoutDivId+"rollmsgId").direction = "up";
+            // }
+
+
+            //新方法（旧方法在IE浏览器上会出现明显卡顿现象，且marquee已弃用，不推荐使用）
+            //设置控件layout div样式
+            //超出范围的内容隐藏
+            window.parent.document.getElementById(layoutDivId).style["overflow"] = "hidden";
+
+            if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 3) {//3 从下到上滚动
+                //设置控件layout div样式
+                /*flex 布局*/
+                window.parent.document.getElementById(layoutDivId).style["display"] = "flex";
+                /*实现水平居中*/
+                window.parent.document.getElementById(layoutDivId).style["justify-content"] = "center";
+                //显示内容
+                $("#"+layoutDivId,window.parent.document).append("<div id=\""+layoutDivId+"rollmsgId\" style=\"position:absolute; top:100%; \">"+layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent+"</div>");
+                //从下到上滚动
+                messageScroll(layoutXmlDoc,layoutDivId,layoutIndex,contentsIndex,"bottomTotop");
+            }else {
+                //文字在div垂直居中
+                window.parent.document.getElementById(layoutDivId).style["line-height"] = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+
+                if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 1){//1 从右到左滚动
+                    //显示内容
+                    $("#"+layoutDivId,window.parent.document).append("<div id=\""+layoutDivId+"rollmsgId\" style=\"position:absolute; left:100%; white-space:nowrap;\">"+layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent+"</div>");
+                    //从右到左滚动
+                    messageScroll(layoutXmlDoc,layoutDivId,layoutIndex,contentsIndex,"rightToLeft");
+                }else if (parseInt(layoutXmlDoc.getElementsByTagName("txtmarquee")[contentsIndex].textContent,10) == 2) {//2 从左到右滚动
+                    //显示内容
+                    $("#"+layoutDivId,window.parent.document).append("<div id=\""+layoutDivId+"rollmsgId\" style=\"position:absolute; right:100%; white-space:nowrap;\">"+layoutXmlDoc.getElementsByTagName("txtcontents")[contentsIndex].textContent+"</div>");
+                    //从左到右滚动
+                    messageScroll(layoutXmlDoc,layoutDivId,layoutIndex,contentsIndex,"leftToRight");
+                }
+            }
+
+
+
+            // window.setTimeout(function(){
+            //     //剩余最大播放显示时长
+            //     reSumTimeLength  -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10);
+            //     //显示一次，则剩余显示次数减少一次
+            //     rePlayTimes--;
+            //     //判断当前显示的是否为最后一个的contents内容，且播放次数是否为0，如果是，则下一个显示的内容切换到第一个contents内容
+            //     if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length-1 && rePlayTimes == 0){
+            //         contentsIndex = -1;
+            //     }
+            //     if (rePlayTimes == 0) {//当前播放次数为0时切换显示下一个contents
+            //         cutoverRollmsg(layoutDivId,layoutXmlDoc,contentsIndex+1,reSumTimeLength,parseInt(layoutXmlDoc.getElementsByTagName("playtimes")[contentsIndex+1].textContent,10));
+            //     }else {//当前播放次数不为0时显示当前contents
+            //         cutoverRollmsg(layoutDivId,layoutXmlDoc,contentsIndex,reSumTimeLength,rePlayTimes);
+            //     }
+            // }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10)*1000);
+        }
+
+    }
+}
+    //文本滚动
+    function messageScroll(layoutXmlDoc,layoutDivId,layoutIndex,contentsIndex,direction){
+        if (direction == "bottomTotop") {//3 从下到上滚动
+            var rollmsgHeight = $("#"+layoutDivId+"rollmsgId",window.parent.document).height();
+            var layoutDivHeight = $("#"+layoutDivId,window.parent.document).height();
+            var i = layoutDivHeight;
+
+        }else{
+            var rollmsgWidth = $("#"+layoutDivId+"rollmsgId",window.parent.document).width();
+            var layoutDivWidth = $("#"+layoutDivId,window.parent.document).width();
+            var i = layoutDivWidth;
+        }
+
+
+        //定时每1/50秒滚动一次，每次滚动长度为 txtspeed * 时间间隔1/50即0.02 个像素
+        intervalIds[layoutIndex] = setInterval(function(){
+            i -= parseInt(layoutXmlDoc.getElementsByTagName("txtspeed")[contentsIndex].textContent,10) * 0.02;
+            if(direction == "bottomTotop"){//3 从下到上滚动
+                if(i <= -rollmsgHeight){
+                    i = layoutDivHeight;
+                }else{
+                    window.parent.document.getElementById(layoutDivId+"rollmsgId").style.top = i + 'px';
+                }
+            }else{
+                if(i <= -rollmsgWidth){
+                    i = layoutDivWidth;
+                }else{
+                    if(direction == "rightToLeft"){ //从右到左滚动
+                        window.parent.document.getElementById(layoutDivId+"rollmsgId").style.left = i + 'px';
+                    }else if(direction == "leftToRight"){//从左到右滚动
+                        window.parent.document.getElementById(layoutDivId+"rollmsgId").style.right = i + 'px';
+                    }
+                }
+            }
+        },20);
+
+    }
+/*//循环切换显示flash
+function cutoverFlash(layoutDivId,layoutXmlDoc,contentsIndex,maxSumTimeLength) {
+    //在最大播放显示时长内切换显示
+    var reSumTimeLength = maxSumTimeLength;
+    if (reSumTimeLength > 0){
+        //显示内容
+        $("#"+layoutDivId,window.parent.document).empty();
+        $("#"+layoutDivId,window.parent.document).append("<embed src=\""+layoutXmlDoc.getElementsByTagName("getcontents")[contentsIndex].textContent+"\""
+            + " type=\"application/x-shockwave-flash\" quality=\"high\" />"
+        );
+        //循环切换显示
+        window.setTimeout(function(){
+            //剩余最大播放显示时长
+            reSumTimeLength  -= parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10);
+
+            //判断当前显示的是否为最后一个的contents内容，如果是，则下一个显示的内容切换到第一个contents内容
+            if (contentsIndex == layoutXmlDoc.getElementsByTagName("contents").length-1){
+                contentsIndex = -1;
+            }
+
+            //循环切换显示
+            cutoverFlash(layoutDivId,layoutXmlDoc,contentsIndex+1,reSumTimeLength);
+        }, parseInt(layoutXmlDoc.getElementsByTagName("timelength")[contentsIndex].textContent,10)*1000);
+    }
+}*/
+//显示模拟时钟
+function showAnaogclock(layoutDivId,layoutXmlDoc,contentsIndex,maxSumTimeLength) {
+    //在最大播放显示时长内切换显示
+    //当前版式剩余总显示时长
+    var reSumTimeLength = maxSumTimeLength;
+    // //当前contents内容剩余显示次数
+    // var rePlayTimes = playTimes;
+    if (reSumTimeLength > 0){
+        //清空内容
+        $("#"+layoutDivId,window.parent.document).empty();
+        //设置contents的样式
+        setContentsStyle(layoutDivId,layoutXmlDoc,contentsIndex);
+        //显示内容
+        //时钟居中
+        window.parent.document.getElementById(layoutDivId).style["display"] =  "-webkit-flex";
+        window.parent.document.getElementById(layoutDivId).style["justify-content"] =  "center";
+        window.parent.document.getElementById(layoutDivId).style["jalign-items"] =  "center";
+        var width = layoutXmlDoc.getElementsByTagName("width")[contentsIndex].textContent;
+        var height = layoutXmlDoc.getElementsByTagName("height")[contentsIndex].textContent;
+        $("#"+layoutDivId,window.parent.document).thooClock({
+            size: (width < height) ? width : height,//时钟大小，宽高一样
+            sweepingMinutes:true,//扫描分针
+            sweepingSeconds:true,//扫描秒针
+            showNumerals:true,//是否显示数字
+            dialColor:(layoutXmlDoc.getElementsByTagName("watchdialcolor")[contentsIndex].textContent).replace("0x", "#"),//前景色，即表盘刻度颜色
+            hourHandColor:(layoutXmlDoc.getElementsByTagName("hourhandcolor")[contentsIndex].textContent).replace("0x", "#"),//时钟时针的颜色。
+            minuteHandColor:(layoutXmlDoc.getElementsByTagName("minutehandcolor")[contentsIndex].textContent).replace("0x", "#"),//时钟分针的颜色。
+            secondHandColor:(layoutXmlDoc.getElementsByTagName("secondhandcolor")[contentsIndex].textContent).replace("0x", "#")//时钟秒针的颜色。
+        });
+    }
+}
+
+//显示数字时钟
+//获得相应格式的当前系统时间
+function getLocaleTime(date,datestyle,week,weekstyle,time,timestyle,multirow,today)
+{
+    // var today;
+    // today = new Date();
+    var str = "";
+    var dateStr = "";
+    var weekStr = "";
+    var timeStr = "";
+    if (date != 0){ //显示年月日
+        //年
+        var yyyy = today.getFullYear();
+        //月
+        var MM = today.getMonth()+1;
+        if(MM < 10) {
+            MM = '0' + MM;
+        }
+        //日
+        var dd = today.getDate();
+        if(dd < 10) {
+            dd = '0' + dd;
+        }
+        //年月日的显示格式
+        if (datestyle == 0) {
+            dateStr = dateStr + yyyy + "/" + MM + "/" + dd;
+        }
+        else if (datestyle == 1){
+            dateStr = dateStr + MM + "/" + dd + "/"+ yyyy;
+        }
+        else if (datestyle == 2){
+            dateStr = dateStr + dd + "/" + MM + "/"+ yyyy;
+        }
+        else if (datestyle == 3){
+            dateStr = dateStr + yyyy + "年" + MM + "月" + dd + "日";
+        }
+    }
+
+    if (week != 0){ //显示星期
+        //星期
+        var ww = today.getDay();
+
+        //星期的显示格式
+        if (weekstyle == 0) {
+            if (ww == 0) {
+                ww = "星期日";
+            }
+            else if (ww == 1) {
+                ww = "星期一";
+            }
+            else if (ww == 2) {
+                ww = "星期二";
+            }
+            else if (ww == 3) {
+                ww = "星期三";
+            }
+            else if (ww == 4) {
+                ww = "星期四";
+            }
+            else if (ww == 5) {
+                ww = "星期五";
+            }
+            else if (ww == 6) {
+                ww = "星期六";
+            }
+        }
+        else if (weekstyle == 1){
+            if (ww == 0) {
+                ww = "Sun";
+            }
+            else if (ww == 1) {
+                ww = "Mon";
+            }
+            else if (ww == 2) {
+                ww = "Tues";
+            }
+            else if (ww == 3) {
+                ww = "Wed";
+            }
+            else if (ww == 4) {
+                ww = "Thur";
+            }
+            else if (ww == 5) {
+                ww = "Fri";
+            }
+            else if (ww == 6){
+                ww = "Sat";
+            }
+        }
+        else if (weekstyle == 2){
+            if (ww == 0) {
+                ww = "Sunday";
+            }
+            else if (ww == 1) {
+                ww = "Monday";
+            }
+            else if (ww == 2) {
+                ww = "Tuesday";
+            }
+            else if (ww == 3) {
+                ww = "Wednesday";
+            }
+            else if (ww == 4) {
+                ww = "Thursday";
+            }
+            else if (ww == 5) {
+                ww = "Friday";
+            }
+            else if (ww == 6){
+                ww = "Saturday";
+            }
+        }
+        weekStr = weekStr + ww;
+    }
+    if (time != 0){ //显示时分秒
+        //时
+        var hh = today.getHours();
+        if(hh < 10) {
+            hh = '0' + hh;
+        }
+        //分
+        var mm = today.getMinutes();
+        if(mm < 10) {
+            mm = '0' + mm;
+        }
+        //秒
+        var ss = today.getSeconds();
+        if(ss < 10) {
+            ss = '0' + ss;
+        }
+
+        //时分秒的显示格式
+        if (timestyle == 0) {
+            timeStr = timeStr + hh + ":" + mm + ":" + ss;
+        }
+        else if (timestyle == 1){
+            timeStr = timeStr + hh + ":" + mm;
+        }
+        else if (timestyle == 2){
+            timeStr = timeStr + hh + "时" + mm + "分" + ss + "秒";
+        }
+        else if (timestyle == 3){
+            timeStr = timeStr + hh + "时" + mm + "分";
+        }
+    }
+
+    if (multirow == 0){//单行显示
+        str = str + " " + dateStr + " " + weekStr + " " + timeStr ;
+        //js去掉字符串两端空白字符
+        str = str.trim();
+
+        //trim()是ECMAS提供的新方面，在一些旧环境中并不兼容，以下是兼容性的trim()实现:
+        // if(!String.prototype.trim){
+        //     String.prototype.trim = function(){
+        //         return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,'');
+        //     };
+        // }
+    }else {//多行显示
+        str = str  + dateStr + "<br/>" + weekStr + "<br/>" + timeStr ;
+    }
+    return(str);
+}
+//显示当前系统时间 数字时钟
+function showLocalDateTime(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,maxSumTimeLength)
+{
+    var reSumTimeLength = maxSumTimeLength;
+    //在最大总的播放显示时长内显示
+    if (reSumTimeLength > 0){
+
+        //显示年月日
+        var date = layoutXmlDoc.getElementsByTagName("date")[contentsIndex].textContent;
+        //显示年月日格式
+        var datestyle = layoutXmlDoc.getElementsByTagName("datestyle")[contentsIndex].textContent;
+        //显示星期
+        var week = layoutXmlDoc.getElementsByTagName("week")[contentsIndex].textContent;
+        //显示星期格式
+        var weekstyle = layoutXmlDoc.getElementsByTagName("weekstyle")[contentsIndex].textContent;
+        //显示时分秒
+        var time = layoutXmlDoc.getElementsByTagName("time")[contentsIndex].textContent;
+        //显示时分秒格式
+        var timestyle = layoutXmlDoc.getElementsByTagName("timestyle")[contentsIndex].textContent;
+        //是否多行显示
+        var multirow = layoutXmlDoc.getElementsByTagName("multirow")[contentsIndex].textContent;
+
+        //设置contents的样式
+        setContentsStyle(layoutDivId,layoutXmlDoc,contentsIndex);
+        if(window.parent.document.getElementById(layoutDivId) != null){
+            //文字水平居中
+            window.parent.document.getElementById(layoutDivId).style["text-align"] = "center";
+            //文字垂直居中
+            window.parent.document.getElementById(layoutDivId).style["line-height"] = layoutXmlDoc.getElementsByTagName("height")[0].textContent + "px";
+        }
+        if (window.parent.document.getElementById(layoutDivId) != null){
+
+            // window.parent.document.getElementById(layoutDivId).style.left = layoutXmlDoc.getElementsByTagName("x")[0].textContent + "pt";
+            // window.parent.document.getElementById(layoutDivId).style.top = layoutXmlDoc.getElementsByTagName("y")[0].textContent + "pt";
+
+            var today = new Date();
+
+            // $("#"+layoutDivId,window.parent.document).empty();
+            // var appendDateStr = "<span>";
+            // appendDateStr = appendDateStr + getLocaleTime(date,datestyle,week,weekstyle,time,timestyle,multirow,today) + "</span>"
+            // $("#"+layoutDivId,window.parent.document).append(appendDateStr);
+
+            window.parent.document.getElementById(String(layoutDivId)).textContent = getLocaleTime(date,datestyle,week,weekstyle,time,timestyle,multirow,today);
+            timeoutIds[layoutIndex] = window.setTimeout(function () {
+                reSumTimeLength--;
+                showLocalDateTime(layoutDivId,layoutXmlDoc,layoutIndex,contentsIndex,reSumTimeLength);
+            }, 1000);
+        }
+    }
+}
+
+//设置contents的样式
+function setContentsStyle(layoutDivId,layoutXmlDoc,contentsIndex) {
+    if (window.parent.document.getElementById(layoutDivId) != null){
+        if (layoutXmlDoc.getElementsByTagName("backgroundcolor").length != 0) {//背景颜色
+            window.parent.document.getElementById(layoutDivId).style.background =  (layoutXmlDoc.getElementsByTagName("backgroundcolor")[contentsIndex].textContent).replace("0x", "#");
+        }
+        if (layoutXmlDoc.getElementsByTagName("fontcolor").length != 0) {//文字颜色
+            window.parent.document.getElementById(layoutDivId).style["color"] =  (layoutXmlDoc.getElementsByTagName("fontcolor")[contentsIndex].textContent).replace("0x", "#");
+        }
+        if (layoutXmlDoc.getElementsByTagName("fontsize").length != 0) {//文字大小
+            //C端用的单位为磅(pt)，若B端要用像素(px)单位，则要转换
+            window.parent.document.getElementById(layoutDivId).style["font-size"] =  parseInt(layoutXmlDoc.getElementsByTagName("fontsize")[contentsIndex].textContent,10) + "pt";
+        }
+        if (layoutXmlDoc.getElementsByTagName("txtfont").length != 0) {//文字字体
+            window.parent.document.getElementById(layoutDivId).style["font-family"] =  layoutXmlDoc.getElementsByTagName("txtfont")[contentsIndex].textContent;
+        }
+        if (layoutXmlDoc.getElementsByTagName("fontstyle").length != 0) {//文字斜体
+            window.parent.document.getElementById(layoutDivId).style["font-style"] =  layoutXmlDoc.getElementsByTagName("fontstyle")[contentsIndex].textContent;
+        }
+        if (layoutXmlDoc.getElementsByTagName("fontweight").length != 0) {//文字加粗
+            window.parent.document.getElementById(layoutDivId).style["font-weight"] =  layoutXmlDoc.getElementsByTagName("fontweight")[contentsIndex].textContent;
+        }
+        if (layoutXmlDoc.getElementsByTagName("opacity").length != 0){//透明度
+            if (layoutXmlDoc.getElementsByTagName("opacity")[contentsIndex].textContent == 0){//0背景全透明，内容不透明
+                window.parent.document.getElementById(layoutDivId).style["background-color"] = "transparent";
+            }else{
+                window.parent.document.getElementById(layoutDivId).style["opacity"] = layoutXmlDoc.getElementsByTagName("opacity")[contentsIndex].textContent;
+            }
+        }
+    }
+
+}
+
+//关闭弹出层
+function closeDiv(bg_div,show_div)
+{
+    window.parent.document.getElementById(bg_div).style.display='none';
+    window.parent.document.getElementById(show_div).style.display='none';
+}
+
+//加载xml字符串
+function loadXmlString(xmlString)
+{
+    var xmlDoc=null;
+    if(!window.DOMParser && window.ActiveXObject) //判断浏览器的类型 支持IE浏览器 window.DOMParser 判断是否是非ie浏览器
+    {
+        var xmlDomVersions = ['MSXML.2.DOMDocument.6.0','MSXML.2.DOMDocument.3.0','Microsoft.XMLDOM'];
+        for(var i=0; i < xmlDomVersions.length; i++)
+        {
+            try{
+                xmlDoc = new ActiveXObject(xmlDomVersions[i]);
+                xmlDoc.async = false;
+                xmlDoc.loadXML(xmlString); //loadXML方法载入xml字符串
+                break;
+            }catch(e){
+            }
+        }
+    }else if(window.DOMParser && document.implementation && document.implementation.createDocument){//支持Mozilla浏览器
+        try{
+            /* DOMParser 对象解析 XML 文本并返回一个 XML Document 对象。
+             * 要使用 DOMParser，使用不带参数的构造函数来实例化它，然后调用其 parseFromString() 方法
+             * parseFromString(text, contentType) 参数text:要解析的 XML 标记 参数contentType文本的内容类型
+             * 可能是 "text/xml" 、"application/xml" 或 "application/xhtml+xml" 中的一个。注意，不支持 "text/html"。
+             */
+            domParser = new  DOMParser();
+            xmlDoc = domParser.parseFromString(xmlString, 'text/xml');
+        }catch(e){
+        }
+    }
+    else{
+        return null;
+    }
+    return xmlDoc;
+}
 
 function getPlayStyle(state,pageNum,playName) {
     $.ajax({
         url:'/playStyle/selectPlayStyle',
         type:"POST",
+        // ceche:false,
         data:{state:state,name:playName,pageNum:pageNum,isTemplate:0},
         success:function (data) {
             $("#playStyleTable tbody tr").remove();

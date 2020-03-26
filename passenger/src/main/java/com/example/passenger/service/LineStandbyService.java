@@ -20,56 +20,56 @@ public class LineStandbyService {
     @Autowired
     LineStandbyMapper lineStandbyMapper;
 
-    public List<Map<String,String>> getSparePart(Integer lineID){
+    public List<Map<String, String>> getSparePart(Integer lineID) {
         return lineStandbyMapper.getSparePart(lineID);
     }
 
-    public PageUtil selectPaging(Integer lineID, Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer lineID, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(lineStandbyMapper.count(lineID));
-        pageUtil.setPageData(lineStandbyMapper.selectPaging(lineID,pageNum,pageSize));
+        pageUtil.setPageData(lineStandbyMapper.selectPaging(lineID, pageNum, pageSize));
         return pageUtil;
     }
 
-    public Integer selectLineStandbyExist(Integer lineID,Integer standbyType){
-        return lineStandbyMapper.selectLineStandbyExist(lineID,standbyType);
+    public Integer selectLineStandbyExist(Integer lineID, Integer standbyType) {
+        return lineStandbyMapper.selectLineStandbyExist(lineID, standbyType);
     }
 
-    public Integer getStandbyExistByType(Integer type){
+    public Integer getStandbyExistByType(Integer type) {
         return lineStandbyMapper.getStandbyExistByType(type);
     }
 
-    public List<LineStandbyVo> queryAllStandbyVo(){
+    public List<LineStandbyVo> queryAllStandbyVo() {
         return lineStandbyMapper.queryAllStandbyVo();
     }
 
     @Transactional
-    public Integer addLineStandby(LineStandby lineStandby){
+    public Integer addLineStandby(LineStandby lineStandby) {
         try {
             return lineStandbyMapper.addLineStandby(lineStandby);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateLineStandby(LineStandby lineStandby){
+    public Integer updateLineStandby(LineStandby lineStandby) {
         try {
             return lineStandbyMapper.updateLineStandby(lineStandby);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteLineStandby(Integer id){
+    public Integer deleteLineStandby(Integer id) {
         try {
             return lineStandbyMapper.deleteLineStandby(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

@@ -3,8 +3,8 @@
 <mapper namespace="com.example.passenger.mapper.LineStandbyMapper">
     <select id="selectPaging" resultType="com.example.passenger.entity.vo.LineStandbyVo">
         SELECT TOP
-        (#{pageSize}) d.Name as lineName,c.StandbyName as standbyName,a.Available_Number,
-        a.Fault_Number,a.Reworking_Number,a.Scrap_Number,a.ID,a.LineID,
+        (#{pageSize}) a.id,d.Name as lineName,c.StandbyName as standbyName,a.Available_Number,
+        a.Fault_Number,a.Reworking_Number,a.Scrap_Number,a.LineID,
         a.StandbyType
         FROM
         (
@@ -12,7 +12,7 @@
         ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
         FROM
         LineStandby
-        <if test="lineID!=null">
+        <if test="lineID!=null and lineID!=0">
             WHERE
             LineID=#{lineID}
         </if>
@@ -28,13 +28,14 @@
             (*)
         FROM
             LineStandby
-        <if test="lineID!=null">
+        <if test="lineID!=null and lineID!=0">
             WHERE
             LineID=#{lineID}
         </if>
     </select>
     <select id="getSparePart" parameterType="java.lang.Integer" resultType="java.util.LinkedHashMap">
         SELECT
+            Row_Number()over(ORDER BY a.id DESC) as id,
             d.Name AS lineName,
             c.StandbyName AS standbyName,
             a.Available_Number,
@@ -65,7 +66,7 @@
             COUNT(*)
         FROM
             LineStandby
-        WHERE
+        WHERE4
             LineID = #{lineID}
             AND StandbyType =#{standbyType}
     </select>

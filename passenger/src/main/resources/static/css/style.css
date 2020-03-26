@@ -53,7 +53,7 @@ h2{font-weight:normal;}
 .topleft{height:88px;background:url(../images/topleft.jpg) no-repeat;float:left; width:300px;}
 .topleft img{margin-top:12px;margin-left:10px;}
 .topright{height:88px;background:url(../images/topright.jpg) no-repeat right;float:right;}
-.nav{float:left;width: 36%;}
+.nav{float:left;width: 42%;}
 .nav li{float:left;width:87px;height:88px; text-align:center;}
 .nav li a{display:block;width:87px;height:88px;-moz-transition: none; transition: background-color 0.3s linear; -moz-transition: background-color 0.3s linear; -webkit-transition: background-color 0.3s linear; -o-transition: background-color 0.3s linear; }
 .nav li a.selected{background:url(../images/navbg.png) no-repeat;}
@@ -82,11 +82,14 @@ h2{font-weight:normal;}
 .leftmenu dd .menuson{display:none;}
 .menuson {line-height:30px; font-weight:normal; }
 .menuson li{cursor:pointer;}
+.menuson li div{height: 30px;}
 .menuson li.active{position:relative; background:url(../images/libg.png) repeat-x; line-height:30px; color:#fff;}
 .menuson li cite{display:block; float:left; margin-left:32px; background:url(../images/list.gif) no-repeat; width:16px; height:16px; margin-top:7px;}
 .menuson li.active cite{background:url(../images/list1.gif) no-repeat;}
 .menuson li.active i{display:block; background:url(../images/sj.png) no-repeat; width:6px; height:11px; position:absolute; right:0;z-index:10000; top:9px; right:-1px;}
-.menuson li a{ *display:inline; *padding-top:5px;}
+/*.menuson li a{ *display:inline; *padding-top:5px;} 原先设置*/
+.menuson li a{ display:block;/*display:block;设置成块状，只需点击该链接行即可有点击链接效果*/ cursor:pointer;/*cursor:pointer;设置鼠标悬浮在当前标签时为手型*/}
+.menuson li a:hover{background:#eee}
 .menuson li.active a{color:#fff;}
 .title{cursor:pointer;}
 
@@ -227,7 +230,7 @@ h2{font-weight:normal;}
 .comtitle h2{font-size:14px; display:block; float:left;color:#2a3e93; background:#fff; padding-left:5px; padding-right:8px;}
 .rline{border-bottom:solid 1px #e5ecf0; height:10px; margin-left:50px;}
 .disklist{padding-left:20px; padding-right:20px;}
-.disklist li{width:275px;_width:270px;float:left; margin-right:10px;px;height:70px; cursor:pointer; margin-bottom:5px;border:solid 1px #fff;}
+.disklist li{width:275px;_width:270px;float:left; margin-right:10px;height:70px; cursor:pointer; margin-bottom:5px;border:solid 1px #fff;}
 .disklist li a{color:#000;}
 .disklist li:hover{background:#fcfcfc; border:solid 1px #e5ecf0;}
 .dleft{background:url(../images/c02.png) no-repeat; height:50px; margin-left:12px; float:left; width:50px; margin-top:15px;}

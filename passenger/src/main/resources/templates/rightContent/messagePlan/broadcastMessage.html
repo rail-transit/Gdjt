@@ -10,7 +10,7 @@
         overflow: auto}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:460px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="/js/tabSize.js"></script>
     <script type="text/javascript">
         window.onload = function() {
-            tabSize.init('auditTable');
+            tabSize.init('broadcastTable');
         };
     </script>
 </head>
@@ -31,7 +31,7 @@
 <div id="broadcast_height_div">
     <p id="broadcast_title">在播消息</p>
     <div style="overflow: auto;height: 505px">
-        <table width="100%" border="0" id="auditTable">
+        <table width="100%" border="0" id="broadcastTable">
             <thead>
             <tr>
                 <th class="tips" hidden="hidden"></th>
@@ -42,20 +42,19 @@
                 <th class="tips">开始时间</th>
                 <th class="tips">结束日期</th>
                 <th class="tips">结束时间</th>
-                <th class="tips">操作</th>
             </tr>
             </thead>
             <tr th:each="message:${pageUtil.pageData}">
                 <td th:text="${message.id}" hidden="hidden"></td>
-                <td th:if="${message.isPlanMsg} eq '0'">实时消息</td>
-                <td th:if="${message.isPlanMsg} eq '1'">定时消息</td>
+                <td th:if="${message.type} eq '11' and ${message.isPlanMsg} eq '0'">滚动消息</td>
+                <td th:if="${message.type} eq '11' and ${message.isPlanMsg} eq '1'">定时消息</td>
+                <td th:if="${message.type} eq '12'">紧急消息</td>
                 <td th:text="${message.msg}"></td>
                 <td th:text="${message.lineName}+'-'+${message.stationName}+'-'+${message.deviceName}"></td>
                 <td th:text="${message.startDate}"></td>
                 <td th:text="${message.startTime}"></td>
                 <td th:text="${message.endDate}"></td>
                 <td th:text="${message.endTime}"></td>
-                <td><input type="button" value="撤销" class="revokeMessage"></td>
             </tr>
         </table>
     </div>
@@ -73,31 +72,12 @@
 <script language="JavaScript" src="/js/jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    $("tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+    $("#broadcastTable tbody").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
         var trs = $(this).parent().find('tr'); //获取所有tr
         if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
             trs.removeClass('on');//把class on 移除
         }
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
-    });
-
-    $(".revokeMessage").click(function () {
-        var id=$(this).closest("tr").find("td").eq(0).text();
-        $.ajax({
-            url:'/message/revokeMessage',
-            type:"POST",
-            data:{id:id},
-            success:function (data) {
-                if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/message/broadcastMessageManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
-                }
-            }
-        });
     });
 });
 

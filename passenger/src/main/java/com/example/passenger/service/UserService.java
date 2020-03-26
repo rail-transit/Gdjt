@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author jinbin
  * @date 2018-07-08 20:52
@@ -17,58 +20,64 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("UserService")
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     UserMapper userMapper;
 
-    public Users findByUsername(Users user){
+    public Users findByUsername(Users user) {
         return userMapper.findByUsername(user.getName());
     }
 
-    public Users findUserById(String userId) {
+    public Users findUserById(Integer userId) {
         return userMapper.findUserById(userId);
     }
 
-    public Integer selectUserIsNotID(Integer id,String name){
-        return userMapper.selectUserIsNotID(id,name);
+    public Integer selectUserIsNotID(Integer id, String name) {
+        return userMapper.selectUserIsNotID(id, name);
     }
 
-    public PageUtil selectAllUsersByName(String username, Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectAllUsersByName(String username, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(userMapper.count(username));
-        pageUtil.setPageData(userMapper.selectAllUsersByName(username,pageNum,pageSize));
+        pageUtil.setPageData(userMapper.selectAllUsersByName(username, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer updateUserState(Integer id,Integer state){
+    public Integer updateUserState(Integer id, Integer state) {
         try {
-            return userMapper.updateUserState(id,state);
-        }catch (Exception e){
-            logger.error("注册异常",e.getMessage());
+            String UpdateDate = sdf.format(new Date());
+            return userMapper.updateUserState(id, state, UpdateDate);
+        } catch (Exception e) {
+            logger.error("修改异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer addUser(Users users){
+    public Integer addUser(Users users) {
         try {
+            users.setUpdateDate(sdf.format(new Date()));
+            users.setRightLevel(0);
+            users.setState(1);
             return userMapper.addUser(users);
-        }catch (Exception e){
-            logger.error("注册异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("注册异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteUser(Integer Id){
+    public Integer deleteUser(Integer Id) {
         try {
             return userMapper.deleteUser(Id);
-        }catch (Exception e){
-            logger.error("删除异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("删除异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
@@ -76,14 +85,15 @@ public class UserService {
     }
 
     @Transactional
-    public Integer updateUser(Users users){
+    public Integer updateUser(Users users) {
         try {
-            if(users.getPwd()!=null && users.getPwd()!=""){
+            users.setUpdateDate(sdf.format(new Date()));
+            if (users.getPwd() != null && users.getPwd() != "") {
                 users.setPwd(MD5.MD5(users.getPwd()));
             }
             return userMapper.updateUser(users);
-        }catch (Exception e){
-            logger.error("修改异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("修改异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
@@ -91,10 +101,10 @@ public class UserService {
 
 
     @Transactional
-    public Integer deleteUserByGroupId(Integer id){
+    public Integer deleteUserByGroupId(Integer id) {
         try {
             return userMapper.deleteUserByGroupId(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

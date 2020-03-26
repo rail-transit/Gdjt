@@ -8,7 +8,6 @@
             Play_Style
         WHERE
             id =#{id}
-            and IsDelete=0
     </select>
     <select id="selectPlayStyleID" resultType="java.lang.Integer">
         SELECT TOP
@@ -87,8 +86,8 @@
             ID =#{id}
     </update>
     <delete id="deletePlayStyle" parameterType="com.example.passenger.entity.PlayStyle">
-       UPDATE Play_Style SET
-       ContentText =#{content}
+       UPDATE Play_Style
+        SET IsDelete=1
         <if test="editorID!=null">
             ,Editor_ID=#{editorID}
         </if>

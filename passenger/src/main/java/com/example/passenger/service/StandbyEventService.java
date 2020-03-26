@@ -16,32 +16,32 @@ public class StandbyEventService {
     @Autowired
     StandbyEventMapper standbyEventMapper;
 
-    public List<StandbyEvent> selectAllStandbyEvent(Integer lineID){
+    public List<StandbyEvent> selectAllStandbyEvent(Integer lineID) {
         return standbyEventMapper.selectAllStandbyEvent(lineID);
     }
 
-    public Integer addStandbyEvent(StandbyEvent standbyEvent){
+    public Integer addStandbyEvent(StandbyEvent standbyEvent) {
         try {
             return standbyEventMapper.addStandbyEvent(standbyEvent);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
-    public Integer updateStandbyEvent(StandbyEvent standbyEvent){
+    public Integer updateStandbyEvent(StandbyEvent standbyEvent) {
         try {
             return standbyEventMapper.updateStandbyEvent(standbyEvent);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
-    public Integer deleteStandbyEvent(Integer id){
+    public Integer deleteStandbyEvent(Integer id) {
         try {
             return standbyEventMapper.deleteStandbyEvent(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

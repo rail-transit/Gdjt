@@ -12,11 +12,11 @@ public class RightsService {
     @Autowired
     RightsMapper rightsMapper;
 
-    public List<Rights> selectFirstRight(Integer parentID){
+    public List<Rights> selectFirstRight(Integer parentID) {
         return rightsMapper.selectFirstRight(parentID);
     }
 
-    public Rights selectRightsByID(Integer id){
+    public Rights selectRightsByID(Integer id) {
         return rightsMapper.selectRightsByID(id);
     }
 }

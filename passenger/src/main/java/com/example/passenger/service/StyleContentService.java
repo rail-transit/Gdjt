@@ -19,61 +19,61 @@ public class StyleContentService {
     @Autowired
     StyleContentMapper styleContentMapper;
 
-    public StyleContent selectContentById(Integer id){
+    public StyleContent selectContentById(Integer id) {
         return styleContentMapper.selectContentById(id);
     }
 
-    public List<StyleContent> selectStyleContent(Integer id,String layoutID){
-        return styleContentMapper.selectStyleContent(id,layoutID);
+    public List<StyleContent> selectStyleContent(Integer id, String layoutID) {
+        return styleContentMapper.selectStyleContent(id, layoutID);
     }
 
-    public List<StyleContentVo> selectStyleContentVo(Integer styleID){
+    public List<StyleContentVo> selectStyleContentVo(Integer styleID) {
         return styleContentMapper.selectStyleContentVo(styleID);
     }
 
-    public Integer selectContentByMaterialID(Integer materialID){
+    public Integer selectContentByMaterialID(Integer materialID) {
         return styleContentMapper.selectContentByMaterialID(materialID);
     }
 
-    public PageUtil selectPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(styleContentMapper.count());
-        pageUtil.setPageData(styleContentMapper.selectPaging(pageNum,pageSize));
+        pageUtil.setPageData(styleContentMapper.selectPaging(pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addStyleContent(StyleContent styleContent){
+    public Integer addStyleContent(StyleContent styleContent) {
         try {
-            Integer count=styleContentMapper.StyleContentID(styleContent.getStyleID());
-            count+=1;
+            Integer count = styleContentMapper.StyleContentID(styleContent.getStyleID());
+            count += 1;
             styleContent.setLayoutID("1");
             styleContent.setContentID(count);
             styleContent.setPlaytimes(1);
             return styleContentMapper.addStyleContent(styleContent);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateStyleContent(StyleContent styleContent){
+    public Integer updateStyleContent(StyleContent styleContent) {
         try {
             return styleContentMapper.updateStyleContent(styleContent);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteStyleContent(Integer id){
+    public Integer deleteStyleContent(Integer id) {
         try {
             return styleContentMapper.deleteStyleContent(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

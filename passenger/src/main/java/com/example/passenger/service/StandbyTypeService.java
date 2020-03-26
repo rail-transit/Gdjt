@@ -18,48 +18,48 @@ public class StandbyTypeService {
     @Autowired
     StandbyTypeMapper standbyTypeMapper;
 
-    public PageUtil selectStandbyTypePaging(Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectStandbyTypePaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(standbyTypeMapper.count());
-        pageUtil.setPageData(standbyTypeMapper.selectStandbyTypePaging(pageNum,pageSize));
+        pageUtil.setPageData(standbyTypeMapper.selectStandbyTypePaging(pageNum, pageSize));
         return pageUtil;
     }
 
-    public List<StandbyType> selectAllStandbyType(){
+    public List<StandbyType> selectAllStandbyType() {
         return standbyTypeMapper.selectAllStandbyType();
     }
 
-    public Integer selectStandbyTypeByName(String name){
+    public Integer selectStandbyTypeByName(String name) {
         return standbyTypeMapper.selectStandbyTypeByName(name);
     }
 
     @Transactional
-    public Integer addStandbyType(StandbyType standbyType){
+    public Integer addStandbyType(StandbyType standbyType) {
         try {
             return standbyTypeMapper.addStandbyType(standbyType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateStandbyType(StandbyType standbyType){
+    public Integer updateStandbyType(StandbyType standbyType) {
         try {
             return standbyTypeMapper.updateStandbyType(standbyType);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteStandbyType(Integer id){
+    public Integer deleteStandbyType(Integer id) {
         try {
             return standbyTypeMapper.deleteStandbyType(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

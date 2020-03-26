@@ -17,25 +17,25 @@ public class PlayListDownloadStatusService {
     @Autowired
     PlayListDownloadStatusMapper playListDownloadStatusMapper;
 
-    public List<PlayListDownloadStatus> selectDownloadStatus(Integer playlistID,Integer clientID){
-        return playListDownloadStatusMapper.selectDownloadStatus(playlistID,clientID);
+    public List<PlayListDownloadStatus> selectDownloadStatus(Integer playlistID, Integer clientID) {
+        return playListDownloadStatusMapper.selectDownloadStatus(playlistID, clientID);
     }
 
 
     @Transactional
-    public Integer updateDownload(PlayListDownloadStatus playListDownloadStatus){
+    public Integer updateDownload(PlayListDownloadStatus playListDownloadStatus) {
         try {
             return playListDownloadStatusMapper.updateDownload(playListDownloadStatus);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return-1;
+            return -1;
         }
     }
 
-    public Integer deleteDownload(Integer id){
+    public Integer deleteDownload(Integer id) {
         try {
             return playListDownloadStatusMapper.deleteDownload(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }

@@ -2,9 +2,11 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.MsgLevel;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MsgLevelMapper {
     MsgLevel selectMsgLevel(Integer id);
 

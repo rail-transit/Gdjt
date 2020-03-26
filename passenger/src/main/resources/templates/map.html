@@ -93,10 +93,17 @@ $(document).ready(function(){
         var fileObj = document.getElementById("file").files; // js 获取文件对象
         var formData=new FormData();
         for (var i=0;i<fileObj.length;i++){
+            var imgStr = /\.(jpg|jpeg|png|bmp|BMP|JPG|PNG|JPEG)$/;
+            if(!imgStr.test(fileObj[i].name)) {
+                swal("文件不是图片类型!");
+                return false;
+            }
             formData.append("file",fileObj[i]);
         }
         var oneID=$("#lineID").val();
+        var type=0;
         if(oneID!=null){
+            type=1;
             formData.append("type","1");
         }
         $.ajax({
@@ -111,6 +118,7 @@ $(document).ready(function(){
                 if(data.result=="success"){
                     swal("Good!", "操作成功!", "success");
                     $(".confirm").click(function () {
+                        getMapImage(type);
                     });
                 }else{
                     swal("OMG!", "操作错误!", "error");
@@ -181,7 +189,6 @@ $(document).ready(function(){
            list.push({mapImg:back,divTop:divTop,divLeft:divLeft,stationID:stationID,
                stationName:stationName,left:left,top:top});
        }
-
        $.ajax({
            url:'/map/addMap',
            type:"POST",
@@ -204,7 +211,7 @@ $(document).ready(function(){
    });
 
    $("#baseMap").change(function () {
-       $("#big").css("background-image","url("+$(this).val()+"");
+       $("#big").css("background-image","url("+$(this).val()+")");
    });
 
 });
@@ -232,7 +239,7 @@ function getMap() {
                 }else{
                     var images='<img src="/images/normal.jpg" width="12px" height="12px" class="img" ondblclick="attribute(this)">';
                 }
-                $("#big").css("background-image","url("+item.mapImg+"");
+                $("#big").css("background-image","url("+item.mapImg+")");
                 $("#big").append('<div class="small" style="left: '+item.divLef+';top: '+item.divTop+';"' +
                     ' onmousedown="small_down(event,this)">\n' +
                     images+
@@ -252,11 +259,12 @@ function getMapImage(type) {
         data:{type:type},
         success:function (data) {
             $("#baseMap option").remove();
+            $("#baseMap").append('<option>请选择背景</option>');
             $.each(data.mapList, function (i, item) {
                 if(type==1){
-                    $("#baseMap").append('<option value="/Path/deviceMapImage/'+item+'">'+item+'</option>');
-                }else if(type==0){
                     $("#baseMap").append('<option value="/Path/stationMapImage/'+item+'">'+item+'</option>');
+                }else if(type==0){
+                    $("#baseMap").append('<option value="/Path/lineMapImage/'+item+'">'+item+'</option>');
                 }
             });
         }

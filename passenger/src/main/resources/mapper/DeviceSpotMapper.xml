@@ -2,16 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.passenger.mapper.DeviceSpotMapper">
     <select id="selectDeviceSpotById" resultType="com.example.passenger.entity.DeviceSpot">
-         SELECT
-        *
+        SELECT
+            *
         FROM
         Device_Spot
         WHERE
             id=#{id}
     </select>
+    <select id="selectDeviceSpotByCtrlType" resultType="com.example.passenger.entity.DeviceSpot">
+        SELECT
+            *
+        FROM
+            Device_Spot
+        WHERE
+            Type = #{type}
+            AND CtrlType = #{ctrlType}
+            <if test="id != null">
+                AND ID != #{id}
+            </if>
+    </select>
     <select id="selectDeviceSpot" resultType="com.example.passenger.entity.DeviceSpot">
         SELECT
-        *
+            *
         FROM
         Device_Spot
         WHERE

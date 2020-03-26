@@ -22,8 +22,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
         loginRegistry.addPathPatterns("/**");    // 拦截所有请求，通过判断是否有 @LoginRequired 注解 决定是否需要登录
 
         //排除拦截
-        loginRegistry.excludePathPatterns("/user/home"); //添加排除拦截命名空间
+        loginRegistry.excludePathPatterns("/user/userLogin"); //添加排除拦截命名空间
         loginRegistry.excludePathPatterns("/user/login");
+        loginRegistry.excludePathPatterns("/user/userRegister");
+        loginRegistry.excludePathPatterns("/user/register");
+        loginRegistry.excludePathPatterns("/user/getRSAPublicKey");
         loginRegistry.excludePathPatterns("/schedules/*");
         loginRegistry.excludePathPatterns("/**/*.css");
         loginRegistry.excludePathPatterns("/**/*.js");
@@ -34,6 +37,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         loginRegistry.excludePathPatterns("/**/*.svg");
         loginRegistry.excludePathPatterns("/**/Path/**");
     }
+
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();

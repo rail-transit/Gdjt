@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
     <title>Title</title>
     <link rel="stylesheet" href="/css/css.css" />
-    <link rel="stylesheet" href="/zTreeStyle/zTreeStyle.css" type="text/css">
+<!--    <link rel="stylesheet" href="/zTreeStyle/zTreeStyle.css" type="text/css">-->
     <link rel="stylesheet" href="/css/contentTree.css" type="text/css">
     <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
     <script type="text/javascript" src="/js/jquery.min.js"></script>
@@ -27,7 +27,7 @@
         #group_operation_div input{height: 25px;width: 90px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:350px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -72,8 +72,8 @@
     <p id="group_top_p">角色管理</p>
     <input type="text" class="id" hidden="hidden">
     <ul id="group_ul">
-        <li><span>角色名称:</span><input type="text" class="name" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>描述:</span><input type="text" class="des" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>角色名称:</span><input type="text" class="name" ></li>
+        <li><span>描述:</span><input type="text" class="des" ></li>
     </ul>
     <div id="group_top_Button">
         <input id="addGroup" type="button" value="添加">&nbsp;
@@ -115,7 +115,7 @@
 <!--    <div>-->
 <!--        <div class="f-right"></div>-->
 <!--    </div>-->
-    <div>
+    <div style="padding-left: 2px">
         <ul id="rightTree" class="ztree tree"></ul>
     </div>
 </div>
@@ -251,11 +251,8 @@ $(document).ready(function(){
 
     $("#addGroup").click(function () {
         var rights=new Array();
-        // var rightsList=$(".f-iconRadioTrue").siblings(".deviceID");
         var treeObj = $.fn.zTree.getZTreeObj("rightTree");
         var rightsList = treeObj.getCheckedNodes(true); //获取所有被勾选的节点
-        // console.log("nodes:");
-        // console.log(nodes);
         for(var i=0;i<rightsList.length;i++){
             if(rightsList[i].id != 'undefined' && rightsList[i].id!=null){
                 rights.push(rightsList[i].id);
@@ -263,43 +260,32 @@ $(document).ready(function(){
         }
         var name=$(".name").val();
         var des=$(".des").val();
-        if(name==""||name==''||name==undefined){
-            swal("请输入角色名称");
-            return false;
-        }
-        if(des==""||des==''||des==undefined){
-            swal("请输入描述");
-            return false;
-        }
-        if(rights.length==0){
-            swal("请选择权限");
-            return false;
-        }
-        $.ajax({
-            url:'/group/addGroup',
-            type:"POST",
-            data:{name:name,des:des,rightLevel:rights.toString()},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该角色已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/group/groupManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,des,rights)){
+            $.ajax({
+                url:'/group/addGroup',
+                type:"POST",
+                data:{name:name,des:des,rightLevel:rights.toString()},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该角色已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/group/groupManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#updateGroup").click(function () {
         var rights=new Array();
-       // var rightsList=$(".f-iconRadioTrue").siblings(".deviceID");
         var treeObj = $.fn.zTree.getZTreeObj("rightTree");
         var rightsList = treeObj.getCheckedNodes(true); //获取所有被勾选的节点
         for(var i=0;i<rightsList.length;i++){
@@ -315,38 +301,28 @@ $(document).ready(function(){
             swal("请选择角色");
             return false;
         }
-        if(name==""){
-            swal("请输入角色名称");
-            return false;
-        }
-        if(des==""){
-            swal("请输入描述");
-            return false;
-        }
-        if(rights.length==0){
-            swal("请选择权限");
-            return false;
-        }
-        $.ajax({
-            url:'/group/updateGroup',
-            type:"POST",
-            data:{id:id,name:name,des:des,rightLevel:rights.toString()},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该角色已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/group/groupManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(name,des,rights)){
+            $.ajax({
+                url:'/group/updateGroup',
+                type:"POST",
+                data:{id:id,name:name,des:des,rightLevel:rights.toString()},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该角色已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/group/groupManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#deleteGroup").on("click",function () {
@@ -385,6 +361,22 @@ $(document).ready(function(){
         });
     });
 });
+
+function isnull(name,des,rights) {
+    if(name==""||name.match(/^\s+$/g)){
+        swal("请输入角色名称");
+        return false;
+    }
+    if(des==""||des.match(/^\s+$/g)){
+        swal("请输入描述");
+        return false;
+    }
+    if(rights.length==0){
+        swal("请选择权限");
+        return false;
+    }
+    return true;
+}
 
 function nextPage(pageNum) {
     location.href="/group/groupManagement?pageNum="+pageNum;

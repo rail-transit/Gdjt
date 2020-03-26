@@ -18,7 +18,7 @@
             margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:370px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {/*height:370px;*/overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -50,6 +50,7 @@
     <table width="100%" border="0" id="sparePartTable">
         <thead>
         <tr>
+            <th class="tips">序号</th>
             <th class="tips">线路名称</th>
             <th class="tips">备件名称</th>
             <th class="tips">可用数量(只)</th>
@@ -88,24 +89,37 @@ $(document).ready(function(){
                 if(data.lineStandbyVoList.length!=0){
                     const jsonData=data.lineStandbyVoList;
                     //列标题，逗号隔开，每一个逗号就是隔开一个单元格
-                    let str = `所属线路,备件名称,可用数量(只),故障数量(只),返修数量(只),报废数量(只)\n`;
+                    let str = "序号,所属线路,备件名称,可用数量(只),故障数量(只),返修数量(只),报废数量(只)\n";
                     //增加\t为了不让表格显示科学计数法或者其他格式
                     for(let i = 0 ; i < jsonData.length ; i++ ){
                         for(let item in jsonData[i]){
-                            str+=`${jsonData[i][item] + '\t'},`;
+                            str+=jsonData[i][item] +",";
                         }
                         str+='\n';
                     }
-                    //encodeURIComponent解决中文乱码
-                    let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
-                    //通过创建a标签实现
-                    let link = document.createElement("a");
-                    link.href = uri;
-                    //对下载的文件命名
-                    link.download =  "json数据表.csv";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    let isIE = false;
+                    if (navigator.userAgent.indexOf("compatible") > -1 && navigator.userAgent.indexOf("MSIE") > -1) { // ie浏览器
+                        isIE = true;
+                    }
+                    if (navigator.userAgent.indexOf("Trident") > -1) { // edge 浏览器
+                        isIE = true;
+                    }
+                    if(isIE){
+                        var BOM = "\uFEFF";
+                        var csvData = new Blob([BOM + str], { type: "text/csv" });
+                        navigator.msSaveBlob(csvData, "设备备件统计.csv");
+                    }else{
+                        //encodeURIComponent解决中文乱码
+                        let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+                        //通过创建a标签实现
+                        let link = document.createElement("a");
+                        link.href = uri;
+                        //对下载的文件命名
+                        link.download =  "设备备件统计.csv";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
                 }
             }
         });
@@ -120,8 +134,9 @@ function selectMaintain(pageNum,lineID) {
         success:function (data) {
             $("#sparePartTable tbody tr").remove();
             $.each(data.pageUtil.pageData, function (i, item) {
-                $("#sparePartTable tbody").prepend('<tr><td>'+item.lineName+'</td>' +
-                    '<td>'+item.standbyName+'</td>' +
+                $("#sparePartTable tbody").append('<tr><td>'+item.id+'</td>' +
+                    '<td>'+(item.lineName != null ? item.lineName : "")+'</td>' +
+                    '<td>'+(item.standbyName != null ? item.standbyName : "")+'</td>' +
                     '<td>'+item.availableNumber+'</td>' +
                     '<td>'+item.faultNumber+'</td>' +
                     '<td>'+item.reworkingNumber+'</td>' +

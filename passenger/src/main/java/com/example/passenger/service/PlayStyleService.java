@@ -28,59 +28,59 @@ public class PlayStyleService {
     @Autowired
     MsgSend msgSend;
 
-    public PlayStyle selectPlayStyle(Integer id){
+    public PlayStyle selectPlayStyle(Integer id) {
         return playStyleMapper.selectPlayStyle(id);
     }
 
-    public PageUtil selectPaging(Integer state,String name,Integer isTemplate,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer state, String name, Integer isTemplate, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
-        pageUtil.setRowCount(playStyleMapper.count(state,name,isTemplate));
-        pageUtil.setPageData(playStyleMapper.selectPaging(state,name,isTemplate,pageNum,pageSize));
+        pageUtil.setRowCount(playStyleMapper.count(state, name, isTemplate));
+        pageUtil.setPageData(playStyleMapper.selectPaging(state, name, isTemplate, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addPlayStyle(PlayStyle playStyle){
+    public Integer addPlayStyle(PlayStyle playStyle) {
         try {
             return playStyleMapper.addPlayStyle(playStyle);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updatePlayStyleContent(Integer id,String content){
+    public Integer updatePlayStyleContent(Integer id, String content) {
         try {
-            return playStyleMapper.updatePlayStyleContent(id,content);
-        }catch (Exception e){
+            return playStyleMapper.updatePlayStyleContent(id, content);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updatePlayStyle(PlayStyle playStyle){
+    public Integer updatePlayStyle(PlayStyle playStyle) {
         try {
             return playStyleMapper.updatePlayStyle(playStyle);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deletePlayStyle(PlayStyle playStyle){
+    public Integer deletePlayStyle(PlayStyle playStyle) {
         try {
-            Integer i=playStyleMapper.deletePlayStyle(playStyle);
-            if(i>0){
+            Integer i = playStyleMapper.deletePlayStyle(playStyle);
+            if (i > 0) {
                 //styleContentMapper.deleteStyleContentByStyleID(playStyle.getId());
                 playListStyleMapper.deleteByStyleID(playStyle.getId());
             }
             return i;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

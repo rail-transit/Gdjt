@@ -7,7 +7,7 @@
         FROM
             Users
         WHERE
-            name = #{username}
+            name collate Chinese_PRC_CS_AS=#{username}
     </select>
     <select id="selectUserIsNotID" resultType="java.lang.Integer">
         SELECT COUNT
@@ -58,14 +58,20 @@
         </if>
     </select>
     <update id="updateUserState">
-         UPDATE users
-         SET
-         State=#{state}
-         WHERE
-            id = #{id}
+        UPDATE users
+        <set>
+            <if test="state!=null and state!=''">
+                State=#{state},
+            </if>
+            <if test="updateDate!=null">
+                UpdateDate=#{updateDate},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
     </update>
     <insert id="addUser" parameterType="com.example.passenger.entity.Users">
-        INSERT INTO users ( Name, Pwd, State, Tel, Email, Des, DepartmentID, Right_Level, Last_Logon_Time, GroupID, StationID, LineID )
+        INSERT INTO users
         VALUES
             (
                 #{name},
@@ -73,14 +79,57 @@
                 #{state},
                 #{tel},
                 #{email},
-                #{des},
+                #{nickname},
                 #{departmentID},
                 #{rightLevel},
-                #{lastLogonTime},
+                #{updateDate},
                 #{groupID},
             #{stationID},
             #{lineID})
     </insert>
+    <update id="updateUser" parameterType="com.example.passenger.entity.Users">
+        UPDATE users
+        <set>
+            <if test="name!=null and name!=''">
+                Name = #{name},
+            </if>
+            <if test="pwd!=null and pwd!=''">
+                Pwd = #{pwd},
+            </if>
+            <if test="state!=null and state!=''">
+                State =#{state},
+            </if>
+            <if test="tel!=null and tel!=''">
+                Tel =#{tel},
+            </if>
+            <if test="email!=null and email!=''">
+                Email =#{email},
+            </if>
+            <if test="nickname!=null and nickname!=''">
+                Nickname =#{nickname},
+            </if>
+            <if test="departmentID!=null and departmentID!=''">
+                DepartmentID =#{departmentID},
+            </if>
+            <if test="rightLevel!=null and rightLevel!=''">
+                Right_Level =#{rightLevel},
+            </if>
+            <if test="updateDate!=null">
+                UpdateDate =#{updateDate},
+            </if>
+            <if test="groupID!=null and groupID!=''">
+                GroupID =#{groupID},
+            </if>
+            <if test="stationID!=null">
+                StationID =#{stationID},
+            </if>
+            <if test="lineID!=null">
+                LineID =#{lineID},
+            </if>
+        </set>
+        WHERE
+            id = #{id}
+    </update>
     <delete id="deleteUser" parameterType="java.lang.Integer">
         DELETE
         FROM
@@ -88,48 +137,6 @@
         WHERE
             id= #{Id}
     </delete>
-    <update id="updateUser" parameterType="com.example.passenger.entity.Users">
-        UPDATE users
-        SET
-        <if test="pwd!=null and pwd!=''">
-            Pwd = #{pwd},
-        </if>
-        <if test="state!=null">
-            State =#{state},
-        </if>
-        <if test="tel!=null">
-            Tel =#{tel},
-        </if>
-        <if test="email!=null">
-            Email =#{email},
-        </if>
-        <if test="des!=null">
-            Des =#{des},
-        </if>
-        <if test="departmentID!=null">
-            DepartmentID =#{departmentID},
-        </if>
-        <if test="rightLevel!=null">
-            Right_Level =#{rightLevel},
-        </if>
-        <if test="lastLogonTime!=null">
-            Last_Logon_Time =#{lastLogonTime},
-        </if>
-        <if test="groupID!=null">
-            GroupID =#{groupID},
-        </if>
-        <if test="stationID!=null">
-            StationID =#{stationID},
-        </if>
-        <if test="lineID!=null">
-            LineID =#{lineID},
-        </if>
-        <if test="name!=null">
-            Name = #{name}
-        </if>
-        WHERE
-            id = #{id}
-    </update>
     <delete id="deleteUserByGroupId" parameterType="java.lang.Integer">
         DELETE
         FROM
@@ -137,5 +144,4 @@
         WHERE
             GroupID= #{groupID}
     </delete>
-
 </mapper>

@@ -26,55 +26,55 @@ public class DevUpkeepService {
     @Autowired
     DeviceMapper deviceMapper;
 
-    public List<DevUpkeep> selectDevUpkeepByEndTimeIsNull(Integer deviceID){
-       return devUpkeepMapper.selectDevUpkeepByEndTimeIsNull(deviceID);
+    public List<DevUpkeep> selectDevUpkeepByEndTimeIsNull(Integer deviceID) {
+        return devUpkeepMapper.selectDevUpkeepByEndTimeIsNull(deviceID);
     }
 
-    public List<Map<String,String>> getDevUpKeep(DevUpkeepVo devUpkeep){
+    public List<Map<String, String>> getDevUpKeep(DevUpkeepVo devUpkeep) {
         return devUpkeepMapper.getDevUpKeep(devUpkeep);
     }
 
-    public PageUtil selectDevUpkeepByEndTimeNotNull(Integer deviceID,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectDevUpkeepByEndTimeNotNull(Integer deviceID, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(devUpkeepMapper.count(deviceID));
-        pageUtil.setPageData(devUpkeepMapper.selectDevUpkeepByEndTimeNotNull(deviceID,pageNum,pageSize));
+        pageUtil.setPageData(devUpkeepMapper.selectDevUpkeepByEndTimeNotNull(deviceID, pageNum, pageSize));
         return pageUtil;
     }
 
-    public PageUtil maintainPaging(DevUpkeepVo devUpkeep,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil maintainPaging(DevUpkeepVo devUpkeep, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(devUpkeepMapper.maintainCount(devUpkeep));
-        pageUtil.setPageData(devUpkeepMapper.maintainPaging(devUpkeep,pageNum,pageSize));
+        pageUtil.setPageData(devUpkeepMapper.maintainPaging(devUpkeep, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addDevUpkeep(DevUpkeep devUpkeep){
+    public Integer addDevUpkeep(DevUpkeep devUpkeep) {
         try {
-            Device device=deviceMapper.selectDevice(devUpkeep.getDeviceID());
+            Device device = deviceMapper.selectDevice(devUpkeep.getDeviceID());
             devUpkeep.setDeviceID(device.getId());
             devUpkeep.setStationID(device.getStationID());
             devUpkeep.setLineID(device.getLineID());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             devUpkeep.setStartTime(sdf.format(new Date()));
             return devUpkeepMapper.addDevUpkeep(devUpkeep);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateDevUpkeep(DevUpkeep devUpkeep){
+    public Integer updateDevUpkeep(DevUpkeep devUpkeep) {
         try {
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             devUpkeep.setEndTime(sdf.format(new Date()));
             return devUpkeepMapper.updateDevUpkeep(devUpkeep);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

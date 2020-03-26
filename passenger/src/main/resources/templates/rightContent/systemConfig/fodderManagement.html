@@ -23,7 +23,7 @@
         .name{height: 22px;width: 150px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:328px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -59,8 +59,8 @@
     <ul id="fodder_ul">
         <li><span>直播线路:</span><select class="name">
             <option th:each="line:${lineList}" th:value="${line.id}" th:text="${line.name}"></option></select> </li>
-        <li><span>直播地址:</span><input type="text" class="path" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>延迟(s):</span><input type="text" class="note" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>直播地址:</span><input type="text" class="path" ></li>
+        <li><span>延迟(s):</span><input type="text" class="note" ></li>
     </ul>
     <div id="fodder_top_Button">
         <input id="addFodder" type="button" value="添加">
@@ -105,8 +105,8 @@
         <ul id="fodder_footer_ul">
             <li><span>素材名称:</span><select class="fodderName">
                 <option th:each="line:${lineList}" th:value="${line.id}" th:text="${line.name}"></option></select> </li>
-            <li><span>素材路径:</span><input type="text" class="fodderPath"></li>
-            <li><span style="padding-left: 29px">延迟(s):</span><input type="text" class="fodderNote"></li>
+            <li><span>素材路径:</span><input type="text" class="fodderPath" ></li>
+            <li><span style="padding-left: 29px">延迟(s):</span><input type="text" class="fodderNote" ></li>
         </ul>
     </div>
     <div id="fodder_operation_div">
@@ -116,24 +116,20 @@
 </div>
 <script language="JavaScript" src="/js/jquery.js"></script>
 <script type="text/javascript">
-    $(document).ready(function(){
+$(document).ready(function(){
+    $("#fodderTable tr").live("click",function(){
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
 
-        $("#addFodder").click(function () {
-            var name=$(".name option:selected").text();
-            var path=$(".path").val();
-            var note=$(".note").val();
-            if(path==""){
-                swal("直播地址不能为空");
-                return false;
-            }
-            if(note==""){
-                swal("延迟不能为空");
-                return false;
-            }
-            if(!(/^[0-9]+$/.test(note))){
-                swal("延迟不能输入非数字");
-                return false;
-            }
+    $("#addFodder").click(function () {
+        var name=$(".name option:selected").text();
+        var path=$(".path").val();
+        var note=$(".note").val();
+        if(isnull(path,note)){
             $.ajax({
                 url:'/fodder/addFodder',
                 type:"POST",
@@ -154,34 +150,24 @@
                     swal("OMG!", "请求失败!", "error");
                 }
             });
-        });
+        }
+    });
 
-        $("#updateButton").live("click",function () {
-            document.getElementById('cont_b').style.display='block';
-            //获取选中的值,传入输入框
-            $(".id").val($(this).closest("tr").find("td").eq(0).text());
-            $(".fodderName").find("option[text='"+$(this).closest("tr").find("td").eq(1).text()+"']").attr("selected",true);
-            $(".fodderPath").val($(this).closest("tr").find("td").eq(2).text());
-            $(".fodderNote").val($(this).closest("tr").find("td").eq(3).text());
-        });
+    $("#updateButton").live("click",function () {
+        document.getElementById('cont_b').style.display='block';
+        //获取选中的值,传入输入框
+        $(".id").val($(this).closest("tr").find("td").eq(0).text());
+        $(".fodderName").find("option[text='"+$(this).closest("tr").find("td").eq(1).text()+"']").attr("selected",true);
+        $(".fodderPath").val($(this).closest("tr").find("td").eq(2).text());
+        $(".fodderNote").val($(this).closest("tr").find("td").eq(3).text());
+    });
 
-        $("#updateFodder").click(function () {
-            var id=$(".id").val();
-            var name=$(".fodderName option:selected").text();
-            var path=$(".fodderPath").val();
-            var note=$(".fodderNote").val();
-            if(path==""){
-                swal("直播地址不能为空");
-                return false;
-            }
-            if(note==""){
-                swal("延迟不能为空");
-                return false;
-            }
-            if(!(/^[0-9]+$/.test(note))){
-                swal("延迟不能输入非数字");
-                return false;
-            }
+    $("#updateFodder").click(function () {
+        var id=$(".id").val();
+        var name=$(".fodderName option:selected").text();
+        var path=$(".fodderPath").val();
+        var note=$(".fodderNote").val();
+        if(isnull(path,note)){
             $.ajax({
                 url:'/fodder/updateFodder',
                 type:"POST",
@@ -202,55 +188,65 @@
                     swal("OMG!", "请求失败!", "error");
                 }
             });
-        });
+        }
+    });
 
-        $("#deleteButton").live("click",function () {
-            var id=$(this).closest("tr").find("td").eq(0).text();
-            var name=$(this).closest("tr").find("td").eq(1).text();
-            swal({
-                title: "您确定要删除吗？",
-                text: "您确定要删除这条数据？",
-                type: "warning",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "是的，我要删除",
-                confirmButtonColor: "#ec6c62"
-            }, function() {
-                $.ajax({
-                    url:'/fodder/deleteFodder',
-                    type:"POST",
-                    data:{id:id,name:name},
-                    success:function (data) {
-                        if(data.result=="success"){
-                            swal("Good!", "操作成功!", "success");
-                            $(".confirm").click(function () {
-                                window.location.href="/fodder/fodderManagement";
-                            });
-                        }else{
-                            swal("OMG!", "操作错误!", "error");
-                        }
-                    },
-                    error:function (){
-                        swal("OMG!", "请求失败!", "error");
+    $("#deleteButton").live("click",function () {
+        var id=$(this).closest("tr").find("td").eq(0).text();
+        var name=$(this).closest("tr").find("td").eq(1).text();
+        swal({
+            title: "您确定要删除吗？",
+            text: "您确定要删除这条数据？",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "是的，我要删除",
+            confirmButtonColor: "#ec6c62"
+        }, function() {
+            $.ajax({
+                url:'/fodder/deleteFodder',
+                type:"POST",
+                data:{id:id,name:name},
+                success:function (data) {
+                    if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/fodder/fodderManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
                     }
-                });
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
+                }
             });
         });
+    });
+});
 
-        $("#fodderTable tr").live("click",function(){
-            var trs = $(this).parent().find('tr'); //获取所有tr
-            if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
-                trs.removeClass('on');//把class on 移除
-            }
-            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
-        });
-    })
-    function nextPage(pageNum) {
-        location.href="/fodder/fodderManagement?pageNum="+pageNum;
+function isnull(path,note) {
+    if(path==""||path.match(/^\s+$/g)){
+        swal("直播地址不能为空");
+        return false;
     }
-    function previousPage(pageNum) {
-        location.href="/fodder/fodderManagement?pageNum="+pageNum;
+    if(note==""||note.match(/^\s+$/g)){
+        swal("延迟不能为空");
+        return false;
     }
+    if(!(/^[0-9]+$/.test(note))){
+        swal("延迟不能输入非数字");
+        return false;
+    }
+    return true;
+}
+
+function nextPage(pageNum) {
+    location.href="/fodder/fodderManagement?pageNum="+pageNum;
+}
+function previousPage(pageNum) {
+    location.href="/fodder/fodderManagement?pageNum="+pageNum;
+}
 </script>
 </body>
 </html>

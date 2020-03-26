@@ -2,9 +2,11 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.Department;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface DepartmentMapper {
 
     Department selectDepartmentById(@Param("id") Integer id);

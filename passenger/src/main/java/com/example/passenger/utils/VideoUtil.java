@@ -14,6 +14,7 @@ import java.util.UUID;
 public class VideoUtil {
     public static String width;
     public static String height;
+
     /**
      * 获取视频时长(时分秒)
      *
@@ -41,7 +42,7 @@ public class VideoUtil {
         /*if (strHour.equals("00")) {
             return strMinute + ":" + strSecond;
         } else {*/
-            return strHour + ":" + strMinute + ":" + strSecond;
+        return strHour + ":" + strMinute + ":" + strSecond;
         //}
     }
 
@@ -68,17 +69,17 @@ public class VideoUtil {
             MultimediaInfo m = encoder.getInfo(excelFile);
             long ls = m.getDuration();
             length = ReadVideoTime(ls);
-            if (pref.equals("vnd.dlna.mpeg-tts")){
+            if (pref.equals("vnd.dlna.mpeg-tts")) {
                 getVedioInfo(excelFile.getPath());
-            }else{
-                width=String.valueOf(m.getVideo().getSize().getWidth());
-                height=String.valueOf(m.getVideo().getSize().getHeight());
+            } else {
+                width = String.valueOf(m.getVideo().getSize().getWidth());
+                height = String.valueOf(m.getVideo().getSize().getHeight());
             }
             //程序结束时，删除临时文件
             VideoUtil.deleteFile(excelFile);
         } catch (Exception e) {
             e.printStackTrace();
-            length="-1";
+            length = "-1";
         }
         return length;
     }
@@ -107,8 +108,8 @@ public class VideoUtil {
             IStream stream = container.getStream(i);
             IStreamCoder coder = stream.getStreamCoder();
             if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-                width=String.valueOf(coder.getWidth());
-                height=String.valueOf(coder.getHeight());
+                width = String.valueOf(coder.getWidth());
+                height = String.valueOf(coder.getHeight());
             }
         }
     }

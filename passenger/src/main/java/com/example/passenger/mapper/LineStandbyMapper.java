@@ -3,10 +3,12 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.LineStandby;
 import com.example.passenger.entity.vo.LineStandbyVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface LineStandbyMapper {
     List<LineStandbyVo> selectPaging(@Param("lineID") Integer lineID,
                                           @Param("pageNum") Integer pageNum,

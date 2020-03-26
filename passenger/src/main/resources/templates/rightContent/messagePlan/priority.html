@@ -97,7 +97,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     selectMsgLevel();
-    $("tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
+    $("#priorityTable tbody tr").live("click",function(){ //给每个tr 绑定点击事件 主要锁定每个tr
         var trs = $(this).parent().find('tr'); //获取所有tr
         if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
             trs.removeClass('on');//把class on 移除
@@ -110,47 +110,25 @@ $(document).ready(function(){
         var title=$("#title").val();
         var levelCode=$("#levelCode").val();
         var note=$("#note").val();
-        if(level.match(/^\s+$/g)||level==""){
-            swal("级别不能为空");
-            return false;
-        }
-        if(title.match(/^\s+$/g)||title==""){
-            swal("标题不能为空");
-            return false;
-        }
-        if(levelCode.match(/^\s+$/g)||levelCode==""){
-            swal("代码不能为空");
-            return false;
-        }
-        if(note.match(/^\s+$/g)||note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        if(level>255 || level<1){
-            swal("优先级不能大于255,或者小于1");
-            return false;
-        }
-        if(!(/^[0-9]+$/.test(level))){
-            swal("优先级只能为数字!");
-            return false;
-        }
-        $.ajax({
-            url:'/msgLevel/addMsgLevel',
-            type:"POST",
-            data:{title:title,level:level,levelCode:levelCode,note:note},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该级别已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/msgLevel/msgLevelManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(level,title,levelCode,note)){
+            $.ajax({
+                url:'/msgLevel/addMsgLevel',
+                type:"POST",
+                data:{title:title,level:level,levelCode:levelCode,note:note},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该级别已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/msgLevel/msgLevelManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#updateButton").live("click",function () {
@@ -168,48 +146,26 @@ $(document).ready(function(){
         var title=$("#msgTitle").val();
         var levelCode=$("#msgLevelCode").val();
         var note=$("#msgNote").val();
-        if(level.match(/^\s+$/g)||level==""){
-            swal("级别不能为空");
-            return false;
-        }
-        if(title.match(/^\s+$/g)||title==""){
-            swal("标题不能为空");
-            return false;
-        }
-        if(levelCode.match(/^\s+$/g)||levelCode==""){
-            swal("代码不能为空");
-            return false;
-        }
-        if(note.match(/^\s+$/g)||note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        if(level>255 || level<1){
-            swal("优先级不能大于255,或者小于1");
-            return false;
-        }
-        if(!(/^[0-9]+$/.test(level))){
-            swal("优先级只能为数字!");
-            return false;
-        }
-        $.ajax({
-            url:'/msgLevel/updateMsgLevel',
-            type:"POST",
-            data:{id:id,level:level,title:title,levelCode:levelCode,note:note},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该级别已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        document.getElementById('cont_b').style.display='none';
-                        location.href="/msgLevel/msgLevelManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(level,title,levelCode,note)){
+            $.ajax({
+                url:'/msgLevel/updateMsgLevel',
+                type:"POST",
+                data:{id:id,level:level,title:title,levelCode:levelCode,note:note},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该级别已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            document.getElementById('cont_b').style.display='none';
+                            location.href="/msgLevel/msgLevelManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#deleteMsgLevel").live("click",function () {
@@ -283,6 +239,35 @@ function selectMsgLevel(pageNum) {
         }
     });
 }
+
+function isnull(level,title,levelCode,note) {
+    if(level.match(/^\s+$/g)||level==""){
+        swal("级别不能为空");
+        return false;
+    }
+    if(level>255 || level<1){
+        swal("优先级不能大于255,或者小于1");
+        return false;
+    }
+    if(!(/^[0-9]+$/.test(level))){
+        swal("优先级只能为数字!");
+        return false;
+    }
+    if(title.match(/^\s+$/g)||title==""){
+        swal("标题不能为空");
+        return false;
+    }
+    if(levelCode.match(/^\s+$/g)||levelCode==""){
+        swal("代码不能为空");
+        return false;
+    }
+    if(note.match(/^\s+$/g)||note==""){
+        swal("备注不能为空");
+        return false;
+    }
+    return true;
+}
+
 function nextPage(pageNum) {
     var num=parseInt(pageNum)+1;
     selectMsgLevel(num);

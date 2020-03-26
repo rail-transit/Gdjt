@@ -32,7 +32,7 @@
         #standbyEvent{width: 65%;float: left;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 23px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:390px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -55,7 +55,7 @@
     <div id="lineStandby_top_div">
         <p id="lineStandby_top_p">备件管理</p>
         <div id="lineStandby_top_title">
-            <span>备件类型名称:</span>
+            <span>线路名称:</span>
             <select id="lineID">
                 <option>所有线路</option>
                 <option th:each="line:${lineList}" th:value="${line.id}" th:text="${line.name}"></option>
@@ -161,114 +161,64 @@ $(document).ready(function(){
         var faultNumber=$(".faultNumber").val();
         var reworkingNumber=$(".reworkingNumber").val();
         var scrapNumber=$(".scrapNumber").val();
-        var event=$(".event").val();
-
-        if(availableNumber=="" || availableNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(availableNumber))){
-            swal("库存数量只能为数字");
-            return false;
-        }
-        if(faultNumber=="" || faultNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(faultNumber))){
-            swal("故障数量只能为数字");
-            return false;
-        }
-        if(reworkingNumber=="" || reworkingNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(reworkingNumber))){
-            swal("返修数量只能为数字");
-            return false;
-        }
-        if(scrapNumber=="" || scrapNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(scrapNumber))){
-            swal("报废数量只能为数字");
-            return false;
-        }
         var type=$('input[name="type"]:checked').val();
-        if(type=='1'){
-            if(event=="" || event.match(/^\s+$/g)){
-                swal("事件描述不能为空");
-                return false;
-            }
-            var lineIDA=$(".lin").val();
-            var lineIDB=$("#lineID").val();
-            var standbyType=$("#standbyType").val();
-            var lineID;
-            if(lineIDA==""||lineIDA==null) {
-                if (lineIDB == "" || lineIDB == null) {
-                    swal("请选择线路");
+        var event=$(".event").val();
+        if (isnull(availableNumber,faultNumber,reworkingNumber,scrapNumber)){
+            if(type=='1'){
+                if(event=="" || event.match(/^\s+$/g)){
+                    swal("事件描述不能为空");
                     return false;
                 }
-                lineID=lineIDB;
-            }else{
-                lineID=lineIDA;
-            }
-            $.ajax({
-                url:'/lineStandby/addLineStandby',
-                type:"POST",
-                data:{id:id,lineID:lineID,standbyType:standbyType,availableNumber:availableNumber,faultNumber:faultNumber,
-                    reworkingNumber:reworkingNumber,scrapNumber:scrapNumber,event:event},
-                success:function (data) {
-                    if(data.result=="success"){
-                        swal("Good!", "操作成功!", "success");
-                        $(".confirm").click(function () {
-                            window.location.href="/lineStandby/lineStandbyManagement";
-                        });
-                    }else if (data.result=="existing") {
-                        swal("备件已存在请勿重复添加!");
-                    }else{
-                        swal("OMG!", "操作错误!", "error");
+                var lineIDA=$(".lin").val();
+                var lineIDB=$("#lineID").val();
+                var standbyType=$("#standbyType").val();
+                var lineID;
+                if(lineIDA==""||lineIDA==null) {
+                    if (lineIDB == "" || lineIDB == null) {
+                        swal("请选择线路");
+                        return false;
                     }
-                },
-                error:function (){
-                    swal("OMG!", "请求失败!", "error");
+                    lineID=lineIDB;
+                }else{
+                    lineID=lineIDA;
                 }
-            });
-        }else if (type=='2') {
-            if(event=="" || event.match(/^\s+$/g)){
-                swal("事件描述不能为空");
-                return false;
-            }
-            var id=$(".id").val();
-            var lineID=$(".lin").val();
-            if(id==""||id==null){
-                swal("请选则需要修改的备件");
-                return false;
-            }
-            $.ajax({
-                url:'/lineStandby/updateLineStandby',
-                type:"POST",
-                data:{id:id,lineID:lineID,availableNumber:availableNumber,faultNumber:faultNumber,
-                    reworkingNumber:reworkingNumber,scrapNumber:scrapNumber,event:event},
-                success:function (data) {
-                    if(data.result=="success"){
-                        swal("Good!", "操作成功!", "success");
-                        $(".confirm").click(function () {
-                            window.location.href="/lineStandby/lineStandbyManagement";
-                        });
-                    }else{
-                        swal("OMG!", "操作错误!", "error");
-                    }
-                },
-                error:function (){
-                    swal("OMG!", "请求失败!", "error");
-                }
-            });
-        }else if (type=='3'){
-            var id=$(".id").val();
-            var lineID=$(".lin").val();
-            if(id==""||id==null){
-                swal("请选则要删除的备件");
-                return false;
-            }
-            swal({
-                title: "您确定要删除吗？",
-                text: "您确定要删除这条数据？",
-                type: "warning",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                confirmButtonText: "是的，我要删除",
-                confirmButtonColor: "#ec6c62"
-            }, function() {
                 $.ajax({
-                    url:'/lineStandby/deleteLineStandby',
+                    url:'/lineStandby/addLineStandby',
                     type:"POST",
-                    data:{id:id,lineID:lineID},
+                    data:{id:id,lineID:lineID,standbyType:standbyType,availableNumber:availableNumber,faultNumber:faultNumber,
+                        reworkingNumber:reworkingNumber,scrapNumber:scrapNumber,event:event},
+                    success:function (data) {
+                        if(data.result=="success"){
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                window.location.href="/lineStandby/lineStandbyManagement";
+                            });
+                        }else if (data.result=="existing") {
+                            swal("备件已存在请勿重复添加!");
+                        }else{
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    },
+                    error:function (){
+                        swal("OMG!", "请求失败!", "error");
+                    }
+                });
+            }else if (type=='2') {
+                if(event=="" || event.match(/^\s+$/g)){
+                    swal("事件描述不能为空");
+                    return false;
+                }
+                var id=$(".id").val();
+                var lineID=$(".lin").val();
+                if(id==""||id==null){
+                    swal("请选则需要修改的备件");
+                    return false;
+                }
+                $.ajax({
+                    url:'/lineStandby/updateLineStandby',
+                    type:"POST",
+                    data:{id:id,lineID:lineID,availableNumber:availableNumber,faultNumber:faultNumber,
+                        reworkingNumber:reworkingNumber,scrapNumber:scrapNumber,event:event},
                     success:function (data) {
                         if(data.result=="success"){
                             swal("Good!", "操作成功!", "success");
@@ -283,7 +233,42 @@ $(document).ready(function(){
                         swal("OMG!", "请求失败!", "error");
                     }
                 });
-            });
+            }else if (type=='3'){
+                var id=$(".id").val();
+                var lineID=$(".lin").val();
+                if(id==""||id==null){
+                    swal("请选则要删除的备件");
+                    return false;
+                }
+                swal({
+                    title: "您确定要删除吗？",
+                    text: "您确定要删除这条数据？",
+                    type: "warning",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: "是的，我要删除",
+                    confirmButtonColor: "#ec6c62"
+                }, function() {
+                    $.ajax({
+                        url:'/lineStandby/deleteLineStandby',
+                        type:"POST",
+                        data:{id:id,lineID:lineID},
+                        success:function (data) {
+                            if(data.result=="success"){
+                                swal("Good!", "操作成功!", "success");
+                                $(".confirm").click(function () {
+                                    window.location.href="/lineStandby/lineStandbyManagement";
+                                });
+                            }else{
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        },
+                        error:function (){
+                            swal("OMG!", "请求失败!", "error");
+                        }
+                    });
+                });
+            }
         }
     });
 
@@ -332,6 +317,25 @@ function selectLineStandby(pageNum,lineID) {
     });
 }
 
+function isnull(availableNumber,faultNumber,reworkingNumber,scrapNumber) {
+    if(availableNumber=="" || availableNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(availableNumber))){
+        swal("库存数量只能为数字");
+        return false;
+    }
+    if(faultNumber=="" || faultNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(faultNumber))){
+        swal("故障数量只能为数字");
+        return false;
+    }
+    if(reworkingNumber=="" || reworkingNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(reworkingNumber))){
+        swal("返修数量只能为数字");
+        return false;
+    }
+    if(scrapNumber=="" || scrapNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(scrapNumber))){
+        swal("报废数量只能为数字");
+        return false;
+    }
+    return true;
+}
 
 function nextPage(pageNum) {
     var num=parseInt(pageNum)+1;

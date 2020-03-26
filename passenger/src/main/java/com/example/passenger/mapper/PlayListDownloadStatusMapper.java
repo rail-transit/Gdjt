@@ -2,9 +2,11 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.PlayListDownloadStatus;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface PlayListDownloadStatusMapper {
 
     List<PlayListDownloadStatus> selectDownloadStatus(@Param("playlistID") Integer playlistID,

@@ -2,9 +2,11 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.PlayList;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface PlayListMapper {
 
     PlayList selectPlayList(Integer id);
@@ -15,10 +17,13 @@ public interface PlayListMapper {
                               @Param("type") Integer type,
                               @Param("id") Integer id);
 
-    List<PlayList> selectPaging(@Param("state") Integer state,@Param("type") Integer type,@Param("pageNum") Integer pageNum,
+    List<PlayList> selectPaging(@Param("state") Integer state,
+                                @Param("type") Integer type,
+                                @Param("pageNum") Integer pageNum,
                                 @Param("pageSize") Integer pageSize);
 
-    Integer count(@Param("state") Integer state,@Param("type") Integer type);
+    Integer count(@Param("state") Integer state,
+                  @Param("type") Integer type);
 
     Integer updatePlayListByID(@Param("id") Integer id,
                                @Param("state") Integer state,

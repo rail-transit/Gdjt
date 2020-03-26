@@ -14,14 +14,14 @@
         .para{width: 14%}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:350px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
-        #playListTable tbody{height:507px;}
-        #planManageTable tbody{height:540px;}
-        #contentTable tbody {height:316px;}
-        #playStyleTable tbody{height:105px;}
+        /*#playListTable tbody{height:507px;}*/
+        /*#planManageTable tbody{height:540px;}*/
+        /*#contentTable tbody {height:316px;}*/
+        /*#playStyleTable tbody{height:105px;}*/
         ul{list-style: none;padding-left: 20px;margin: auto;}
         li{float: left;width: 32%;height: 34px;}
         p{font-size: 14px;font-weight: bolder;padding-left: 8px;
@@ -36,12 +36,14 @@
             left: 18%;
             width: 60%;
             height: 50%;
-            border: 6px solid #d6b6dd47;
+            border: 6px solid rgba(101, 171, 243, 0.83);
+            /*-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);*/
+            /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);*/
             background-color: white;
             z-index:1;
             overflow: auto;
         }
-        #contentTable select{width: 60%;height: 70%;}
+        #contentTable select{width: 63%;height: 70%;}
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 15px;padding-top: 7px;}
         #paging_ul li{display: inline;float:left;width: 68px;}
         #nextPage{margin-left: -32px;}
@@ -52,6 +54,7 @@
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
     <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript" src="/My97DatePicker/WdatePicker.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             tabSize.init('playListTable');
@@ -66,7 +69,7 @@
             <tr>
                 <th class="tips">播放日期</th>
                 <th class="tips">播表名称</th>
-                <th class="tips" style="width: 90px">操作</th>
+                <th class="tips" style="width: 100px">操作</th>
             </tr>
             </thead>
             <tr>
@@ -93,8 +96,10 @@
             </tr>
         </table>
     </div>
-    <input type="button" value="添加版式" id="addPlayStyle">
-    <input type="button" value="删除版式" id="deletePlayStyle">
+    <div th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 232}">
+        <input type="button" value="添加版式" id="addPlayStyle">
+        <input type="button" value="删除版式" id="deletePlayStyle">
+    </div>
     <input type="text" id="playStyleID" hidden="hidden">
     <input type="text" id="playStyleName" hidden="hidden">
     <input type="text" id="playStylePath" hidden="hidden">
@@ -183,7 +188,12 @@
             </tr>
             <tr>
                 <td class="para">开始时间</td>
-                <td><input style="width: 64%;" type="datetime-local" step="1" id="startDate"></td>
+<!--                <td><input style="width: 64%;" type="datetime-local" step="1" id="startDate"></td>-->
+                <td>
+                    <!--前端 JavaScript 日期插件 My97DatePicker-->
+                    <input class="Wdate" id="startDate" step="1" type="text" autocomplete="off"
+                           onClick="WdatePicker({el:this,dateFmt:'yyyy/MM/dd HH:mm:ss'/*,minDate:'%y/%M/%d %H:%m:%s'*/,maxDate:'#F{$dp.$D(\'endDate\')}'})" style ="width: 64%;">
+                </td>
                 <td class="para">起始星期</td>
                 <td class="planTD"><select id="startWeek">
                     <option value="1">星期一</option>
@@ -197,7 +207,12 @@
             </tr>
             <tr>
                 <td class="para">结束时间</td>
-                <td><input style="width: 64%;" type="datetime-local" step="1" id="endDate"></td>
+<!--                <td><input style="width: 64%;" type="datetime-local" step="1" id="endDate"></td>-->
+                <td>
+                    <!--前端 JavaScript 日期插件 My97DatePicker-->
+                    <input class="Wdate" id="endDate" step="1" type="text" autocomplete="off"
+                           onClick="WdatePicker({el:this,dateFmt:'yyyy/MM/dd HH:mm:ss',minDate:'#F{$dp.$D(\'startDate\') || \'%y/%M/%d %H:%m:%s\'}'})" style ="width: 64%;">
+                </td>
                 <td class="para">结束星期</td>
                 <td class="planTD"><select id="endWeek">
                     <option value="1">星期一</option>
@@ -279,7 +294,10 @@ $(document).ready(function() {
                 }else if(data.playList.type==4){
                     type="插播";
                 }
-                $("#note").val(data.playList.note);
+                if (data.playList.note != null){
+                    $("#note").val(data.playList.note);
+                }
+                // $("#note").val(data.playList.note);
                 $("#playListType").val(type);
             }
         });
@@ -349,8 +367,17 @@ $(document).ready(function() {
                 //编辑
                 $("#playListName").val(data.playList.name);
                 $("#summary").val(data.playList.summary);
-                $("#startDate").val(data.playList.startDate);
-                $("#endDate").val(data.playList.endDate);
+
+                var starDateObject = new Date(data.playList.startDate);
+                //将日期对象以yyyy/MM/dd hh:mm:SS格式转为日期字符串
+                var starDateString = formatDateObjectToDateString(starDateObject);
+                $("#startDate").val(starDateString);
+
+                var endDateObject = new Date(data.playList.endDate);
+                //将日期对象以yyyy/MM/dd hh:mm:SS格式转为日期字符串
+                var endDateString = formatDateObjectToDateString(endDateObject);
+                $("#endDate").val(endDateString);
+
                 $("#type").val(data.playList.type);
                 if(data.playList.type==4){
                     $("#timeLength").val(data.playList.timeLength);
@@ -363,7 +390,6 @@ $(document).ready(function() {
                     $("#startWeek").attr("disabled",true);
                     $("#endWeek").attr("disabled",true);
                 }
-
             }
         });
     });
@@ -377,96 +403,76 @@ $(document).ready(function() {
     $("#addPlayList").click(function () {
         var name=$("#playListName").val();
         var timeLength=$("#timeLength").val();
-        var startDate=$("#startDate").val();
-        var endDate=$("#endDate").val();
+        var startDate= $("#startDate").val().replace(/\//g,"-");
+        var endDate=$("#endDate").val().replace(/\//g, "-");
         var summary=$("#summary").val();
         var description=$("#description").val();
         var type=$("#type").val();
         var startWeek=$("#startWeek").val();
         var endWeek=$("#endWeek").val();
-        if(name.match(/^\s+$/g)||name==""){
-            swal("播表不能为空!");
-            return false;
-        }
-        if(startDate=="" || endDate==""){
-            swal("开始时间和结束时间不能为空!");
-            return false;
-        }
-        if(type==4){
-            if(timeLength.match(/^\s+$/g)||timeLength==""){
-                swal("请输入播放时长!");
-                return false;
-            }
-        }
-        $.ajax({
-            url:'/playList/addPlayList',
-            type:"POST",
-            data:{name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,summary:summary,
-                description:description,startWeek:startWeek,endWeek:endWeek,type:type},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该播表名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/playList/playListManagement";
-                        getPlayList();
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,startDate,endDate,type,timeLength)){
+            $.ajax({
+                url:'/playList/addPlayList',
+                type:"POST",
+                data:{name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,summary:summary,
+                    description:description,startWeek:startWeek,endWeek:endWeek,type:type},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该播表名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/playList/playListManagement";
+                            getPlayList();
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#updatePlayList").click(function () {
         var id=$("#id").val();
         var name=$("#playListName").val();
         var timeLength=$("#timeLength").val();
-        var startDate=$("#startDate").val();
-        var endDate=$("#endDate").val();
+        var startDate= $("#startDate").val().replace(/\//g,"-");
+        var endDate=$("#endDate").val().replace(/\//g, "-");
         var summary=$("#summary").val();
         var type=$("#type").val();
         var startWeek=$("#startWeek").val();
         var endWeek=$("#endWeek").val();
-        if(name.match(/^\s+$/g)||name==""){
-            swal("播表不能为空!");
-            return false;
-        }
-        if(startDate=="" || endDate==""){
-            swal("开始时间和结束时间不能为空!");
-            return false;
-        }
-        if(type==4){
-            if(timeLength.match(/^\s+$/g)||timeLength==""){
-                swal("请输入播放时长!");
-                return false;
-            }
-        }
-        $.ajax({
-            url:'/playList/updatePlayList',
-            type:"POST",
-            data:{id:id,name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,
-                summary:summary,startWeek:startWeek,endWeek:endWeek,type:type},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该播表已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/playList/playListManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,startDate,endDate,type,timeLength)){
+            $.ajax({
+                url:'/playList/updatePlayList',
+                type:"POST",
+                data:{id:id,name:name,timeLength:timeLength,startDate:startDate,endDate:endDate,
+                    summary:summary,startWeek:startWeek,endWeek:endWeek,type:type},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该播表已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/playList/playListManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#audit").click(function () {
         var id=$("#id").val();
         var state=$('input[name="state"]:checked').val();
         var note=$("#note").val();
+        if(id==null || id==""){
+            swal("请选择需要审核的播表!");
+            return false;
+        }
         if(state==2){
             if(note=="" || note==null || note.match(/^\s+$/g)){
                 swal("请填写审核意见!");
@@ -495,6 +501,14 @@ $(document).ready(function() {
         var styleID=$("#playStyleID").val();
         var styleName=$("#playStyleName").val();
         var stylePath=$("#playStylePath").val();
+        if(playListID==null || playListID==""){
+            swal("请选择需要添加版式的播表!");
+            return true;
+        }
+        if(styleID==null || styleID==""){
+            swal("请选择需要添加的版式!");
+            return true;
+        }
         $.ajax({
             url:'/playStyle/addPlayListStyle',
             type:"POST",
@@ -515,6 +529,14 @@ $(document).ready(function() {
     $("#deletePlayStyle").click(function () {
         var playListID=$("#id").val();
         var playListStyleID=$("#playListStyleID").val();
+        if(playListID==null || playListID==""){
+            swal("请选择需要删除版式的播表!");
+            return true;
+        }
+        if(playListStyleID==null || playListStyleID==""){
+            swal("请选择需要删除的版式!");
+            return true;
+        }
         $.ajax({
             url:'/playStyle/deletePlayListStyle',
             type:"POST",
@@ -571,6 +593,23 @@ $(document).ready(function() {
 
 });
 
+//日期对象转为 yyyy/MM/dd hh:mm:ss 格式日期字符串
+function formatDateObjectToDateString(date){
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    h = h < 10 ? ((h == 0) ? '00' : ('0' + h)) : h;
+    var minute = date.getMinutes();
+    minute = minute < 10 ? ((minute == 0) ? '00' : ('0' + minute)) : minute;
+    // minute = minute < 10 ? ('0' + minute) : minute;
+    var second= date.getSeconds();
+    second = second < 10 ? ((second == 0) ? '00' : ('0' + second)) : second;
+    // second = minute < 10 ? ('0' + second) : second;
+    return y + '/' + m + '/' + d+' '+h+':'+minute+':'+ second;
+}
 
 function getPlayList(pageNum) {
     var type=1;
@@ -582,8 +621,8 @@ function getPlayList(pageNum) {
             var operation="";
             $.each(data.rightsList, function (i, item) {
                 if(item.id==232 ){
-                    operation='<input type="button" value="审核" id="updateButton">' +
-                              '<input type="button" value="删除" id="deleteButton">';
+                    operation='<input type="button" value="修改" id="update">' +
+                              '<input type="button" value="删除" id="delete">';
                 }
             });
             $("#playListTable tbody tr").remove();
@@ -664,6 +703,24 @@ function getPlayStyle(pageNum) {
             }
         }
     });
+}
+
+function isnull(name,startDate,endDate,type,timeLength) {
+    if(name.match(/^\s+$/g)||name==""){
+        swal("播表不能为空!");
+        return false;
+    }
+    if(startDate=="" || endDate==""){
+        swal("开始时间和结束时间不能为空!");
+        return false;
+    }
+    if(type==4){
+        if(timeLength.match(/^\s+$/g)||timeLength==""){
+            swal("请输入播放时长!");
+            return false;
+        }
+    }
+    return true;
 }
 
 function nextPage(pageNum) {

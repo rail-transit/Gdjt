@@ -17,18 +17,19 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        Users users = (Users)httpServletRequest.getSession().getAttribute("user");
-        //String token = httpServletRequest.getParameter("token");// 从 http 请求头中取出 token
-
+        Users users = (Users) httpServletRequest.getSession().getAttribute("user");
         //判断session是否失效
-        if(users==null) {
+        if (users == null) {
             //httpServletResponse.getWriter().print("<html><script>window.open ('/login.jsp','_top')</script></html>");
-            httpServletResponse.sendRedirect("/user/home");
+            httpServletResponse.sendRedirect("/user/login");
             return false;
         }
-       /* // 如果不是映射到方法直接通过
+       /* String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+
+        // 如果不是映射到方法直接通过
         if(!(object instanceof HandlerMethod)){
             return true;
         }
@@ -56,7 +57,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 } catch (JWTDecodeException j) {
                     throw new RuntimeException("401");
                 }
-                UsersVo user = userService.findUserById(userId);
+                Users user = userService.findUserById(userId);
                 if (user == null) {
                     throw new RuntimeException("用户不存在，请重新登录");
                 }
@@ -77,6 +78,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
 
     }
+
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
 

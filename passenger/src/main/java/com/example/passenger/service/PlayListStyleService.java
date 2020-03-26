@@ -18,60 +18,61 @@ public class PlayListStyleService {
     @Autowired
     PlayListStyleMapper playListStyleMapper;
 
-    public PlayListStyle selectPlayListStyle(Integer id){
+    public PlayListStyle selectPlayListStyle(Integer id) {
         return playListStyleMapper.selectPlayListStyle(id);
     }
 
-    public PlayListStyle selectPlayListByStyleID(Integer styleID){
+    public PlayListStyle selectPlayListByStyleID(Integer styleID) {
         return playListStyleMapper.selectPlayListByStyleID(styleID);
     }
-    public List<PlayListStyle> getPlayListStyle(Integer playListID){
+
+    public List<PlayListStyle> getPlayListStyle(Integer playListID) {
         return playListStyleMapper.getPlayListStyle(playListID);
     }
 
-    public PageUtil selectPaging(Integer playListID,Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer playListID, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(playListStyleMapper.count(playListID));
-        pageUtil.setPageData(playListStyleMapper.selectPaging(playListID,pageNum,pageSize));
+        pageUtil.setPageData(playListStyleMapper.selectPaging(playListID, pageNum, pageSize));
         return pageUtil;
     }
 
-    public Integer updateTime(Integer id,String time){
+    public Integer updateTime(Integer id, String time) {
         try {
-            return playListStyleMapper.updateTime(id,time);
-        }catch (Exception e){
+            return playListStyleMapper.updateTime(id, time);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer addPlayListStyle(PlayListStyle playListStyle){
+    public Integer addPlayListStyle(PlayListStyle playListStyle) {
         try {
             return playListStyleMapper.addPlayListStyle(playListStyle);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updatePlayListStyle(PlayListStyle playListStyle){
+    public Integer updatePlayListStyle(PlayListStyle playListStyle) {
         try {
             return playListStyleMapper.updatePlayListStyle(playListStyle);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deletePlayListStyle(Integer id){
+    public Integer deletePlayListStyle(Integer id) {
         try {
             return playListStyleMapper.deletePlayListStyle(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        #contract_top_div{height: 335px;width: 99%; margin: auto;
+            border: 1px solid #d2d2c1;}
+        #contract_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
+            margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
+        #contract_Button{padding-top: 20px;padding-left: 205px}
+        #contract_Button input{width: 65px;height: 25px;}
+        td span{color: red;font-size: 12px;}
+        td{width: 100px;}
+        textarea{resize:none;width: 82%;}
+        select{width: 166px;height: 21px}
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+</head>
+<body>
+<div id="contract_top_div">
+    <p id="contract_title">合同属性管理</p>
+    <table width="100%" border="0" height="100px">
+        <tr>
+            <td align="center">属性名称:</td>
+            <td>
+                <input  type="text">
+            </td>
+            <td align="center">长度:</td>
+            <td>
+                <input  type="text">
+            </td>
+        </tr>
+        <tr>
+            <td align="center">数据类型:</td>
+            <td>
+                <select>
+                    <option>文本</option>
+                    <option>数值</option>
+                    <option>日期</option>
+                    <option>枚举</option>
+                    <option>布尔</option>
+                    <option>日期区间</option>
+                    <option>数值区间</option>
+                    <option>大文本</option>
+                </select>
+            </td>
+            <td align="center">是否必填:</td>
+            <td>
+                <select>
+                    <option>否</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">枚举选项:</td>
+            <td colspan="3">
+                <textarea></textarea>
+            </td>
+        </tr>
+    </table>
+    <div id="contract_Button">
+        <input id="addUser" type="button"  value="添加">&nbsp;&nbsp;
+        <input id="cancel" type="button"  value="取消">
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

@@ -2,10 +2,12 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.PlayStyle;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface PlayStyleMapper {
 
     PlayStyle selectPlayStyle(Integer id);

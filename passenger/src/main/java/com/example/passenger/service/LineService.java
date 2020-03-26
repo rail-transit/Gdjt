@@ -17,46 +17,46 @@ public class LineService {
     @Autowired
     LineMapper lineMapper;
 
-    public Line selectLine(Integer id){
+    public Line selectLine(Integer id) {
         return lineMapper.selectLine(id);
     }
 
-    public List<Line> selectAllLine(){
+    public List<Line> selectAllLine() {
         return lineMapper.selectAllLine();
     }
 
-    public Integer selectLineByName(String lineID,String name,Integer id){
-        return lineMapper.selectLineByName(lineID,name,id);
+    public Integer selectLineByName(String lineID, String name, Integer id) {
+        return lineMapper.selectLineByName(lineID, name, id);
     }
 
     @Transactional
-    public Integer addLine(Line line){
+    public Integer addLine(Line line) {
         try {
             return lineMapper.addLine(line);
-        }catch (Exception e){
-            logger.error("添加线路异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("添加线路异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateLine(Line line){
+    public Integer updateLine(Line line) {
         try {
             return lineMapper.updateLine(line);
-        }catch (Exception e){
-            logger.error("修改线路异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("修改线路异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteLine(Integer id){
+    public Integer deleteLine(Integer id) {
         try {
             return lineMapper.deleteLine(id);
-        }catch (Exception e){
-            logger.error("删除线路异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("删除线路异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }

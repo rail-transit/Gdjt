@@ -9,23 +9,25 @@
         #fault_title{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
             margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
         #fault_ul{list-style: none;}
-        #fault_ul li{display: inline;float:left;width: 24%;font-size: 14px;height: 35px;}
+        #fault_ul li{display: inline;float:left;width: 27%;font-size: 14px;height: 35px;}
         #fault_ul li span{padding-right: 10px;}
-        #fault_ul select{height: 24px;width: 135px;}
+        #fault_ul select{height: 24px;width: 163px;}
         #fault_height{height: 420px;width: 99%;border: 1px solid #ebf2f5;
             margin-top: 10px;margin-left: 5px;overflow-y: auto;}
         #fault_height p{font-size: 14px;font-weight: bolder;background-color: #006c96;color: white;
             margin: auto;height: 20px;padding-left: 10px;padding-top: 10px;padding-bottom: 10px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:370px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {/*height:370px;*/overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;text-align: center}
         #paging_ul li{display: inline;float:left;width: 69px;}
     </style>
+    <script src="/js/echarts.min.js"></script>
     <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript" src="/My97DatePicker/WdatePicker.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             tabSize.init('faultTable');
@@ -34,7 +36,7 @@
 </head>
 <body>
 <div id="fault_top">
-    <p id="fault_title">设备告警统计</p>
+    <p id="fault_title">设备故障统计</p>
     <ul id="fault_ul">
         <li><span>线路名称:</span>
             <select id="lineID">
@@ -54,20 +56,38 @@
                 <option th:each="deviceType:${deviceTypeList}" th:value="${deviceType.id}"
                         th:text="${deviceType.name}"></option>
             </select></li>
-        <li><input type="button" value="查询" id="select"></li>
-        <li style="padding-left: 4px"><span>开始时间:</span><input type="date" id="startDate"></li>
-        <li><span>结束时间:</span><input type="date" id="endDate"></li>
-        <li><span>设备名称:</span><select id="deviceID">
+        <li style="width: 50px"><input type="button" value="查询" id="select"></li>
+        <li style="width: 50px"><input type="button" value="饼状" id="pancake"></li>
+        <li style="width: 50px"><input type="button" value="柱状" id="columnar"></li>
+        <li><span>开始时间:</span>
+            <!--<input type="date" id="startDate">-->
+            <!--前端 JavaScript 日期插件 My97DatePicker-->
+            <input class="Wdate" id="startDate" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'/*,minDate:'%y-%M-%d'*/,maxDate:'#F{$dp.$D(\'endDate\')}'})">
+
+        </li>
+        <li><span>结束时间:</span>
+            <!--<input type="date" id="endDate">-->
+            <!--前端 JavaScript 日期插件 My97DatePicker-->
+            <input class="Wdate" id="endDate" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\') || \'%y-%M-%d\'}'})">
+
+        </li>
+        <li><span>设备名称:</span>
+            <select id="deviceID">
             <option value="0">所有设备</option>
             <option th:each="device:${deviceList}" th:value="${device.id}"
-                    th:text="${device.name}"></option></select></li>
-        <li style="margin-left: -4px"><input type="button" value="导出" id="export"></li>
+                    th:text="${device.name}"></option>
+            </select></li>
+        <li style="width: 50px"><input type="button" value="导出" id="export"></li>
+        <li style="width: 50px"><input type="button" value="列表" id="faultList"></li>
     </ul>
 </div>
 <div id="fault_height">
     <table width="100%" border="0" id="faultTable">
         <thead>
         <tr>
+            <th class="tips">序号</th>
             <th class="tips">所属线路</th>
             <th class="tips">所属车站</th>
             <th class="tips">设备名称</th>
@@ -84,8 +104,12 @@
 
     </ul>
 </div>
+<div id="first" style="width: 99%;height:400px;"></div>
+<div id="second" style="width: 99%;height:400px;"></div>
 </body>
 <script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/pancake.js"></script>
+<script type="text/javascript" src="/js/columnar.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     var time = new Date();
@@ -94,7 +118,31 @@ $(document).ready(function(){
     var today = time.getFullYear() + '-' + month + '-' + day;
     $('#startDate').val(today);
     $('#endDate').val(today);
+
     selectMaintain();
+    getPancake($('#startDate').val(),$('#endDate').val());
+    getColumnar($('#startDate').val(),$('#endDate').val());
+    $("#first").attr("style","display:none;");
+    $("#second").attr("style","display:none;");
+    $("#pancake").click(function () {
+        $("#first").attr("style","display:block;");
+        $("#second").attr("style","display:none;");
+        $("#fault_height").attr("style","display:none;");
+        $("#paging_div").attr("style","display:none;");
+    });
+    $("#faultList").click(function () {
+        $("#first").attr("style","display:none;");
+        $("#second").attr("style","display:none;");
+        $("#fault_height").attr("style","display:block;");
+        $("#paging_div").attr("style","display:block;");
+    });
+    $("#columnar").click(function () {
+        $("#second").attr("style","display:block;");
+        $("#first").attr("style","display:none;");
+        $("#fault_height").attr("style","display:none;");
+        $("#paging_div").attr("style","display:none;");
+    });
+
     $("#select").click(function () {
         var lineID=$("#lineID").val();
         var stationID=$("#stationID").val();
@@ -155,24 +203,37 @@ $(document).ready(function(){
                 if(data.devAlarmLogVoList.length!=0){
                     const jsonData=data.devAlarmLogVoList;
                     //列标题，逗号隔开，每一个逗号就是隔开一个单元格
-                    let str = `所属线路,所属车站,设备名称,报警描述,报警次数\n`;
+                    let str = "序号,所属线路,所属车站,设备名称,故障描述,故障次数\n";
                     //增加\t为了不让表格显示科学计数法或者其他格式
                     for(let i = 0 ; i < jsonData.length ; i++ ){
                         for(let item in jsonData[i]){
-                            str+=`${jsonData[i][item] + '\t'},`;
+                            str+=jsonData[i][item]+",";
                         }
                         str+='\n';
                     }
-                    //encodeURIComponent解决中文乱码
-                    let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
-                    //通过创建a标签实现
-                    let link = document.createElement("a");
-                    link.href = uri;
-                    //对下载的文件命名
-                    link.download =  "json数据表.csv";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    let isIE = false;
+                    if (navigator.userAgent.indexOf("compatible") > -1 && navigator.userAgent.indexOf("MSIE") > -1) { // ie浏览器
+                        isIE = true;
+                    }
+                    if (navigator.userAgent.indexOf("Trident") > -1) { // edge 浏览器
+                        isIE = true;
+                    }
+                    if(isIE){
+                        var BOM = "\uFEFF";
+                        var csvData = new Blob([BOM + str], { type: "text/csv" });
+                        navigator.msSaveBlob(csvData, "设备故障统计.csv");
+                    }else{
+                        //encodeURIComponent解决中文乱码
+                        let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+                        //通过创建a标签实现
+                        let link = document.createElement("a");
+                        link.href = uri;
+                        //对下载的文件命名
+                        link.download =  "设备故障统计.csv";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
                 }
             }
         });
@@ -189,7 +250,8 @@ function selectMaintain(pageNum,startDate,endDate,type,lineID,stationID,deviceID
         success:function (data) {
             $("#faultTable tbody tr").remove();
             $.each(data.pageUtil.pageData, function (i, item) {
-                $("#faultTable tbody").append('<tr><td>'+item.lineName+'</td>' +
+                $("#faultTable tbody").append('<tr><td>'+item.id+'</td>' +
+                    '<td>'+item.lineName+'</td>' +
                     '<td>'+item.stationName+'</td>' +
                     '<td>'+item.deviceName+'</td>' +
                     '<td>'+item.event+'</td>' +
@@ -230,6 +292,70 @@ function getDevice(lineID,stationID,type) {
             });
         }
     })
+}
+
+function getColumnar(startDate,endDate) {
+    //柱状
+    var alarmType=0;
+    $.ajax({
+        dataType: "json",
+        url:'/devAlarmLog/getWarning',
+        type:"POST",
+        //cache : false,  //禁用缓存
+        data:{alarmType:alarmType,startDate:startDate,endDate:endDate},
+        success: function(data) {
+            var linNames=[];
+            var linNums=[];
+            $.each(data.devAlarmLogVoList, function (i, item) {
+                linNames.push(item.lineName);
+                linNums.push(item.count);
+            });
+            //柱形图赋值
+            myChartSecond.setOption({ //加载数据图表
+                xAxis: {
+                    data: linNames
+                },
+                series: {
+                    // 根据名字对应到相应的系列
+                    name: ['数量'],
+                    data: linNums
+                }
+            });
+        }
+    });
+}
+
+function getPancake(startDate,endDate) {
+    //饼状
+    var alarmType=0;
+    $.ajax({
+        dataType: "json",
+        url:'/devAlarmLog/getWarning',
+        type:"POST",
+        //cache : false,  //禁用缓存
+        data:{alarmType:alarmType,startDate:startDate,endDate:endDate},
+        success: function(data) {
+            var names=[];//定义两个数组
+            var nums=[];
+            $.each(data.devAlarmLogVoList, function (i, item) {
+                names.push(item.Event);
+                var obj = new Object();
+                obj.name = item.Event;
+                obj.value = item.count;
+                nums.push(obj);
+            });
+            myChart.setOption({ //加载数据图表
+                legend: {
+                    data: names
+                },
+                series: {
+                    // 根据名字对应到相应的系列
+                    name: ['数量'],
+                    data: nums
+                }
+            });
+        }
+    });
 }
 
 function nextPage(pageNum) {

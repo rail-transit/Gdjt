@@ -12,8 +12,8 @@
         .devUpkeep_add_height{padding-left: 10px;padding-top: 10px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        #devUpkeepOpenTable tbody {height:115px;overflow-y:auto;width: 100%;table-layout: fixed;}
-        #devUpkeepEndTable tbody {height:200px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        #devUpkeepOpenTable tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
+        #devUpkeepEndTable tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -54,7 +54,7 @@
         </div>
         <div class="devUpkeep_add_height">
             <input type="text" class="id" hidden="hidden">
-            <input type="button" value="结束保养" id="updateDevUpkeep" disabled>
+            <input type="button" value="结束保养信息" id="updateDevUpkeep" disabled>
             <label>联系电话:</label>
             <input type="text" class="tel">
             <input type="radio" name="upkeepState" value="0"><label>异常</label>
@@ -197,7 +197,7 @@ function selectDevUpkeep(pageNum){
                 if(item.upkeepState=='1'){
                     upkeepState="正常";
                 }
-                $("#devUpkeepEndTable tbody").prepend('<tr><td>'+data.device.name+'</td>'+
+                $("#devUpkeepEndTable tbody").append('<tr><td>'+data.device.name+'</td>'+
                     '<td>'+item.accendant+'</td>'+
                     '<td>'+item.tel+'</td>'+
                     '<td>'+item.startTime+'</td>'+

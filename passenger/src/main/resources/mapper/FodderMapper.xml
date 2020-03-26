@@ -128,12 +128,6 @@
         <if test="note!=null">
             ,Note=#{note}
         </if>
-        <if test="editorID!=null">
-            ,Editor_ID=#{editorID}
-        </if>
-        <if test="editTime!=null">
-            ,Edit_Time=#{editTime}
-        </if>
         WHERE
             id =#{id}
     </update>
@@ -143,24 +137,12 @@
         <if test="note!=null">
             ,Note=#{note}
         </if>
-        <if test="editorID!=null">
-            ,Editor_ID=#{editorID}
-        </if>
-        <if test="editTime!=null">
-            ,Edit_Time=#{editTime}
-        </if>
         WHERE
             id =#{id}
     </update>
     <delete id="deleteFodder" parameterType="com.example.passenger.entity.Fodder">
         UPDATE Fodder
         SET IsDelete=1
-        <if test="editorID!=null">
-            ,Editor_ID=#{editorID}
-        </if>
-        <if test="editTime!=null">
-            ,Edit_Time=#{editTime}
-        </if>
         WHERE
         id =#{id}
     </delete>

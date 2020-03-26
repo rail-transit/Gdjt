@@ -30,82 +30,84 @@ public class PlayListClientService {
     @Autowired
     MsgSend msgSend;
 
-    public PlayListClient selectPlayListClient(Integer id){
+    public PlayListClient selectPlayListClient(Integer id) {
         return playListClientMapper.selectPlayListClient(id);
     }
 
-    public Integer selectClientByPlayListID(Integer playListID,Integer clientID){
-        return playListClientMapper.selectClientByPlayListID(playListID,clientID);
+    public PlayListClient selectClientByPlayListID(Integer playListID, Integer clientID) {
+        return playListClientMapper.selectClientByPlayListID(playListID, clientID);
     }
 
-    public Integer selectClientByPlayID(Integer clientID,Integer playListID){
-        return playListClientMapper.selectClientByPlayID(clientID,playListID);
+    public List<PlayListClient> previousRelease(Integer playListID, Integer clientID, String auditTime) {
+        return playListClientMapper.previousRelease(playListID, clientID, auditTime);
     }
 
-    public List<Map<String,String>> getVideoRelease(Integer lineID,Integer stationID,Integer deviceID,
-                                                  String startDate,String endDate){
-        return playListClientMapper.getVideoRelease(lineID,stationID,deviceID,
-                startDate,endDate);
+    public List<Map<String, String>> getVideoRelease(Integer lineID, Integer stationID, Integer deviceID,
+                                                     String startDate, String endDate) {
+        return playListClientMapper.getVideoRelease(lineID, stationID, deviceID,
+                startDate, endDate);
     }
 
-    public PageUtil selectPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(playListClientMapper.count());
-        pageUtil.setPageData(playListClientMapper.selectPaging(pageNum,pageSize));
+        pageUtil.setPageData(playListClientMapper.selectPaging(pageNum, pageSize));
         return pageUtil;
     }
 
-    public PageUtil getDownloadSpeed(Integer playListID,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil getDownloadSpeed(Integer playListID, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(playListClientMapper.DownloadSpeedCount(playListID));
-        pageUtil.setPageData(playListClientMapper.getDownloadSpeed(playListID,pageNum,pageSize));
+        pageUtil.setPageData(playListClientMapper.getDownloadSpeed(playListID, pageNum, pageSize));
         return pageUtil;
     }
 
-    public PageUtil releasePaging(Integer lineID,Integer stationID,Integer deviceID,
-                                  String startDate,String endDate,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil releasePaging(Integer lineID, Integer stationID, Integer deviceID,
+                                  String startDate, String endDate, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
-        pageUtil.setRowCount(playListClientMapper.releaseCount(lineID,stationID,deviceID,
-                startDate,endDate));
-        pageUtil.setPageData(playListClientMapper.releasePaging(lineID,stationID,deviceID,
-                startDate,endDate,pageNum,pageSize));
+        pageUtil.setRowCount(playListClientMapper.releaseCount(lineID, stationID, deviceID,
+                startDate, endDate));
+        pageUtil.setPageData(playListClientMapper.releasePaging(lineID, stationID, deviceID,
+                startDate, endDate, pageNum, pageSize));
         return pageUtil;
     }
 
     @Scheduled(cron = "0/30 * * * * ?")
-    public void selectClientBySequence(){
-        List<Map<String,String>> list= AmqpConfig.deviceList;
-        if(list!=null){
+    public void selectClientBySequence() {
+        List<Map<String, String>> list = AmqpConfig.deviceList;
+        if (list != null) {
             Set set = new HashSet();
-            List<Map<String,String>> newList = new ArrayList();
-            for (Map cd:list) {
-                if(set.add(cd)){
+            List<Map<String, String>> newList = new ArrayList();
+            for (Map cd : list) {
+                if (set.add(cd)) {
                     newList.add(cd);
                 }
             }
-            for (Map<String,String> stringMap :newList){
-                for (String key:stringMap.keySet()){
-                    System.out.println("设备id:"+key);
-                    Device device=deviceMapper.selectDeviceByIp(key);
-                    List<PlayListClient> playListClients
-                            =playListClientMapper.selectPlayListClientBySequence(device.getId());
-                    if(playListClients!=null){
-                        for (PlayListClient playListClient:playListClients){
-                            System.out.println("需要下载的播表:"+playListClient.getId());
-                            //消息体
-                            String content="UPSC:http://"+IPUtil.ip+":8080/schedules/getScheduleById?clientid="+
-                                    playListClient.getClientID()+"&idxs="+playListClient.getPlaylistID();
-                            //ip转换
-                            long ip= IPUtil.ipToLong(device.getIp());
-                            //发送下载命令
-                            msgSend.sendMsg("pisplayer.*."+ip,content);
-                            msgSend.sendMsg("pisplayer.*."+ip,"DLPS:");
+            for (Map<String, String> stringMap : newList) {
+                for (String key : stringMap.keySet()) {
+                    System.out.println("设备ip:" + key);
+                    Device device = deviceMapper.selectDeviceByIp(key);
+                    if (device != null) {
+                        List<PlayListClient> playListClients
+                                = playListClientMapper.selectPlayListClientBySequence(device.getId());
+                        if (playListClients.size() > 0) {
+                            for (PlayListClient playListClient : playListClients) {
+                                System.out.println("需要下载的播表:" + playListClient.getId());
+                                //消息体
+                                String content = "UPSC:http://" + IPUtil.ip + ":8080/schedules/getScheduleById?clientid=" +
+                                        playListClient.getClientID() + "&idxs=" + playListClient.getPlaylistID();
+                                //ip转换
+                                long ip = IPUtil.ipToLong(device.getIp());
+                                //发送下载命令
+                                msgSend.sendMsg("pisplayer.*." + ip, content);
+                                msgSend.sendMsg("pisplayer.*." + ip, "DLPS:");
+                            }
                         }
                     }
                 }
@@ -114,30 +116,30 @@ public class PlayListClientService {
     }
 
     @Transactional
-    public Integer addPlayListClient(PlayListClient playListClient){
+    public Integer addPlayListClient(PlayListClient playListClient) {
         try {
             return playListClientMapper.addPlayListClient(playListClient);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updatePlayListClient(PlayListClient playListClient){
+    public Integer updatePlayListClient(PlayListClient playListClient) {
         try {
             return playListClientMapper.updatePlayListClient(playListClient);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deletePlayListClient(Integer id){
+    public Integer deletePlayListClient(Integer id) {
         try {
             return playListClientMapper.deletePlayListClient(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

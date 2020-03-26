@@ -13,9 +13,16 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>passenger</name>
     <description>Demo project for Spring Boot</description>
+    <!--<packaging>war</packaging>-->
 
-    <properties>
+  <!--  <properties>
         <java.version>1.8</java.version>
+    </properties>-->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <skipTests>true</skipTests><!--添加 -->
     </properties>
 
     <dependencies>
@@ -48,10 +55,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
@@ -63,6 +66,12 @@
         <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
             <version>1.9.21</version>
         </dependency>
         <dependency>
@@ -123,15 +132,40 @@
             <artifactId>xuggle-xuggler</artifactId>
             <version>5.4</version>
         </dependency>
+        <!--<dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>3.2.3</version>
+        </dependency>-->
+
+        <!-- bouncy castle（轻量级密码术包）是一种用于 Java 平台的开放源码的轻量级密码术包 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-ext-jdk15on</artifactId>
+            <version>1.64</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
+        <!--原来配置-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+
+        <!--新增打包war配置-->
+        <!--<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+            </plugin>
+        </plugins>-->
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

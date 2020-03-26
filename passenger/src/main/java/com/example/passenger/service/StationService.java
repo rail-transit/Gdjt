@@ -17,74 +17,70 @@ public class StationService {
     @Autowired
     StationMapper stationMapper;
 
-    public Station selectStation(Integer id){
+    public Station selectStation(Integer id) {
         return stationMapper.selectStation(id);
     }
 
-    public Station selectTrain(Integer id){
-        return stationMapper.selectTrain(id);
-    }
-
-    public List<Station> selectAllStation(Integer lineID){
+    public List<Station> selectAllStation(Integer lineID) {
         return stationMapper.selectAllStation(lineID);
     }
 
-    public List<Station> selectAllTrain(Integer lineID){
+    public List<Station> selectAllTrain(Integer lineID) {
         return stationMapper.selectAllTrain(lineID);
     }
 
-    public List<Station> queryAllStation(){
+    public List<Station> queryAllStation() {
         return stationMapper.queryAllStation();
     }
 
-    public Integer selectStationByName(Integer lineID,String stationID,String name,Integer id){
-        return stationMapper.selectStationByName(lineID,stationID,name,id);
+    public Integer selectStationByName(Integer lineID, String stationID, String name, Integer id) {
+        return stationMapper.selectStationByName(lineID, stationID, name, id);
     }
 
     @Transactional
-    public  Integer addStation(Station station){
+    public Integer addStation(Station station) {
         try {
-            if(station.getIsTrain()==null){
+            if (station.getIsTrain() == null) {
                 station.setIsTrain(0);
             }
-            if(station.getIsCenter()==null){
+            if (station.getIsCenter() == null) {
                 station.setIsCenter(0);
             }
             return stationMapper.addStation(station);
-        }catch (Exception e){
-            logger.error("添加车站异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("添加车站异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateStation(Station station){
+    public Integer updateStation(Station station) {
         try {
             return stationMapper.updateStation(station);
-        }catch (Exception e){
-            logger.error("修改车站异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("修改车站异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteStation(Integer id){
+    public Integer deleteStation(Integer id) {
         try {
             return stationMapper.deleteStation(id);
-        }catch (Exception e){
-            logger.error("添加车站异常",e.getMessage());
+        } catch (Exception e) {
+            logger.error("添加车站异常", e.getMessage());
             e.printStackTrace();
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteStationByLineId(Integer lineID){
+    public Integer deleteStationByLineId(Integer lineID) {
         try {
             return stationMapper.deleteStationByLineId(lineID);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

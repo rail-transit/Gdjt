@@ -15,22 +15,22 @@ public class MessageBoardService {
     @Autowired
     MessageBoardMapper messageBoardMapper;
 
-    public PageUtil messageBoardPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil messageBoardPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(messageBoardMapper.count());
-        pageUtil.setPageData(messageBoardMapper.messageBoardPaging(pageNum,pageSize));
+        pageUtil.setPageData(messageBoardMapper.messageBoardPaging(pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addMessageBoard(MessageBoard messageBoard){
+    public Integer addMessageBoard(MessageBoard messageBoard) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             messageBoard.setCreateDate(sdf.format(new Date()));
             return messageBoardMapper.addMessageBoard(messageBoard);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }

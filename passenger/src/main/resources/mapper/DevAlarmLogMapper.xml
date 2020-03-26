@@ -3,6 +3,7 @@
 <mapper namespace="com.example.passenger.mapper.DevAlarmLogMapper">
 <select id="getWarning" resultType="java.util.LinkedHashMap" parameterType="com.example.passenger.entity.DevAlarmLog">
     SELECT
+        Row_Number()over(ORDER BY count(*)) as id,
         max(d.Name) as lineName,
         max(c.Name) as stationName,
         a.DeviceName as deviceName,
@@ -36,7 +37,7 @@
         FROM
             (
             SELECT
-                ROW_NUMBER () OVER ( ORDER BY aa.count ) AS row1,*
+                ROW_NUMBER () OVER ( ORDER BY aa.count ) AS id,*
             FROM
                 (
                 SELECT
@@ -73,7 +74,7 @@
                 ) AS aa
             ) AS bb
         WHERE
-            bb.row1 > #{pageSize} * (
+            bb.id > #{pageSize} * (
             #{pageNum}-1)
 </select>
 <select id="warningCount" resultType="java.lang.Integer">

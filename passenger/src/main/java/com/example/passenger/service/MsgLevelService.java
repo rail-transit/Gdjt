@@ -24,42 +24,42 @@ public class MsgLevelService {
     @Autowired
     MsgSend msgSend;
 
-    public Integer getMaxLevel(){
+    public Integer getMaxLevel() {
         return msgLevelMapper.getMaxLevel();
     }
 
-    public MsgLevel selectMsgLevelByLevel(String levelCode,Integer level){
-        return msgLevelMapper.selectMsgLevelByLevel(levelCode,level);
+    public MsgLevel selectMsgLevelByLevel(String levelCode, Integer level) {
+        return msgLevelMapper.selectMsgLevelByLevel(levelCode, level);
     }
 
-    public Integer selectLevelByID(Integer level,Integer id){
-        return msgLevelMapper.selectLevelByID(level,id);
+    public Integer selectLevelByID(Integer level, Integer id) {
+        return msgLevelMapper.selectLevelByID(level, id);
     }
 
-    public MsgLevel selectMsgLevel(Integer id){
+    public MsgLevel selectMsgLevel(Integer id) {
         return msgLevelMapper.selectMsgLevel(id);
     }
 
-    public List<MsgLevel> selectMsgLevelAll(){
+    public List<MsgLevel> selectMsgLevelAll() {
         return msgLevelMapper.selectMsgLevelAll();
     }
 
-    public List<MsgLevel> selectMsgLevelByCode(String levelCode){
+    public List<MsgLevel> selectMsgLevelByCode(String levelCode) {
         return msgLevelMapper.selectMsgLevelByCode(levelCode);
     }
 
-    public PageUtil selectPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(msgLevelMapper.count());
-        pageUtil.setPageData(msgLevelMapper.selectPaging(pageNum,pageSize));
+        pageUtil.setPageData(msgLevelMapper.selectPaging(pageNum, pageSize));
         return pageUtil;
     }
 
 
     @Transactional
-    public Integer addMsgLevel(MsgLevel msgLevel){
+    public Integer addMsgLevel(MsgLevel msgLevel) {
         try {
            /* Integer level=msgLevelMapper.getMaxLevel();
             if(level==null){
@@ -71,71 +71,71 @@ public class MsgLevelService {
             msgLevel.setLevelCode("test");
             msgLevel.setTitle("test");
             msgLevel.setNote("test");*/
-            Integer i=msgLevelMapper.addMsgLevel(msgLevel);
-            if(i>0){
+            Integer i = msgLevelMapper.addMsgLevel(msgLevel);
+            if (i > 0) {
                 sendLevel();
             }
             return i;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateMsgLevel(MsgLevel msgLevel){
-        try{
-            Integer i=msgLevelMapper.updateMsgLevel(msgLevel);
-            if(i>0){
+    public Integer updateMsgLevel(MsgLevel msgLevel) {
+        try {
+            Integer i = msgLevelMapper.updateMsgLevel(msgLevel);
+            if (i > 0) {
                 sendLevel();
             }
             return i;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteMsgLevel(Integer id){
-        try{
-            Integer i=msgLevelMapper.deleteMsgLevel(id);
-            if(i>0){
+    public Integer deleteMsgLevel(Integer id) {
+        try {
+            Integer i = msgLevelMapper.deleteMsgLevel(id);
+            if (i > 0) {
                 sendLevel();
             }
             return i;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
-    public void sendLevel(){
-        List<MsgLevel> levels=msgLevelMapper.selectMsgLevelAll();
-        StringBuffer buffer=new StringBuffer();
-        String content="MSLV:<MSG>\r\n" +
+    public void sendLevel() {
+        List<MsgLevel> levels = msgLevelMapper.selectMsgLevelAll();
+        StringBuffer buffer = new StringBuffer();
+        String content = "MSLV:<MSG>\r\n" +
                 "<MsgLevel>\r\n" +
                 "</MsgLevel>\r\n" +
                 "</MSG>";
         buffer.append(content);
-        if(levels!=null){
-            StringBuffer stringBuffer=new StringBuffer();
-            for (MsgLevel msgLevel1:levels){
-                String param= "<LevelItem>\r\n" +
-                        "<Level>"+msgLevel1.getLevel()+"</Level>\r\n" +
-                        "<LevelCode>"+msgLevel1.getLevelCode()+"</LevelCode>\r\n" +
-                        "<IsFull>"+msgLevel1.getNote()+"</IsFull>\r\n" +
+        if (levels != null) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (MsgLevel msgLevel1 : levels) {
+                String param = "<LevelItem>\r\n" +
+                        "<Level>" + msgLevel1.getLevel() + "</Level>\r\n" +
+                        "<LevelCode>" + msgLevel1.getLevelCode() + "</LevelCode>\r\n" +
+                        "<IsFull>" + msgLevel1.getNote() + "</IsFull>\r\n" +
                         "</LevelItem>";
                 stringBuffer.append(param);
             }
-            buffer.insert(buffer.indexOf("<MsgLevel>")+10,stringBuffer);
-        }else{
-            buffer.insert(buffer.indexOf("<MsgLevel>")+10,"<LevelItem/>");
+            buffer.insert(buffer.indexOf("<MsgLevel>") + 10, stringBuffer);
+        } else {
+            buffer.insert(buffer.indexOf("<MsgLevel>") + 10, "<LevelItem/>");
         }
-        List<Map<String,String>> list= AmqpConfig.deviceList;
-        for (Map<String,String> stringMap:list){
-            for (String key:stringMap.keySet()){
-                msgSend.sendMsg("pisplayer.*."+ IPUtil.ipToLong(key),buffer.toString());
+        List<Map<String, String>> list = AmqpConfig.deviceList;
+        for (Map<String, String> stringMap : list) {
+            for (String key : stringMap.keySet()) {
+                msgSend.sendMsg("pisplayer.*." + IPUtil.ipToLong(key), buffer.toString());
             }
         }
 

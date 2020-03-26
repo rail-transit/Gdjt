@@ -3,10 +3,12 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.DevRepair;
 import com.example.passenger.entity.vo.DevRepairVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface DevRepairMapper {
     List<DevRepair> selectDevRepairByEndTimeIsNull(Integer deviceID);
 

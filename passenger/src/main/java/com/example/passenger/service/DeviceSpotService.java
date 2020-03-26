@@ -18,46 +18,50 @@ public class DeviceSpotService {
     @Autowired
     DeviceSpotMapper deviceSpotMapper;
 
-    public DeviceSpot selectDeviceSpotById(Integer id){
+    public DeviceSpot selectDeviceSpotById(Integer id) {
         return deviceSpotMapper.selectDeviceSpotById(id);
     }
 
-    public List<DeviceSpot> selectAllDeviceSpot(){
+    public DeviceSpot selectDeviceSpotByCtrlType(Integer id, Integer type, Integer ctrlType) {
+        return deviceSpotMapper.selectDeviceSpotByCtrlType(id, type, ctrlType);
+    }
+
+    public List<DeviceSpot> selectAllDeviceSpot() {
         return deviceSpotMapper.selectAllDeviceSpot();
     }
 
-    public List<DeviceSpot> selectDeviceSpot(Integer type){
+    public List<DeviceSpot> selectDeviceSpot(Integer type) {
         return deviceSpotMapper.selectDeviceSpot(type);
     }
 
-    public Integer selectDeviceSpotByName(Integer deviceType,String name,Integer id){
-        return deviceSpotMapper.selectDeviceSpotByName(deviceType,name,id);
+    public Integer selectDeviceSpotByName(Integer deviceType, String name, Integer id) {
+        return deviceSpotMapper.selectDeviceSpotByName(deviceType, name, id);
     }
 
-    public PageUtil selectDeviceSpotPaging(Integer deviceType,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectDeviceSpotPaging(Integer deviceType, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(deviceSpotMapper.count(deviceType));
-        pageUtil.setPageData(deviceSpotMapper.selectDeviceSpotPaging(deviceType,pageNum,pageSize));
+        pageUtil.setPageData(deviceSpotMapper.selectDeviceSpotPaging(deviceType, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addDeviceSpot(DeviceSpot deviceSpot){
+    public Integer addDeviceSpot(DeviceSpot deviceSpot) {
         try {
             return deviceSpotMapper.addDeviceSpot(deviceSpot);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateDeviceSpot(DeviceSpot deviceSpot){
+    public Integer updateDeviceSpot(DeviceSpot deviceSpot) {
         try {
             return deviceSpotMapper.updateDeviceSpot(deviceSpot);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
@@ -65,10 +69,10 @@ public class DeviceSpotService {
 
 
     @Transactional
-    public Integer deleteDeviceSpot(Integer id){
+    public Integer deleteDeviceSpot(Integer id) {
         try {
             return deviceSpotMapper.deleteDeviceSpot(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

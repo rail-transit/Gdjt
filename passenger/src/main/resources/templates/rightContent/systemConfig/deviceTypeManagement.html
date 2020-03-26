@@ -24,7 +24,7 @@
         .deviceTypeRadio{vertical-align: bottom;height: 15px;margin-left: 5px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:281px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -58,15 +58,14 @@
 <div id="deviceType_top_div">
     <p id="deviceType_top_p">添加设备类型</p>
     <ul id="deviceType_ul">
-        <li><span>设备类型名称:</span><input type="text" class="name" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>采集驱动名称:</span><input type="text" class="dllName" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>设备类型名称:</span><input type="text" class="name" ></li>
         <li><span>是否可控:</span><span>是:</span><input type="radio" class="deviceTypeRadio" name="isCtrl" value="1">
             <span>否:</span><input type="radio" class="deviceTypeRadio" name="isCtrl" value="0" checked="checked">
         </li>
-        <li style="padding-left: 56px;"><span>备注:</span><textarea style="overflow:auto;resize:none;" class="note" onkeyup="this.value=this.value.replace(/\s+/g,'')"></textarea></li>
         <li><span>是否包含音量:</span><span>是:</span><input type="radio" class="deviceTypeRadio" name="hasVolume" value="1">
             <span>否:</span><input type="radio" class="deviceTypeRadio" name="hasVolume" value="0" checked="checked">
         </li>
+        <li style="padding-left: 56px;"><span>备注:</span><textarea style="overflow:auto;resize:none;vertical-align:middle;" class="note"></textarea></li>
     </ul>
     <div id="deviceType_top_Button">
         <input id="addDeviceType" type="button" value="添加">
@@ -79,7 +78,6 @@
             <thead>
             <tr>
                 <th class="tips">设备类型名称</th>
-                <th class="tips">采集驱动名称</th>
                 <th class="tips">是否可控</th>
                 <th class="tips">是否包含音量</th>
                 <th class="tips">备注</th>
@@ -89,7 +87,6 @@
             <tr th:each="deviceType:${pageUtil.pageData}">
                 <td th:text="${deviceType.id}" hidden="hidden"></td>
                 <td th:text="${deviceType.name}"></td>
-                <td th:text="${deviceType.dllName}"></td>
                 <td th:if="${deviceType.isCtrl} eq '1'">是</td>
                 <td th:if="${deviceType.isCtrl} eq '0'">否</td>
                 <td th:if="${deviceType.hasVolume} eq '1'">是</td>
@@ -115,15 +112,14 @@
     <div id="deviceType_footer_div">
         <input type="text" class="id" hidden="hidden">
         <ul id="deviceType_footer_ul">
-            <li><span>设备类型名称:</span><input type="text" class="deviceTypeName"></li>
-            <li><span>采集驱动名称:</span><input type="text" class="deviceTypeDllName"></li>
+            <li><span>设备类型名称:</span><input type="text" class="deviceTypeName" ></li>
             <li><span>是否可控:</span><span>是:</span><input type="radio" class="devicePosRadio" name="deviceTypeIsCtrl" value="1">
                 <span>否:</span><input type="radio" class="devicePosRadio" name="deviceTypeIsCtrl" value="0">
             </li>
             <li><span>是否包含音量:</span><span>是:</span><input type="radio" class="deviceTypeRadio" name="deviceTypeHasVolume" value="1">
                 <span>否:</span><input type="radio" class="deviceTypeRadio" name="deviceTypeHasVolume" value="0" checked="checked">
             </li>
-            <li><span style="margin-left: 57px;">备注:</span><textarea style="overflow:auto;resize:none;vertical-align:middle;" class="deviceTypeNote"></textarea></li>
+            <li><span>备注:</span><textarea style="overflow:auto;resize:none;vertical-align:middle;" class="deviceTypeNote"></textarea></li>
         </ul>
     </div>
     <div id="deviceType_operation_div">
@@ -134,45 +130,41 @@
 <script language="JavaScript" src="/js/jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+    $("#deviceTypeTable tr").live("click",function(){
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
 
     $("#addDeviceType").click(function () {
         var name=$(".name").val();
-        var dllName=$(".dllName").val();
         var isCtrl=$('input[name="isCtrl"]:checked').val();
-        var note=$(".note").val();
         var hasVolume=$('input[name="hasVolume"]:checked').val();
-        if(name==""){
-            swal("设备类型不能为空");
-            return false;
-        }
-        if(dllName==""){
-            swal("驱动名称不能为空");
-            return false;
-        }
-        if(note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/deviceType/addDeviceType',
-            type:"POST",
-            data:{name:name,dllName:dllName,isCtrl:isCtrl,note:note,hasVolume:hasVolume},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该类型名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/deviceType/deviceTypeManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        var note=$(".note").val();
+        if(isnull(name,note)){
+            $.ajax({
+                url:'/deviceType/addDeviceType',
+                type:"POST",
+                data:{name:name,isCtrl:isCtrl,note:note,hasVolume:hasVolume},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该类型名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/deviceType/deviceTypeManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#updateButton").live("click",function () {
@@ -180,59 +172,47 @@ $(document).ready(function(){
         //获取选中的值,传入输入框
         $(".id").val($(this).closest("tr").find("td").eq(0).text());
         $(".deviceTypeName").val($(this).closest("tr").find("td").eq(1).text());
-        $(".deviceTypeDllName").val($(this).closest("tr").find("td").eq(2).text());
-        if($(this).closest("tr").find("td").eq(3).text()=="是"){
+        if($(this).closest("tr").find("td").eq(2).text()=="是"){
             $(":radio[name='deviceTypeIsCtrl'][value='1']").attr("checked","true");
         }else{
             $(":radio[name='deviceTypeIsCtrl'][value='0']").attr("checked","true");
         }
-        if($(this).closest("tr").find("td").eq(4).text()=="是"){
+        if($(this).closest("tr").find("td").eq(3).text()=="是"){
             $(":radio[name='deviceTypeHasVolume'][value='1']").attr("checked","true");
         }else{
             $(":radio[name='deviceTypeHasVolume'][value='0']").attr("checked","true");
         }
-        $(".deviceTypeNote").val($(this).closest("tr").find("td").eq(5).text());
+        $(".deviceTypeNote").val($(this).closest("tr").find("td").eq(4).text());
     });
 
     $("#updateDeviceType").click(function () {
         var id=$(".id").val();
         var name=$(".deviceTypeName").val();
-        var dllName=$(".deviceTypeDllName").val();
         var isCtrl=$('input[name="deviceTypeIsCtrl"]:checked').val();
         var note=$(".deviceTypeNote").val();
         var hasVolume=$('input[name="deviceTypeHasVolume"]:checked').val();
-        if(name==""){
-            swal("设备类型不能为空");
-            return false;
-        }
-        if(dllName==""){
-            swal("驱动名称不能为空");
-            return false;
-        }
-        if(note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/deviceType/updateDeviceType',
-            type:"POST",
-            data:{id:id,name:name,dllName:dllName,isCtrl:isCtrl,note:note,hasVolume:hasVolume},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该类型名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/deviceType/deviceTypeManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,note)){
+            $.ajax({
+                url:'/deviceType/updateDeviceType',
+                type:"POST",
+                data:{id:id,name:name,isCtrl:isCtrl,note:note,hasVolume:hasVolume},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该类型名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/deviceType/deviceTypeManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#deleteButton").live("click",function () {
@@ -266,15 +246,20 @@ $(document).ready(function(){
             });
         });
     });
-
-    $("#deviceTypeTable tr").live("click",function(){
-        var trs = $(this).parent().find('tr'); //获取所有tr
-        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
-            trs.removeClass('on');//把class on 移除
-        }
-        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
-    });
 });
+
+function isnull(name,note) {
+    if(name==""||name.match(/^\s+$/g)){
+        swal("设备类型不能为空");
+        return false;
+    }
+    if(note==""||note.match(/^\s+$/g)){
+        swal("备注不能为空");
+        return false;
+    }
+    return true;
+}
+
 function nextPage(pageNum) {
     location.href="/deviceType/deviceTypeManagement?pageNum="+pageNum;
 }

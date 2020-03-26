@@ -38,12 +38,15 @@
     </select>
     <select id="getRepair" resultType="java.util.LinkedHashMap" parameterType="com.example.passenger.entity.vo.DevRepairVo">
         SELECT
+            Row_Number()over(ORDER BY a.id DESC) as id,
             d.Name AS lineName,
             c.Name AS stationName,
             b.Name AS deviceName,
             a.Accendant,
             a.Tel,
             a.Note,
+            a.repairPeople,
+            a.repairTel,
             a.Scheme,
             a.StartTime,
             a.EndTime,
@@ -54,8 +57,7 @@
             LEFT JOIN Station c ON a.StationID= c.ID
             LEFT JOIN Line d ON a.LineID= d.id
         WHERE
-            a.EndTime IS NOT NULL
-        AND convert(char(10),a.EndTime,20) between #{startTime} and #{endTime}
+            convert(char(10),a.EndTime,20) between #{startTime} and #{endTime}
         <if test="lineID!=null and lineID!=0">
             AND a.LineID = #{lineID}
         </if>
@@ -71,8 +73,8 @@
     </select>
     <select id="repairPaging" resultType="com.example.passenger.entity.vo.DevRepairVo">
         SELECT TOP
-        (#{pageSize})  b.Name as deviceName,c.Name as stationName,d.Name as lineName,a.Accendant,
-        a.Tel,a.Note,a.Scheme,a.StartTime,a.EndTime,a.RepairResult
+        (#{pageSize})  RowNumber as id,b.Name as deviceName,c.Name as stationName,d.Name as lineName,a.Accendant,
+        a.Tel,a.Note,a.Scheme,a.RepairPeople,a.repairTel,a.StartTime,a.EndTime,a.RepairResult
         FROM
             (
             SELECT
@@ -80,8 +82,7 @@
             FROM
                 DevRepair
 			WHERE
-				EndTime IS NOT NULL
-			AND convert(char(10),StartTime,20) between #{devRepair.startTime} and #{devRepair.endTime}
+				convert(char(10),StartTime,20) between #{devRepair.startTime} and #{devRepair.endTime}
             <if test="devRepair.lineID!=null and devRepair.lineID!=0">
                 AND LineID = #{devRepair.lineID}
             </if>
@@ -109,8 +110,7 @@
             DevRepair a
             LEFT JOIN Device b on a.DeviceID=b.ID
 		WHERE
-			a.EndTime IS NOT NULL
-        AND convert(char(16),a.StartTime,20) between #{startTime} and #{endTime}
+			convert(char(10),a.StartTime,20) between #{startTime} and #{endTime}
         <if test="lineID!=null and lineID!=0">
             AND a.LineID = #{lineID}
         </if>
@@ -137,14 +137,19 @@
             #{scheme},
             #{repairResult},
             #{stationID},
-            #{lineID})
+            #{lineID},
+            #{repairPeople},
+            #{repairTel})
     </insert>
     <update id="updateDevRepair" parameterType="com.example.passenger.entity.DevRepair">
         UPDATE DevRepair
-        SET EndTime =#{endTime},
-        RepairResult =#{repairResult}
+        SET EndTime = #{endTime},
+        Scheme = #{scheme},
+        RepairPeople = #{repairPeople},
+        RepairResult = #{repairResult},
+        RepairTel = #{repairTel}
         WHERE
-            id =#{id}
+            id = #{id}
     </update>
 
 </mapper>

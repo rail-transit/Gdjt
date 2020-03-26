@@ -1,0 +1,70 @@
+.model-box {
+    position: relative;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 3px;
+    text-indent: 5px;
+}
+
+.model-box .model-select-text {
+    position: relative;
+    width: 100%;
+    height: 28px;
+    /*height: 30px;*/
+    /*line-height: 30px;*/
+    color: #666;
+    text-indent: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.model-box .model-select-text:after {
+    position: absolute;
+    /*top: 10px;*/
+    right: 10px;
+    content: '';
+    width: 0;
+    height: 0;
+    border-width: 10px 8px 0;
+    border-style: solid;
+    border-color: #666 transparent transparent;
+}
+
+.model-box .model-select-option {
+    position: absolute;
+    top: 30px;
+    left: -1px;
+    display: none;
+    list-style: none;
+    border: 1px solid #e4e4e4;
+    /*border-top: none;*/
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    z-index: 99;
+    background-color: #fff;
+}
+
+.model-box .model-select-option li {
+    height: 28px;
+    width: 100%;
+    line-height: 28px;
+    color: #333;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    /*text-indent: 10px;*/
+    cursor: pointer;
+}
+
+.model-box .model-select-option li:hover {
+    background-color: #f3f3f3;
+}
+
+.model-box .model-select-option li.seleced {
+    background-color: #f3f3f3;
+}

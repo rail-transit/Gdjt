@@ -13,13 +13,32 @@
         #audit_height_div{width: 99%;height: 440px;border: 1px solid wheat;margin: 0 auto;overflow: auto}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:390px;overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
         #paging_ul li{display: inline;float:left;width: 69px;}
         #nextPage{margin-left: -32px;}
+        .messageCheckStateSelectTable {
+            position:relative;
+            /* border:solid grey 1px; */
+            /*float:left;*/
+            width:130px;
+            height:21px;
+        }
+        .messageCheckStateSelectTable select {
+            position:absolute;
+            top:0px;
+            height: 21px;
+            width: 100px;
+            border:none;
+            background: transparent;
+            margin:0;
+        }
+        .messageCheckState{
+            position:absolute;
+            width:96px;
+        }
     </style>
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
@@ -34,11 +53,25 @@
 <div id="audit_top_div">
     <p id="audit_title">消息审核</p>
     <ul id="audit_top_ul">
-        <li><span>状态:</span><select id="state">
-            <option value="0">未审核</option>
-            <option value="1">审核通过</option>
-            <option value="-1">审核不通过</option>
-        </select></li>
+        <li>
+<!--            <span>状态:</span>-->
+<!--            <select id="state">-->
+<!--                <option value="0">未审核</option>-->
+<!--                <option value="1">审核通过</option>-->
+<!--                <option value="-1">审核不通过</option>-->
+<!--            </select>-->
+
+            <div class="messageCheckStateSelectTable">
+                <span style="font-size: 14px;line-height: 21px">状态:</span>
+                <input readonly="readonly" id="messageCheckState" class="messageCheckState" name="messageCheckState" type="text" value="未审核">
+                <select id="state">
+                    <option id="stateFirstOption" style="display:none" value="0"></option><!--下拉列表的第一项，隐藏的空白项，有该项后选择第一个用户名的时后才会触发onchange事件-->
+                    <option value="0">未审核</option>
+                    <option value="1">审核通过</option>
+                    <option value="-1">审核不通过</option>
+                </select>
+            </div>
+        </li>
         <li><span>内容:</span><input type="text" id="content"></li>
     </ul>
 </div>
@@ -80,7 +113,15 @@ $(document).ready(function() {
     $("#state").change(function () {
        var state=$(this).val();
        var msg=$("#content").val();
+
+        $("#messageCheckState").val($("#state option:checked").text());
         getMessage(state,msg);
+        //清空下拉列表框值
+        $("#state").val("");
+        $("#state").blur();
+    });
+    document.getElementById("stateFirstOption").addEventListener("click",function(){
+        $("#state").blur();
     });
 
     $("#content").bind('input propertychange',function () {

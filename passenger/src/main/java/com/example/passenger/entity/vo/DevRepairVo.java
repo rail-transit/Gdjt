@@ -12,12 +12,30 @@ public class DevRepairVo implements Serializable {
     private String note;
     private String scheme;
     private Integer repairResult;
+    private String repairPeople;
+    private String repairTel;
     private Integer stationID;
     private Integer lineID;
     private String lineName;
     private String stationName;
     private String deviceName;
     private Integer type;
+
+    public String getRepairTel() {
+        return repairTel;
+    }
+
+    public void setRepairTel(String repairTel) {
+        this.repairTel = repairTel;
+    }
+
+    public String getRepairPeople() {
+        return repairPeople;
+    }
+
+    public void setRepairPeople(String repairPeople) {
+        this.repairPeople = repairPeople;
+    }
 
     public Integer getType() {
         return type;

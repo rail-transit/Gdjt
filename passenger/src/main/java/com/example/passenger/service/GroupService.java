@@ -18,52 +18,52 @@ public class GroupService {
     @Autowired
     GroupMapper groupMapper;
 
-    public List<Group> selectAllGroup(){
+    public List<Group> selectAllGroup() {
         return groupMapper.selectAllGroup();
     }
 
-    public Group selectGroupByID(Integer id){
+    public Group selectGroupByID(Integer id) {
         return groupMapper.selectGroupByID(id);
     }
 
-    public Integer selectGroupByName(String name,Integer id){
-        return groupMapper.selectGroupByName(name,id);
+    public Integer selectGroupByName(String name, Integer id) {
+        return groupMapper.selectGroupByName(name, id);
     }
 
-    public PageUtil selectGroupPaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectGroupPaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(groupMapper.count());
-        pageUtil.setPageData(groupMapper.selectGroupPaging(pageNum,pageSize));
+        pageUtil.setPageData(groupMapper.selectGroupPaging(pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addGroup(Group group){
+    public Integer addGroup(Group group) {
         try {
             return groupMapper.addGroup(group);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateGroup(Group group){
+    public Integer updateGroup(Group group) {
         try {
             return groupMapper.updateGroup(group);
-        }catch (Exception  e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteGroup(Integer id){
+    public Integer deleteGroup(Integer id) {
         try {
             return groupMapper.deleteGroup(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

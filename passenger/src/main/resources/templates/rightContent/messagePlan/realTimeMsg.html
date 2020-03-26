@@ -19,7 +19,7 @@
         #realTimeMsg_right_ul li textarea{width: 480px;overflow: auto;resize: none;height: 310px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        #realTimeMsgTable tbody {height:405px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        #realTimeMsgTable tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -38,6 +38,7 @@
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
     <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript" src="/My97DatePicker/WdatePicker.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             tabSize.init('realTimeMsgTable');
@@ -83,15 +84,31 @@
         <li>消息级别</li>
         <li><select id="msgID"></select></li>
         <li>开始时间</li>
-        <li style="width: 49%;"><input style="width: 56%;" type="date" id="startDate">
-            &nbsp;<input type="time" step="1" id="startTime"></li>
+        <li style="width: 49%;">
+            <!--前端 JavaScript 日期插件 My97DatePicker-->
+            <input class="Wdate" id="startDate" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'/*,minDate:'%y-%M-%d',maxDate:'#F{$dp.$D(\'endDate\')}'*/})" style ="width: 56%;">
+            &nbsp;<input class="Wdate" id="startTime" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'HH:mm:ss'/*,minDate:'%H:%m:%s'*//*,maxDate:'#F{$dp.$D(\'endTime\')}'*/})">
+
+            <!--<input style="width: 56%;" type="date" id="startDate">-->
+            <!--<input type="time" step="1" id="startTime">-->
+
+        </li>
         <li>消息控件</li>
         <li><select id="ctrIID"><option value="Txt1">Txt1</option>
             <option value="Txt2">Txt2</option>
             <option value="Txt3">Txt3</option></select></li>
         <li>结束时间</li>
-        <li style="width: 49%;"><input style="width: 56%;" type="date" id="endDate">
-            &nbsp;<input type="time" step="1"  id="endTime"></li>
+        <li style="width: 49%;">
+            <!--前端 JavaScript 日期插件 My97DatePicker-->
+            <input class="Wdate" id="endDate" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\') || \'%y-%M-%d\'}'})" style ="width: 56%;">
+            &nbsp;<input class="Wdate" id="endTime" step="1" type="text" autocomplete="off"
+                   onClick="WdatePicker({el:this,dateFmt:'HH:mm:ss'/*,minDate:'#F{($dp.$D(\'endDate\') > $dp.$D(\'startDate\')) ? \'00:00:00\' : \'09:00:00\'}'*/})">
+
+            <!--<input style="width: 56%;" type="date" id="endDate">-->
+            <!--<input type="time" step="1"  id="endTime"></li>-->
     </ul>
     <ul id="realTimeMsg_right_ul">
         <li><textarea id="content"></textarea></li>
@@ -103,6 +120,19 @@
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+    var date = new Date();
+    var day = ('0' + date.getDate()).slice(-2);
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var today = date.getFullYear() + '-' + month + '-' + day;
+    var hours=date.getHours() > 9 ? date.getHours() : "0"+date.getHours();
+    var minutes=date.getMinutes() > 9 ? date.getMinutes() : "0"+date.getMinutes();
+    var seconds=date.getSeconds() > 9 ? date.getSeconds() : "0"+date.getSeconds();
+    var time= hours + ':' + minutes + ':' +seconds;
+    $('#startDate').val(today);
+    $('#endDate').val(today);
+    $('#startTime').val(time);
+    $('#endTime').val(time);
+
     selectFodderMsgByState();
     $.ajax({
         url:'/Line/getMenu',
@@ -179,7 +209,7 @@ $(document).ready(function(){
         var endDate=$("#endDate").val();
         var endTime=$("#endTime").val();
         var content=$("#content").val();
-        if(content==""||content==null){
+        if(content==""||content==null||content.match(/^\s+$/g)){
             swal("请选择消息!");
             return false;
         }
@@ -197,8 +227,28 @@ $(document).ready(function(){
         if(startTime.length==5){
             startTime=startTime+":00";
         }
+
+        //const date2 = new Date('1995-12-17T03:24:00');
+        var startDateTime = new Date(startDate+"T"+startTime);
+        var endDateTime = new Date(endDate+"T"+endTime);
+        // if((startDateTime - (new Date())) < 0){
+        //     swal("开始时间不能小于当前系统时间！");
+        //     return false;
+        // }
+        // if((endDateTime - (new Date())) < 0){
+        //     swal("结束时间不能小于当前系统时间！");
+        //     return false;
+        // }
+        if((startDateTime - endDateTime) > 0){
+            swal("开始时间不能大于结束时间！");
+            return false;
+        }
         var deviceID=null;
         var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
+        if(deviceList.length==0){
+            swal("请选择设备!");
+            return false;
+        }
         for(var i=0;i<deviceList.length;i++){
             if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
                 deviceID=deviceList[i].value;
@@ -221,10 +271,6 @@ $(document).ready(function(){
                 });
             }
         }
-        if(deviceID==null){
-            swal("请选择设备!");
-            return false;
-        }
     });
 
     $("#send").click(function () {
@@ -237,6 +283,10 @@ $(document).ready(function(){
         }
         var deviceID=null;
         var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
+        if(deviceList.length==0){
+            swal("请选择设备!");
+            return false;
+        }
         for(var i=0;i<deviceList.length;i++){
             if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
                 deviceID=deviceList[i].value;
@@ -257,10 +307,6 @@ $(document).ready(function(){
                     }
                 });
             }
-        }
-        if(deviceID==null){
-            swal("请选择设备!");
-            return false;
         }
     });
 });

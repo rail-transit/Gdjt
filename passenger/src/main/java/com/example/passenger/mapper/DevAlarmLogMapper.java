@@ -3,10 +3,12 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.DevAlarmLog;
 import com.example.passenger.entity.vo.DevAlarmLogVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface DevAlarmLogMapper {
 
     List<DevAlarmLogVo> warningPaging(@Param("alarmType") Integer alarmType,

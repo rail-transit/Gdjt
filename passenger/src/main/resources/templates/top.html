@@ -12,13 +12,14 @@
  <a href="javascript:void(0);"><img src="/images/logo.png" title="系统首页" /></a>
 </div>
 <ul class="nav">
-    <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 1}"><a href="/path/monitorLeft" target="leftFrame" class="selected"><img src="/images/icon04.png" title="设备监控" /><h2>设备监控</h2></a></li>
+    <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 1}"><a href="/path/monitorLeft" target="leftFrame"><img src="/images/icon04.png" title="设备监控" /><h2>设备监控</h2></a></li>
     <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 2}"><a href="/path/messageLeft" target="leftFrame"><img src="/images/icon02.png" title="版式管理" /><h2>版式管理</h2></a></li>
     <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 3}"><a href="/path/scmLeft"  target="leftFrame"><img src="/images/icon05.png" title="系统配置管理" /><h2>系统配置管理</h2></a></li>
     <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 5}"><a href="/path/journalLeft"  target="leftFrame"><img src="/images/icon01.png" title="预案管理" /><h2>预案管理</h2></a></li>
     <li th:each="rights:${session.rightsList}" th:if="${rights.id eq 6}"><a href="/path/messageAuditLeft" target="leftFrame"><img src="/images/icon03.png" title="报表管理" /><h2>报表管理</h2></a></li>
+    <li><a href="/path/advertisement" target="leftFrame"><img src="/images/icon03.png" title="广告管理" /><h2>广告管理</h2></a></li>
 </ul>
-<div id="txt" style="float: left; margin:0 auto; padding-left: 200px;color: white;font-size: 14px;padding-top: 17px;">
+<div id="txt" style="float: left; margin:0 auto; padding-left: 70px;color: white;font-size: 14px;padding-top: 17px;">
 </div>
 <div id="hms" style="float: left; margin:0 -123px; color: white;font-size: 26px;padding-top: 35px;"></div>
 <div class="topright">
@@ -34,11 +35,17 @@
 </body>
 <script type="text/javascript">
     $(function(){
+        //初始加载导航
+        var Uarry=$(".nav  li a");
+        for(var i = 0; i < Uarry.length; i++){
+            $(Uarry[0]).addClass("selected");
+        }
+
         //顶部导航切换
         $(".nav li a").click(function(){
-            $(".nav li a.selected").removeClass("selected")
+            $(".nav li a.selected").removeClass("selected");
             $(this).addClass("selected");
-        })
+        });
     });
     function saveUserName() {
         if(window.localStorage){
@@ -46,11 +53,12 @@
             var sign = false; //当前账户是否已保存的标记
             //循环遍历，判断是否已保存
             if (localStorage.length >= 1) {
+                //去重
                 for(var i=0 ; i < localStorage.length; i++){
                     if (localStorage.getItem(localStorage.key(i)) == name){
                         sign = true;
+                        break;
                     }
-                    break;
                 }
                 if(!sign){
                     var timestamp = (new Date()).getTime();

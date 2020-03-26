@@ -7,8 +7,8 @@ public class UsersVo {
     private String tel;
     private Integer departmentID;
     private String email;
-    private String lastLogonTime;
-    private String des;
+    private String updateDate;
+    private String nickname;
     private Integer groupID;
     private String stationID;
     private String lineID;
@@ -65,20 +65,20 @@ public class UsersVo {
         this.email = email;
     }
 
-    public String getLastLogonTime() {
-        return lastLogonTime;
+    public String getUpdateDate() {
+        return updateDate;
     }
 
-    public void setLastLogonTime(String lastLogonTime) {
-        this.lastLogonTime = lastLogonTime;
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 
-    public String getDes() {
-        return des;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setDes(String des) {
-        this.des = des;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public Integer getGroupID() {

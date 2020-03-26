@@ -8,6 +8,8 @@ import com.example.passenger.service.MsgFodderService;
 import com.example.passenger.service.MsgLevelService;
 import com.example.passenger.service.OperationLogService;
 import com.example.passenger.utils.PageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/msgFodder")
 public class MsgFodderController {
+    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     @Autowired
     MsgFodderService msgFodderService;
@@ -33,139 +36,142 @@ public class MsgFodderController {
 
 
     @RequestMapping("/msgFodderManagement")
-    public String msgFodderManagement(){
+    public String msgFodderManagement() {
         return "rightContent/messagePlan/addMessage";
     }
 
     @RequestMapping("/realTimeMsgManagement")
-    public String realTimeMsgManagement(Model model){
+    public String realTimeMsgManagement(Model model) {
         return "rightContent/messagePlan/realTimeMsg";
     }
 
     @RequestMapping("/timingMsgManagement")
-    public String timingMsgManagement(Model model){
+    public String timingMsgManagement(Model model) {
         return "rightContent/messagePlan/timingMsg";
     }
 
     @RequestMapping("/getMgsLevel")
     @ResponseBody
-    public Map<String,Object> getMgsLevel(ModelAndView mv,@RequestParam(defaultValue = "11")String levelCode){
-        List<MsgLevel> levelList=msgLevelService.selectMsgLevelByCode(levelCode);
-        mv.addObject("levelList",levelList);
+    public Map<String, Object> getMgsLevel(ModelAndView mv, @RequestParam(defaultValue = "11") String levelCode) {
+        List<MsgLevel> levelList = msgLevelService.selectMsgLevelByCode(levelCode);
+        mv.addObject("levelList", levelList);
         return mv.getModel();
     }
 
 
     @RequestMapping("/getFodderMsgByType")
     @ResponseBody
-    public Map<String,Object> getFodderMsgByType(ModelAndView mv,@RequestParam(defaultValue = "1")
-            Integer pageNum,@RequestParam(defaultValue = "0") Integer type){
-        PageUtil pageUtil=msgFodderService.selectPaging(type,null,pageNum,9);
-        mv.addObject("pageUtil",pageUtil);
+    public Map<String, Object> getFodderMsgByType(ModelAndView mv, @RequestParam(defaultValue = "1")
+            Integer pageNum, @RequestParam(defaultValue = "0") Integer type) {
+        PageUtil pageUtil = msgFodderService.selectPaging(type, null, pageNum, 9);
+        mv.addObject("pageUtil", pageUtil);
         return mv.getModel();
     }
 
     @RequestMapping("/getFodderMsgByState")
     @ResponseBody
-    public Map<String,Object> getFodderMsgByState(ModelAndView mv,@RequestParam(defaultValue = "1")
-            Integer pageNum,@RequestParam(defaultValue = "0") Integer type){
-        PageUtil pageUtil=msgFodderService.selectPaging(type,1,pageNum,10);
-        mv.addObject("pageUtil",pageUtil);
+    public Map<String, Object> getFodderMsgByState(ModelAndView mv, @RequestParam(defaultValue = "1")
+            Integer pageNum, @RequestParam(defaultValue = "0") Integer type) {
+        PageUtil pageUtil = msgFodderService.selectPaging(type, 1, pageNum, 10);
+        mv.addObject("pageUtil", pageUtil);
         return mv.getModel();
     }
 
     @RequestMapping("/selectMsgByType")
     @ResponseBody
-    public Map<String,Object> selectMsgByType(ModelAndView mv,Integer type){
-        List<MsgFodder> msgFodderList=msgFodderService.selectMsgFodderByType(type);
-        mv.addObject("msgFodderList",msgFodderList);
+    public Map<String, Object> selectMsgByType(ModelAndView mv, Integer type) {
+        List<MsgFodder> msgFodderList = msgFodderService.selectMsgFodderByType(type);
+        mv.addObject("msgFodderList", msgFodderList);
         return mv.getModel();
     }
 
     @RequestMapping("/updateStateFodder")
     @ResponseBody
-    public Map<String,Object> updateStateFodder(ModelAndView mv,HttpSession session,
-                                                Integer id,Integer state,String note){
-        MsgFodder msgFodder=msgFodderService.selectMsgFodder(id);
-        Users users=(Users) session.getAttribute("user");
+    public Map<String, Object> updateStateFodder(ModelAndView mv, HttpSession session,
+                                                 Integer id, Integer state, String note) {
+        MsgFodder msgFodder = msgFodderService.selectMsgFodder(id);
+        Users users = (Users) session.getAttribute("user");
         try {
-            Integer i=msgFodderService.updateState(id,state,note);
-            if(i>0){
+            Integer i = msgFodderService.updateState(id, state, note);
+            if (i > 0) {
                 //日志记录
-                OperationLog operationLog=new OperationLog();
+                OperationLog operationLog = new OperationLog();
                 operationLog.setOperator(users.getId().toString());
                 operationLog.setType("预案管理");
-                operationLog.setContent("用户("+users.getName()+") 审核消息素材("+msgFodder.getTitle()+")!");
+                operationLog.setContent("用户(" + users.getName() + ") 审核消息素材(" + msgFodder.getTitle() + ")!");
                 operationLogService.addOperationLog(operationLog);
-                mv.addObject("result","success");
-            }else{
-                mv.addObject("result","error");
+                mv.addObject("result", "success");
+            } else {
+                mv.addObject("result", "error");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            mv.addObject("result","error");
+            mv.addObject("result", "error");
+            logger.error(e.getMessage());
         }
         return mv.getModel();
     }
 
     @RequestMapping("/addMsgFodder")
     @ResponseBody
-    public Map<String,Object> addMsgFodder(ModelAndView mv, MsgFodder msgFodder, HttpSession session){
-        Users users=(Users) session.getAttribute("user");
+    public Map<String, Object> addMsgFodder(ModelAndView mv, MsgFodder msgFodder, HttpSession session) {
+        Users users = (Users) session.getAttribute("user");
         try {
-            Integer count=msgFodderService.selectMsgFodderByTitle(msgFodder.getTitle(),
-                    msgFodder.getType(),null);
-            if(count>0){
-                mv.addObject("result","exists");
-            }else {
+            Integer count = msgFodderService.selectMsgFodderByTitle(msgFodder.getTitle(),
+                    msgFodder.getType(), null);
+            if (count > 0) {
+                mv.addObject("result", "exit");
+            } else {
                 //录入消息
-                Integer i=msgFodderService.addMsgFodder(msgFodder);
-                if(i>0){
+                Integer i = msgFodderService.addMsgFodder(msgFodder);
+                if (i > 0) {
                     //日志记录
-                    OperationLog operationLog=new OperationLog();
+                    OperationLog operationLog = new OperationLog();
                     operationLog.setOperator(users.getId().toString());
                     operationLog.setType("预案管理");
-                    operationLog.setContent("用户("+users.getName()+") 添加消息素材("+msgFodder.getTitle()+")!");
+                    operationLog.setContent("用户(" + users.getName() + ") 添加消息素材(" + msgFodder.getTitle() + ")!");
                     operationLogService.addOperationLog(operationLog);
-                    mv.addObject("result","success");
-                }else{
-                    mv.addObject("result","error");
+                    mv.addObject("result", "success");
+                } else {
+                    mv.addObject("result", "error");
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            mv.addObject("result","error");
+            mv.addObject("result", "error");
+            logger.error(e.getMessage());
         }
         return mv.getModel();
     }
 
     @RequestMapping("/updateFodder")
     @ResponseBody
-    public Map<String,Object> updateFodder(ModelAndView mv,MsgFodder msgFodder,HttpSession session){
-        Users users=(Users) session.getAttribute("user");
+    public Map<String, Object> updateFodder(ModelAndView mv, MsgFodder msgFodder, HttpSession session) {
+        Users users = (Users) session.getAttribute("user");
         try {
-            MsgFodder msgFodder1=msgFodderService.selectMsgFodder(msgFodder.getId());
-            Integer count=msgFodderService.selectMsgFodderByTitle(msgFodder.getTitle(),
-                    msgFodder1.getType(),msgFodder.getId());
-            if(count>0){
-                mv.addObject("result","exists");
-            }else{
-                Integer i=msgFodderService.updateMsgFodder(msgFodder);
-                if(i>0){
+            MsgFodder msgFodder1 = msgFodderService.selectMsgFodder(msgFodder.getId());
+            Integer count = msgFodderService.selectMsgFodderByTitle(msgFodder.getTitle(),
+                    msgFodder1.getType(), msgFodder.getId());
+            if (count > 0) {
+                mv.addObject("result", "exit");
+            } else {
+                Integer i = msgFodderService.updateMsgFodder(msgFodder);
+                if (i > 0) {
                     //日志记录
-                    OperationLog operationLog=new OperationLog();
+                    OperationLog operationLog = new OperationLog();
                     operationLog.setOperator(users.getId().toString());
                     operationLog.setType("预案管理");
-                    operationLog.setContent("用户("+users.getName()+") 修改消息素材("+msgFodder.getTitle()+")!");
+                    operationLog.setContent("用户(" + users.getName() + ") 修改消息素材(" + msgFodder.getTitle() + ")!");
                     operationLogService.addOperationLog(operationLog);
-                    mv.addObject("result","success");
-                }else{
-                    mv.addObject("result","error");
+                    mv.addObject("result", "success");
+                } else {
+                    mv.addObject("result", "error");
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            mv.addObject("result","error");
+            mv.addObject("result", "error");
+            logger.error(e.getMessage());
         }
 
         return mv.getModel();
@@ -173,25 +179,26 @@ public class MsgFodderController {
 
     @RequestMapping("/deleteFodder")
     @ResponseBody
-    public Map<String,Object> deleteFodder(ModelAndView mv,Integer id,HttpSession session){
-        MsgFodder msgFodder=msgFodderService.selectMsgFodder(id);
-        Users users=(Users) session.getAttribute("user");
+    public Map<String, Object> deleteFodder(ModelAndView mv, Integer id, HttpSession session) {
+        MsgFodder msgFodder = msgFodderService.selectMsgFodder(id);
+        Users users = (Users) session.getAttribute("user");
         try {
-            Integer i=msgFodderService.deleteMsgFodder(id);
-            if(i>0){
+            Integer i = msgFodderService.deleteMsgFodder(id);
+            if (i > 0) {
                 //日志记录
-                OperationLog operationLog=new OperationLog();
+                OperationLog operationLog = new OperationLog();
                 operationLog.setOperator(users.getId().toString());
                 operationLog.setType("预案管理");
-                operationLog.setContent("用户("+users.getName()+") 删除消息素材("+msgFodder.getTitle()+")!");
+                operationLog.setContent("用户(" + users.getName() + ") 删除消息素材(" + msgFodder.getTitle() + ")!");
                 operationLogService.addOperationLog(operationLog);
-                mv.addObject("result","success");
-            }else{
-                mv.addObject("result","error");
+                mv.addObject("result", "success");
+            } else {
+                mv.addObject("result", "error");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            mv.addObject("result","error");
+            mv.addObject("result", "error");
+            logger.error(e.getMessage());
         }
         return mv.getModel();
     }

@@ -10,7 +10,7 @@
         #event_height_div{width: 99%;height: 205px;border: 1px solid wheat;margin: 0 auto;overflow: auto}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:460px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -57,8 +57,8 @@ $(document).ready(function(){
         }
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
     });
+    getEventState();
     getTime();
-    getEventState()
 });
 
 function getTime(){

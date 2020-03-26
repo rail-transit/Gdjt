@@ -7,15 +7,27 @@
         FROM
             Message
         WHERE
-            id =#{id}
+            id = #{id}
     </select>
-    <select id="selectMessageID" resultType="java.lang.Integer">
-        SELECT TOP
-            1 id
+    <select id="getMessageByCondition" resultType="com.example.passenger.entity.Message">
+        SELECT
+        *
         FROM
-            Message
-        ORDER BY
-            id DESC
+        Message
+        <where>
+            <if test="deviceID != null">
+                AND DeviceID = #{deviceID}
+            </if>
+            <if test="playState != null">
+                AND PlayState = #{playState}
+            </if>
+            <if test="level != null">
+                AND Level = #{level}
+            </if>
+            <if test="msg != null">
+                AND Msg = #{msg}
+            </if>
+        </where>
     </select>
     <select id="getMessage" resultType="com.example.passenger.entity.Message">
         SELECT
@@ -24,39 +36,8 @@
             Message
         where
             Level = #{level}
-            AND DeviceID=#{deviceID}
-            AND PlayState=1
-    </select>
-    <select id="getMessageByDeviceID" resultType="java.lang.Integer">
-        SELECT
-            ID
-        FROM
-            Message
-        WHERE
-            DeviceID = #{deviceID}
-            AND PlayState =1
-    </select>
-    <select id="getMessageByLevel" resultType="com.example.passenger.entity.Message">
-        SELECT
-            *
-        FROM
-            Message
-        WHERE
-            DeviceID = #{deviceID}
-            AND PlayState =2
-            AND  Level = #{level}
-    </select>
-    <select id="getMessageByIsPlanMsg" resultType="com.example.passenger.entity.Message">
-        SELECT
-            *
-        FROM
-            Message
-        WHERE
-           	CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= StartDate
-            and CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >EndTime
-            AND State = 1
-            AND PlayState =0
-            and IsPlanMsg=1
+            AND DeviceID = #{deviceID}
+            AND ( PlayState = 1 OR PlayState = 2)
     </select>
     <select id="getMaxLevel" resultType="java.lang.Integer">
         SELECT
@@ -65,138 +46,19 @@
             Message a,
             Msg_Level b
         where
-            a.Level=b.LevelCode
-            and a.DeviceID=#{deviceID}
-            and (a.PlayState=1 or a.PlayState=2)
+            a.Level = b.LevelCode
+            AND a.DeviceID = #{deviceID}
+            AND ( a.PlayState= 1 OR a.PlayState= 2)
     </select>
-    <select id="getRelease" resultType="java.util.LinkedHashMap">
-        SELECT
-          d.Name AS lineName,
-          c.Name AS stationName,
-          b.Name AS deviceName,
-          a.Msg,
-          a.StartDate,
-          a.EndDate,
-          a.StartTime,
-          a.EndTime,
-          a.Operator
-        FROM
-            Message a
-            LEFT JOIN Device b ON a.DeviceID= b.ID
-            LEFT JOIN Station c ON b.StationID= c.ID
-            LEFT JOIN Line d ON b.LineID= d.ID
-        WHERE
-        convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
-        <if test="lineID!=null">
-            AND d.ID = #{lineID}
-        </if>
-        <if test="stationID!=null">
-            AND c.ID = #{stationID}
-        </if>
-        <if test="deviceID!=null">
-            AND b.ID = #{deviceID}
-        </if>
-    </select>
-    <select id="selectPaging"  resultType="com.example.passenger.entity.vo.MessageVo">
-        SELECT TOP (#{pageSize}) a.*,b.Name as deviceName,c.Name as stationName,d.Name as lineName
-        FROM
-        (
-        SELECT
-        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
-        FROM
-        Message
-        WHERE
-        <if test="playState!=2">
-            PlayState=#{playState}
-        </if>
-        <if test="playState==2">
-            (PlayState=#{playState} or PlayState=0)
-        </if>
-        <if test="state!=null">
-           AND State=#{state}
-        </if>
-        <if test="msg!=null and msg!=''">
-           AND Msg like '%'+#{msg}+'%'
-        </if>
-        ) AS a
-        LEFT JOIN Device b on a.DeviceID=b.ID
-        LEFT JOIN Station c on b.StationID=c.ID
-        LEFT JOIN Line d on b.LineID=d.ID
-        WHERE
-        RowNumber > #{pageSize} * (
-        #{pageNum}-1)
-    </select>
-    <select id="count" resultType="java.lang.Integer">
-        SELECT COUNT
-        (*)
-        FROM
-        Message
-        WHERE
-            PlayState=#{playState}
-        <if test="state!=null">
-            AND State=#{state}
-        </if>
-        <if test="msg!=null">
-           AND Msg like '%'+#{msg}+'%'
-        </if>
-    </select>
-    <select id="messageStatistics" resultType="com.example.passenger.entity.vo.MessageVo">
-        SELECT TOP (#{pageSize})d.Name as lineName,c.Name as stationName,b.Name as deviceName,a.Msg,
-        a.StartDate,a.EndDate,a.StartTime,a.EndTime,a.Operator
-        FROM
-        (
-        SELECT
-        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
-        FROM
-        Message
-        ) AS A
-        LEFT JOIN Device b on a.DeviceID=b.ID
-        LEFT JOIN Station c on b.StationID=c.ID
-        LEFT JOIN Line d on b.lineID=d.ID
-        WHERE
-			convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
-        <if test="lineID!=null">
-            AND d.ID = #{lineID}
-        </if>
-        <if test="stationID!=null">
-            AND c.ID = #{stationID}
-        </if>
-        <if test="deviceID!=null">
-            AND b.ID = #{deviceID}
-        </if>
-        AND RowNumber > #{pageSize} * (
-        #{pageNum}-1)
-    </select>
-    <select id="countStatistics" resultType="java.lang.Integer">
-        SELECT COUNT
-        (*)
-        FROM
-        Message a
-        LEFT JOIN Device b on a.DeviceID=b.ID
-		LEFT JOIN Station c on b.StationID=c.ID
-		LEFT JOIN Line d on b.lineID=d.ID
-        WHERE
-            convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
-        <if test="lineID!=null">
-            AND d.ID = #{lineID}
-        </if>
-        <if test="stationID!=null">
-            AND c.ID = #{stationID}
-        </if>
-        <if test="deviceID!=null">
-            AND b.ID = #{deviceID}
-        </if>
-    </select>
-    <select id="selectMessageByPlanMsg" resultType="com.example.passenger.entity.Message">
+    <select id="getMessageByIsPlanMsg" resultType="com.example.passenger.entity.Message">
         SELECT
             *
         FROM
             Message
         WHERE
-            CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= StartDate
-            AND CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >= EndTime
-            AND State = 1
-            AND PlayState =1
+            id = #{id}
+           	and CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= StartDate
+            and CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >= EndTime
     </select>
     <select id="selectMessageByStartTime" resultType="com.example.passenger.entity.Message">
         SELECT
@@ -207,7 +69,19 @@
             CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= StartDate
             AND CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >= StartTime
             AND State = 1
-            AND PlayState=0
+            AND PlayState = 0
+    </select>
+    <select id="selectMessageByPlanMsg" resultType="com.example.passenger.entity.Message">
+        SELECT
+            *
+        FROM
+            Message
+        WHERE
+            CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= StartDate
+            AND CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >= EndTime
+            AND State = 1
+            AND ( PlayState = 1 OR PlayState = 2)
+            AND IsPlanMsg = 1
     </select>
     <select id="selectMessageByEndTime" resultType="com.example.passenger.entity.Message">
         SELECT
@@ -218,7 +92,128 @@
             CONVERT ( VARCHAR ( 10 ), GETDATE(), 120 ) >= EndDate
             AND CONVERT ( VARCHAR ( 8 ), GETDATE(), 108 ) >= EndTime
             AND State = 1
-            AND PlayState=1
+            AND ( PlayState = 1 OR PlayState = 2)
+            AND IsPlanMsg = 0
+    </select>
+    <select id="queryGroupingMessage" resultType="com.example.passenger.entity.Message">
+        SELECT
+            Msg
+        FROM
+            Message
+        WHERE
+            ( PlayState = 1 OR PlayState = 2 )
+        GROUP BY Msg
+    </select>
+    <select id="selectPaging" resultType="com.example.passenger.entity.vo.MessageVo">
+        SELECT TOP
+        ( #{ pageSize } ) *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY a.id DESC ) AS RowNumber,
+        a.*,
+        b.Name AS deviceName,
+        c.Name AS stationName,
+        d.Name AS lineName
+        FROM
+        Message a
+        LEFT JOIN Device b ON a.DeviceID= b.ID
+        LEFT JOIN Station c ON b.StationID= c.ID
+        LEFT JOIN Line d ON b.LineID= d.ID
+        <where>
+            <if test="playState != null and playState != ''">
+                <if test="playState == 2">
+                    AND ( PlayState =#{ playState } OR PlayState = 0)
+                </if>
+                AND PlayState = #{playState}
+            </if>
+            <if test="state != null">
+                AND State = #{state}
+            </if>
+            <if test="msg != null and msg != ''">
+                AND Msg like '%'+#{msg}+'%'
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
+            </if>
+            <if test="lineID!=null and lineID!=''">
+                AND d.ID = #{lineID}
+            </if>
+            <if test="stationID!=null and stationID!=''">
+                AND c.ID = #{stationID}
+            </if>
+            <if test="deviceID!=null and deviceID!=''">
+                AND b.ID = #{deviceID}
+            </if>
+        </where>
+        ) AS A
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT
+        ( * )
+        FROM
+        Message
+        <where>
+            <if test="playState!=null and playState!=''">
+                <if test="playState==2">
+                    AND (PlayState = #{playState} or PlayState = 0)
+                </if>
+                AND PlayState = #{playState}
+            </if>
+            <if test="state != null">
+                AND State = #{state}
+            </if>
+            <if test="msg!=null and msg!=''">
+                AND Msg like '%'+#{msg}+'%'
+            </if>
+            <if test="startDate!=null and endDate!=null">
+                AND convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
+            </if>
+            <if test="lineID!=null and lineID!=''">
+                AND d.ID = #{lineID}
+            </if>
+            <if test="stationID!=null and stationID!=''">
+                AND c.ID = #{stationID}
+            </if>
+            <if test="deviceID!=null and deviceID!=''">
+                AND b.ID = #{deviceID}
+            </if>
+        </where>
+    </select>
+    <select id="getRelease" resultType="java.util.LinkedHashMap">
+        SELECT
+        Row_Number () OVER ( ORDER BY a.id DESC ) AS id,
+        d.Name AS lineName,
+        c.Name AS stationName,
+        b.Name AS deviceName,
+        a.Msg,
+        a.StartDate,
+        a.EndDate,
+        a.StartTime,
+        a.EndTime,
+        a.Operator
+        FROM
+        Message a
+        LEFT JOIN Device b ON a.DeviceID= b.ID
+        LEFT JOIN Station c ON b.StationID= c.ID
+        LEFT JOIN Line d ON b.LineID= d.ID
+        <where>
+            <if test="startDate!=null and endDate!=null">
+                AND convert(char(10),a.StartDate,20) between #{startDate} and #{endDate}
+            </if>
+            <if test="lineID!=null and lineID!=''">
+                AND d.ID = #{lineID}
+            </if>
+            <if test="stationID!=null and stationID!=''">
+                AND c.ID = #{stationID}
+            </if>
+            <if test="deviceID!=null and deviceID!=''">
+                AND b.ID = #{deviceID}
+            </if>
+        </where>
     </select>
     <insert id="addMessage" parameterType="com.example.passenger.entity.Message">
         INSERT INTO Message
@@ -239,24 +234,23 @@
              #{isPlanMsg})
     </insert>
     <update id="updateMessage" parameterType="java.lang.Integer">
-        UPDATE Message SET
-        <if test="state!=null">
-            State =#{state}
-        </if>
-        <if test="state!=null and playState!=null">
-            ,
-        </if>
-        <if test="playState!=null">
-            PlayState=#{playState}
-        </if>
+        UPDATE Message
+        <set>
+            <if test="state != null">
+                State = #{state},
+            </if>
+            <if test="playState != null">
+                PlayState = #{playState},
+            </if>
+        </set>
         WHERE
-            ID =#{id}
+        ID =#{id}
     </update>
     <delete id="deleteMessage" parameterType="java.lang.Integer">
         DELETE
         FROM
             Message
         WHERE
-            id =#{id}
+            id = #{id}
     </delete>
 </mapper>

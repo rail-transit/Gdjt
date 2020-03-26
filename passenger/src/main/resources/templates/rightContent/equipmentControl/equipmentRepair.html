@@ -12,8 +12,8 @@
         .repair_add_height{padding-left: 10px;padding-top: 10px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        #repairOpenTable tbody {height:115px;overflow-y:auto;width: 100%;table-layout: fixed;}
-        #repairEndTable tbody {height:200px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        #repairOpenTable tbody {/*height:115px;*/overflow-y:auto;width: 100%;table-layout: fixed;}
+        #repairEndTable tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -40,25 +40,29 @@
 <div id="repair_top_div">
     <p id="repair_top_p">设备</p>
     <div id="repair_title_div">
-        <input hidden="hidden" type="text" th:value="${device.id}" class="deviceID">
+        <input hidden="hidden" type="text" th:value="${device.id}" id="deviceID">
         <p th:text="${device.name}"></p>
     </div>
     <div id="repair_top_height">
         <div class="repair_add_height">
             <input type="button" value="添加维修信息" id="addRepair">
+            <label>提交人员:</label>
+            <input type="text" id="accendant">
             <label>维修人员:</label>
-            <input type="text" class="accendant">
+            <input type="text" id="repairPeople" disabled="disabled">
             <label>故障说明:</label>
-            <input type="text" style="width: 45%;" class="note">
+            <input type="text" style="width: 25%;" id="note">
             <input type="radio" name="repairResult" checked="checked" value="1"><label>成功</label>
         </div>
         <div class="repair_add_height">
-            <input type="text" class="id" hidden="hidden">
-            <input type="button" value="结束维修信息" id="updateRepair" disabled>
+            <input type="text" id="id" hidden="hidden">
+            <input type="button" value="结束维修信息" id="updateRepair" disabled="disabled">
             <label>联系电话:</label>
-            <input type="text" class="tel">
+            <input type="text" id="tel">
+            <label>联系电话:</label>
+            <input type="text" id="repairTel" disabled="disabled">
             <label>维修方案:</label>
-            <input type="text" style="width: 45%;" class="scheme">
+            <input type="text" style="width: 25%;" id="scheme" disabled="disabled">
             <input type="radio" name="repairResult" value="0"><label>失败</label>
         </div>
     </div>
@@ -68,7 +72,7 @@
         <thead>
         <tr>
             <th class="tips">设备名称</th>
-            <th class="tips">维修人员</th>
+            <th class="tips">提交人员</th>
             <th class="tips">联系电话</th>
             <th class="tips">故障描述</th>
             <th class="tips">开始维修时间</th>
@@ -92,11 +96,13 @@
         <thead>
         <tr>
             <th class="tips">设备名称</th>
-            <th class="tips">维修人员</th>
+            <th class="tips">提交人员</th>
             <th class="tips">联系电话</th>
             <th class="tips">故障描述</th>
             <th class="tips">开始维修时间</th>
             <th class="tips">维修结束时间</th>
+            <th class="tips">维修人员</th>
+            <th class="tips">联系电话</th>
             <th class="tips">维修方案</th>
             <th class="tips">维修结果</th>
         </tr>
@@ -121,84 +127,72 @@ $(document).ready(function(){
         }
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
 
-        $(".id").val($(this).closest("tr").find('td').eq(0).text());
-        $(".accendant").val($(this).closest("tr").find('td').eq(2).text());
-        $(".tel").val($(this).closest("tr").find('td').eq(3).text());
-        $(".note").val($(this).closest("tr").find('td').eq(4).text());
-        $(".scheme").val($(this).closest("tr").find('td').eq(6).text());
-        $("#updateRepair").removeAttr("disabled");
+        $("#id").val($(this).closest("tr").find('td').eq(0).text());
+        $("#accendant").val($(this).closest("tr").find('td').eq(2).text());
+        $("#tel").val($(this).closest("tr").find('td').eq(3).text());
+        $("#note").val($(this).closest("tr").find('td').eq(4).text());
+        $("#scheme").val($(this).closest("tr").find('td').eq(6).text());
         $("#addRepair").attr("disabled","true");
+        $("#updateRepair").removeAttr("disabled");
+        $("#repairPeople").removeAttr("disabled");
+        $("#repairTel").removeAttr("disabled");
+        $("#scheme").removeAttr("disabled");
     });
 
     $("#addRepair").click(function () {
-        var accendant=$(".accendant").val();
-        var note=$(".note").val();
-        var tel=$(".tel").val();
-        var scheme=$(".scheme").val();
-        var deviceID=$(".deviceID").val();
-        if(accendant.match(/^\s+$/g)||accendant==""){
-            swal("维修人员不能为空!");
-            return false;
-        }
-        if(note.match(/^\s+$/g)||note==""){
-            swal("故障说明不能为空!");
-            return false;
-        }
-
-        if(tel.match(/^\s+$/g)||tel==""){
-            swal("联系电话不能为空!");
-            return false;
-        }
-        var tle_reg=new RegExp("^1(3|4|5|7|8)\\d{9}$");
-        if(!tle_reg.test(tel)){
-            swal("手机号码不正确，请重新输入!");
-            return false;
-        }
-        if(scheme.match(/^\s+$/g)||scheme==""){
-            swal("维修方案不能为空!");
-            return false;
-        }
-        $.ajax({
-            url:'/devRepair/addDevRepair',
-            type:"POST",
-            data:{accendant:accendant,note:note,tel:tel,scheme:scheme,deviceID:deviceID},
-            success:function (data) {
-                if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/devRepair/devRepairManagement?id="+deviceID;
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        var accendant=$("#accendant").val();
+        var note=$("#note").val();
+        var tel=$("#tel").val();
+        var scheme=$("#scheme").val();
+        var deviceID=$("#deviceID").val();
+        if (addIsnull(accendant,note,tel)){
+            $.ajax({
+                url:'/devRepair/addDevRepair',
+                type:"POST",
+                data:{accendant:accendant,note:note,tel:tel,scheme:scheme,deviceID:deviceID},
+                success:function (data) {
+                    if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/devRepair/devRepairManagement?id="+deviceID;
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#updateRepair").click(function () {
+        var id=$("#id").val();
+        var scheme=$("#scheme").val();
+        var deviceID=$("#deviceID").val();
+        var repairPeople=$("#repairPeople").val();
+        var repairTel=$("#repairTel").val();
         var repairResult=$('input[name="repairResult"]:checked').val();
-        var id=$(".id").val();
-        var deviceID=$(".deviceID").val();
-        $.ajax({
-            url:'/devRepair/updateDevRepair',
-            type:"POST",
-            data:{id:id,repairResult:repairResult,deviceID:deviceID},
-            success:function (data) {
-                if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/devRepair/devRepairManagement?id="+deviceID;
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (updateIsnull(repairPeople,repairTel,scheme)){
+            $.ajax({
+                url:'/devRepair/updateDevRepair',
+                type:"POST",
+                data:{id:id,scheme:scheme,repairResult:repairResult,deviceID:deviceID,repairPeople:repairPeople,repairTel:repairTel},
+                success:function (data) {
+                    if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/devRepair/devRepairManagement?id="+deviceID;
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 });
 
 function selectDevRepair(pageNum){
-    var deviceID=$(".deviceID").val();
+    var deviceID=$("#deviceID").val();
     $.ajax({
         url:'/devRepair/selectDevRepair',
         type:"POST",
@@ -210,12 +204,14 @@ function selectDevRepair(pageNum){
                 if(item.repairResult=='1'){
                     repairResult="成功";
                 }
-                $("#repairEndTable tbody").prepend('<tr><td>'+data.device.name+'</td>'+
+                $("#repairEndTable tbody").append('<tr><td>'+data.device.name+'</td>'+
                     '<td>'+item.accendant+'</td>'+
                     '<td>'+item.tel+'</td>'+
                     '<td>'+item.note+'</td>'+
                     '<td>'+item.startTime+'</td>'+
                     '<td>'+item.endTime+'</td>'+
+                    '<td>'+item.repairPeople+'</td>'+
+                    '<td>'+item.repairTel+'</td>'+
                     '<td>'+item.scheme+'</td>'+
                     '<td>'+repairResult+'</td></tr>');
             });
@@ -239,6 +235,50 @@ function selectDevRepair(pageNum){
             }
         }
     });
+}
+
+function addIsnull(accendant,note,tel) {
+    if(accendant.match(/^\s+$/g)||accendant==""){
+        swal("提交人员不能为空!");
+        return false;
+    }
+    if(note.match(/^\s+$/g)||note==""){
+        swal("故障说明不能为空!");
+        return false;
+    }
+
+    if(tel.match(/^\s+$/g)||tel==""){
+        swal("联系电话不能为空!");
+        return false;
+    }
+    var tle_reg=new RegExp("^1(3|4|5|7|8)\\d{9}$");
+    if(!tle_reg.test(tel)){
+        swal("手机号码不正确，请重新输入!");
+        return false;
+    }
+    return true;
+}
+
+function updateIsnull(repairPeople,repairTel,scheme) {
+    if(repairPeople.match(/^\s+$/g)||repairPeople==""){
+        swal("维修人员不能为空!");
+        return false;
+    }
+    if(scheme.match(/^\s+$/g)||scheme==""){
+        swal("维修方案不能为空!");
+        return false;
+    }
+
+    if(repairTel.match(/^\s+$/g)||repairTel==""){
+        swal("联系电话不能为空!");
+        return false;
+    }
+    var tle_reg=new RegExp("^1(3|4|5|7|8)\\d{9}$");
+    if(!tle_reg.test(repairTel)){
+        swal("手机号码不正确，请重新输入!");
+        return false;
+    }
+    return true;
 }
 
 function nextPage(pageNum) {

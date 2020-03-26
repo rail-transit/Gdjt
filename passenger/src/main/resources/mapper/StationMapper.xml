@@ -8,16 +8,6 @@
             Station
         WHERE
             id =#{id}
-        AND IsTrain=0
-</select>
-    <select id="selectTrain" parameterType="java.lang.Integer" resultType="com.example.passenger.entity.Station">
-        SELECT
-            *
-        FROM
-            Station
-        WHERE
-            id =#{id}
-        AND IsTrain=1
 </select>
 <select id="selectAllStation"  resultType="com.example.passenger.entity.Station">
         SELECT
@@ -30,17 +20,17 @@
             AND LineID =#{lineID}
         </if>
 </select>
-    <select id="selectAllTrain"  resultType="com.example.passenger.entity.Station">
-        SELECT
-        *
-        FROM
-        Station
-        WHERE
-        IsTrain=1
-        <if test="lineID!=null and lineID!=0">
-            AND LineID =#{lineID}
-        </if>
-    </select>
+<select id="selectAllTrain"  resultType="com.example.passenger.entity.Station">
+    SELECT
+    *
+    FROM
+    Station
+    WHERE
+    IsTrain=1
+    <if test="lineID!=null and lineID!=0">
+        AND LineID =#{lineID}
+    </if>
+</select>
 <select id="queryAllStation" resultType="com.example.passenger.entity.Station">
         SELECT
             *

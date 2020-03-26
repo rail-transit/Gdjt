@@ -20,40 +20,40 @@ public class OperationLogService {
     @Autowired
     OperationLogMapper operationLogMapper;
 
-    public List<Map<String,String>> getJournal(String startTime, String endTime,
-                                               String type){
-        return operationLogMapper.getJournal(startTime,endTime,type);
+    public List<Map<String, String>> getJournal(String startTime, String endTime,
+                                                String type) {
+        return operationLogMapper.getJournal(startTime, endTime, type);
     }
 
-    public PageUtil selectPaging(String startTime,String endTime,
-                                 String type,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(String startTime, String endTime,
+                                 String type, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
-        pageUtil.setRowCount(operationLogMapper.count(startTime,endTime,type));
-        pageUtil.setPageData(operationLogMapper.selectPaging(startTime,endTime,type,pageNum,pageSize));
+        pageUtil.setRowCount(operationLogMapper.count(startTime, endTime, type));
+        pageUtil.setPageData(operationLogMapper.selectPaging(startTime, endTime, type, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addOperationLog(OperationLog operationLog){
+    public Integer addOperationLog(OperationLog operationLog) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             operationLog.setTime(sdf.format(new Date()));
-            if(operationLog.getIsExported()==null){
+            if (operationLog.getIsExported() == null) {
                 operationLog.setIsExported(0);
             }
-            if(operationLog.getDeviceID()==null){
+            if (operationLog.getDeviceID() == null) {
                 operationLog.setDeviceID(0);
             }
-            if(operationLog.getStationID()==null){
+            if (operationLog.getStationID() == null) {
                 operationLog.setStationID(0);
             }
-            if(operationLog.getLineID()==null){
+            if (operationLog.getLineID() == null) {
                 operationLog.setLineID(0);
             }
             return operationLogMapper.addOperationLog(operationLog);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }

@@ -24,7 +24,7 @@
         .radioTwo{vertical-align: bottom;height: 15px;margin-left: 5px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:320px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -58,8 +58,8 @@
 <div id="devicePos_top_div">
     <p id="devicePos_top_p">添加设备位置</p>
     <ul id="devicePos_ul">
-        <li><span>设备位置名称:</span><input type="text" class="name" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>设备位置描述:</span><input type="text" class="note" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>设备位置名称:</span><input type="text" class="name"></li>
+        <li><span>设备位置描述:</span><input type="text" class="note"></li>
         <li><input id="addDevicePos" type="button" value="添加"></li>
     </ul>
 </div>
@@ -121,34 +121,28 @@ $(document).ready(function(){
     $("#addDevicePos").click(function () {
         var name=$(".name").val();
         var note=$(".note").val();
-        if(name==""){
-            swal("设备位置不能为空");
-            return false;
-        }
-        if(note==""){
-            swal("设备描述不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/devicePos/addDevicePos',
-            type:"POST",
-            data:{name:name,note:note},
-            success:function (data) {
-                if(data.result=="exists"){
-                    swal("该设备位置已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/devicePos/devicePosManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,note)){
+            $.ajax({
+                url:'/devicePos/addDevicePos',
+                type:"POST",
+                data:{name:name,note:note},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该设备位置已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/devicePos/devicePosManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#updateButton").live("click",function () {
@@ -163,34 +157,28 @@ $(document).ready(function(){
         var id=$(".id").val();
         var name=$(".devicePosName").val();
         var note=$(".devicePosNote").val();
-        if(name==""){
-            swal("设备位置不能为空");
-            return false;
-        }
-        if(note==""){
-            swal("设备描述不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/devicePos/updateDevicePos',
-            type:"POST",
-            data:{id:id,name:name,note:note},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该位置名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/devicePos/devicePosManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(name,note)){
+            $.ajax({
+                url:'/devicePos/updateDevicePos',
+                type:"POST",
+                data:{id:id,name:name,note:note},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该位置名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/devicePos/devicePosManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#deleteButton").live("click",function () {
@@ -224,9 +212,20 @@ $(document).ready(function(){
             });
         });
     });
-
-
 });
+
+function isnull(name,note) {
+    if(name==""||name.match(/^\s+$/g)){
+        swal("设备位置不能为空");
+        return false;
+    }
+    if(note==""||note.match(/^\s+$/g)){
+        swal("设备描述不能为空");
+        return false;
+    }
+    return true;
+}
+
 function nextPage(pageNum) {
     location.href="/devicePos/devicePosManagement?pageNum="+pageNum;
 }

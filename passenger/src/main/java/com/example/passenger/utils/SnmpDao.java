@@ -22,42 +22,30 @@ import java.util.List;
 import java.util.Vector;
 
 public class SnmpDao {
-    private String communityName;
-    private String hostIp;
-    //private Integer port;
-    //private int version;
     private static final Logger logger = LoggerFactory.getLogger(SnmpDao.class);
-
-    private static int version = 1;
-    private static String protocol = "udp";
-    private static int port = 161;
 
     /**
      * 获取指定OID对应的table值
+     *
      * @param oid
      * @param snmpModel
      * @return
      */
-    public List<String> walkByTable(String oid, SnmpModel snmpModel){
+    public List<String> walkByTable(String oid, SnmpModel snmpModel) {
         //initSnmp(snmpModel);
         Snmp snmp = null;
         PDU pdu;
         CommunityTarget target;
         List<String> result = new ArrayList<String>();
-
-        communityName = snmpModel.getCommunityName();
-        hostIp = snmpModel.getHostIp();
-        port = snmpModel.getPort();
-        version = snmpModel.getVersion();
         try {
             DefaultUdpTransportMapping dm = new DefaultUdpTransportMapping();
-//			dm.setSocketTimeout(5000);
+            //dm.setSocketTimeout(5000);
             snmp = new Snmp(dm);
             snmp.listen();
             target = new CommunityTarget();
-            target.setCommunity(new OctetString(communityName));
-            target.setVersion(version);
-            target.setAddress(new UdpAddress(hostIp+"/"+port));
+            target.setCommunity(new OctetString(snmpModel.getCommunityName()));
+            target.setVersion(snmpModel.getVersion());
+            target.setAddress(new UdpAddress(snmpModel.getHostIp() + "/" + snmpModel.getPort()));
             target.setTimeout(1000);
             target.setRetries(1);
 
@@ -65,58 +53,49 @@ public class SnmpDao {
             OID[] columns = new OID[1];
             columns[0] = new VariableBinding(new OID(oid)).getOid();
             List<TableEvent> list = (List<TableEvent>) tutils.getTable(target, columns, null, null);
-            for(TableEvent e : list){
+            for (TableEvent e : list) {
                 VariableBinding[] vb = e.getColumns();
-                if(null == vb)continue;
+                if (null == vb) continue;
                 result.add(vb[0].getVariable().toString());
             }
             snmp.close();
         } catch (IOException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             logger.error(e.getMessage());
-        }finally{
+        } finally {
             try {
-                if(snmp != null)
-                {
+                if (snmp != null) {
                     snmp.close();
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 logger.error(e.getMessage());
             }
         }
         return result;
-
     }
 
     public String getSnmpGet(String oid, SnmpModel snmpModel) {
         Snmp snmp = null;
         CommunityTarget target;
         String Data;
-
-        communityName = snmpModel.getCommunityName();
-        hostIp = snmpModel.getHostIp();
-        port = snmpModel.getPort();
-        version = snmpModel.getVersion();
         try {
             DefaultUdpTransportMapping dm = new DefaultUdpTransportMapping();
-//			dm.setSocketTimeout(5000);
+            //dm.setSocketTimeout(5000);
             snmp = new Snmp(dm);
             snmp.listen();
             target = new CommunityTarget();
-            target.setCommunity(new OctetString(communityName));
-            target.setVersion(version);
-            target.setAddress(new UdpAddress(hostIp + "/" + port));
+            target.setCommunity(new OctetString(snmpModel.getCommunityName()));
+            target.setVersion(snmpModel.getVersion());
+            target.setAddress(new UdpAddress(snmpModel.getHostIp() + "/" + snmpModel.getPort()));
             target.setTimeout(1000);
             target.setRetries(1);
-
-            ResponseEvent responseEvent = null;
-
             PDU pdus = new PDU();
-            if(snmpModel.getAsync()==1){
-                pdus.add(new VariableBinding(new OID(oid),new OctetString(snmpModel.getParameter())));
+            if (snmpModel.getAsync() == 1) {
+                pdus.add(new VariableBinding(new OID(oid), new OctetString(snmpModel.getParameter())));
                 // 设置请求方式
                 pdus.setType(PDU.SET);
-            }else{
+            } else {
                 pdus.add(new VariableBinding(new OID(oid)));
                 // 设置请求方式
                 pdus.setType(PDU.GET);
@@ -124,7 +103,14 @@ public class SnmpDao {
             ResponseEvent event = snmp.send(pdus, target);
             if (null != event) {
                 if (null != event && event.getResponse() != null) {
-                    Vector<VariableBinding> vector = (Vector<VariableBinding>) event.getResponse().getVariableBindings();
+                    Vector<VariableBinding> vector = new Vector<>();
+                    //Vector<VariableBinding> vector = (Vector<VariableBinding>) event.getResponse().getVariableBindings();
+                    //进行类型检查
+                    if (event.getResponse().getVariableBindings() instanceof Vector<?>) {
+                        for (Object o : (Vector<?>) event.getResponse().getVariableBindings()) {
+                            vector.add(VariableBinding.class.cast(o));
+                        }
+                    }
                     for (int i = 0; i < vector.size(); i++) {
                         VariableBinding vec = vector.elementAt(i);
                         Data = vec.getVariable().toString();
@@ -133,20 +119,19 @@ public class SnmpDao {
                 }
             }
             snmp.close();
-            } catch(IOException e){
-                //e.printStackTrace();
-                logger.error(e.getMessage());
-            }finally{
-                try {
-                    if (snmp != null) {
-                        snmp.close();
-                    }
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+        } finally {
+            try {
+                if (snmp != null) {
+                    snmp.close();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
             }
-            return null;
-
         }
-
+        return null;
+    }
 }

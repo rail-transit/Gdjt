@@ -14,6 +14,16 @@ public class DevRepair implements Serializable {
     private Integer repairResult;
     private Integer stationID;
     private Integer lineID;
+    private String repairPeople;
+    private String repairTel;
+
+    public String getRepairTel() {
+        return repairTel;
+    }
+
+    public void setRepairTel(String repairTel) {
+        this.repairTel = repairTel;
+    }
 
     public Integer getId() {
         return id;
@@ -101,5 +111,13 @@ public class DevRepair implements Serializable {
 
     public void setLineID(Integer lineID) {
         this.lineID = lineID;
+    }
+
+    public String getRepairPeople() {
+        return repairPeople;
+    }
+
+    public void setRepairPeople(String repairPeople) {
+        this.repairPeople = repairPeople;
     }
 }

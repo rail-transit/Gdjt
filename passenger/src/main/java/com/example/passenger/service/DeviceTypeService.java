@@ -18,54 +18,57 @@ public class DeviceTypeService {
     @Autowired
     DeviceTypeMapper deviceTypeMapper;
 
-    public DeviceType selectTypeByName(){return deviceTypeMapper.selectTypeByName();}
+    public DeviceType selectTypeByName() {
+        return deviceTypeMapper.selectTypeByName();
+    }
 
-    public List<DeviceType> selectAllDeviceType(){
+    public List<DeviceType> selectAllDeviceType() {
         return deviceTypeMapper.selectAllDeviceType();
     }
 
-    public DeviceType selectDeviceTypeById(Integer id){
+    public DeviceType selectDeviceTypeById(Integer id) {
         return deviceTypeMapper.selectDeviceTypeById(id);
     }
 
-    public Integer selectDeviceTypeByName(String name,Integer id){
-        return deviceTypeMapper.selectDeviceTypeByName(name,id);
+    public Integer selectDeviceTypeByName(String name, Integer id) {
+        return deviceTypeMapper.selectDeviceTypeByName(name, id);
     }
 
-    public PageUtil selectDeviceTypePaging(Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectDeviceTypePaging(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(deviceTypeMapper.count());
-        pageUtil.setPageData(deviceTypeMapper.selectDeviceTypePaging(pageNum,pageSize));
+        pageUtil.setPageData(deviceTypeMapper.selectDeviceTypePaging(pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addDeviceType(DeviceType device_type){
+    public Integer addDeviceType(DeviceType device_type) {
         try {
+            device_type.setDllName("测试");
             return deviceTypeMapper.addDeviceType(device_type);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateDeviceType(DeviceType device_type){
+    public Integer updateDeviceType(DeviceType device_type) {
         try {
             return deviceTypeMapper.updateDeviceType(device_type);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteDeviceType(Integer id){
+    public Integer deleteDeviceType(Integer id) {
         try {
             return deviceTypeMapper.deleteDeviceType(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

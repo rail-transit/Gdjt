@@ -16,7 +16,7 @@
         .planTD{width: 25%}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:475px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -37,6 +37,20 @@
         .f-treeList-titleP{ display: block; float: left; line-height: 26px;}
         .f-iconBi{width: 30px;margin-left: -6px}
         .f-treeList-radio{display: block;margin-right: 2px;margin-top: 5px;}
+        .cont {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 30%;
+            width: 35%;
+            height: 53%;
+            border: 6px solid #d6b6dd47;
+            background-color: white;
+            z-index:1;
+            overflow: auto;
+        }
+        #planManage_operation_div{padding-left: 90px;}
+        #planManage_operation_div input{height: 25px;width: 90px;}
         #paging_div{position: fixed;}
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 0px;padding-top: 7px;
             text-align: center;font-size: 16px}
@@ -155,7 +169,17 @@
         </table>
     </div>
 </div>
-<script type="text/javascript" src="/js/config.js" ></script>
+
+<div id="cont_b" class="cont">
+    <div>
+        <span>请输入密码:</span><input type="password" id="pwd">
+    </div>
+    <div id="planManage_operation_div">
+        <input id="determine" type="button" value="确定">
+        <input type="button" value="取消" onclick = "document.getElementById('cont_b').style.display='none'">
+    </div>
+</div>
+<script type="text/javascript" src="/js/config.js"></script>
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -201,13 +225,12 @@ $(document).ready(function(){
         }
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
         $(".playListID").val($(this).closest("tr").find("td").eq(3).text());
-        $(".description").val($(this).closest("tr").find("td").eq(4).text());
        /* $(".planTD").val($(this).closest("tr").find("td").eq(2).text());*/
+        $(".description").find("option:selected").text($(this).closest("tr").find("td").eq(4).text());
         $(".name").val($(this).closest("tr").find("td").eq(0).text());
         $(".note").val($(this).closest("tr").find("td").eq(2).text());
         $(".summary").val($(this).closest("tr").find("td").eq(5).text());
         var state=$(this).closest("tr").find("td").eq(1).text();
-        var playID=$(this).closest("tr").find("td").eq(3).text();
         if(state=="未审核" || state=="未通过"){
             $("#releasePlayList").attr("disabled",true);
             $("#implPlayList").attr("disabled",true);
@@ -217,16 +240,8 @@ $(document).ready(function(){
             $("#implPlayList").attr("disabled",false);
             $("#cancelPlayList").attr("disabled",false);
         }
-        $.ajax({
-            url:'/playStyle/getWidthHeight',
-            type:"POST",
-            data:{playID:playID},
-            success:function (data) {
-                $(".width").val(data.width);
-                $(".height").val(data.height);
-            }
-        });
-       // selectFodder();
+        // selectFodder();
+        getWidthHeight($(this).closest("tr").find("td").eq(3).text());
         getStyleContent($(this).closest("tr").find("td").eq(3).text());
     });
 
@@ -244,7 +259,7 @@ $(document).ready(function(){
        var playID=$(".playListID").val();
        var state=1;
        var summary=$(".summary").val();
-        if(playID==null){
+        if(playID==null || playID==""){
             swal("请选择预案!");
             return false;
         }
@@ -269,6 +284,10 @@ $(document).ready(function(){
         var playID=$(".playListID").val();
         var state=-1;
         var summary=$(".summary").val();
+        if(playID==null || playID==""){
+            swal("请选择预案!");
+            return false;
+        }
         if(summary.match(/^\s+$/g)|| summary==""){
             swal("请填写审核意见");
             return false;
@@ -292,84 +311,128 @@ $(document).ready(function(){
 
     $("#releasePlayList").click(function () {
         var playlistID=$(".playListID").val();
-        var deviceID=null;
         var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
-        for(var i=0;i<deviceList.length;i++){
-            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
-                deviceID=deviceList[i].value;
-                $.ajax({
-                    url:'/playListClient/addClient',
-                    type:"POST",
-                    data:{clientID:deviceID,playlistID:playlistID},
-                    success:function (data) {
-                        if(data.result=="success"){
-                            swal("Good!", "操作成功!", "success");
-                        }else{
-                            swal("OMG!", "操作错误!", "error");
-                        }
-                    }
-                });
-            }
+        if(playlistID==null || playlistID==""){
+            swal("请选择预案!");
+            return false;
         }
-
-        if(deviceID==null){
+        if(deviceList.length==0){
             swal("请选择设备!");
             return false;
         }
+        document.getElementById('cont_b').style.display='block';
+        $("#determine").unbind('click').click(function () {
+            var pwd=$("#pwd").val();
+            if(pwd==null || pwd==""){
+                swal("请输入密码!");
+                return false;
+            }
+            for(var i=0;i<deviceList.length;i++){
+                if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                    var deviceID=deviceList[i].value;
+                    $.ajax({
+                        url:'/playListClient/addClient',
+                        type:"POST",
+                        data:{clientID:deviceID,playlistID:playlistID,pwd:pwd},
+                        success:function (data) {
+                            if(data.result=="success"){
+                                $("#pwd").val("");
+                                document.getElementById('cont_b').style.display='none';
+                                swal("Good!", "操作成功!", "success");
+                            }else if(data.result=="passwordError"){
+                                swal("密码错误!");
+                            }else{
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        }
+                    });
+                }
+            }
+        });
     });
 
     $("#cancelPlayList").click(function () {
         var playlistID=$(".playListID").val();
-        var deviceID=null;
         var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
-        for(var i=0;i<deviceList.length;i++){
-            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
-                deviceID=deviceList[i].value;
-                $.ajax({
-                    url:'/playListClient/cancelPlayList',
-                    type:"POST",
-                    data:{playlistID:playlistID,deviceID:deviceID},
-                    success:function (data) {
-                        if(data.result=="success"){
-                            swal("Good!", "操作成功!", "success");
-                        }else{
-                            swal("OMG!", "操作错误!", "error");
-                        }
-                    }
-                });
-            }
+        if(playlistID==null || playlistID==""){
+            swal("请选择预案!");
+            return false;
         }
-        if(deviceID==null){
+        if(deviceList.length==0){
             swal("请选择设备!");
             return false;
         }
+        document.getElementById('cont_b').style.display='block';
+        $("#determine").unbind('click').click(function () {
+            var pwd=$("#pwd").val();
+            if(pwd==null || pwd==""){
+                swal("请输入密码!");
+                return false;
+            }
+            for(var i=0;i<deviceList.length;i++){
+                if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                    var deviceID=deviceList[i].value;
+                    $.ajax({
+                        url:'/playListClient/cancelPlayList',
+                        type:"POST",
+                        data:{playlistID:playlistID,deviceID:deviceID,pwd:pwd},
+                        success:function (data) {
+                            if(data.result=="success"){
+                                $("#pwd").val("");
+                                document.getElementById('cont_b').style.display='none';
+                                swal("Good!", "操作成功!", "success");
+                            }else if(data.result=="passwordError"){
+                                swal("密码错误!");
+                            }else{
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        }
+                    });
+                }
+            }
+        });
     });
 
     $("#implPlayList").click(function () {
         var playlistID=$(".playListID").val();
-        var deviceID=null;
         var deviceList=$(".f-iconRadioTrue").siblings(".deviceID");
-        for(var i=0;i<deviceList.length;i++){
-            if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
-                deviceID=deviceList[i].value;
-                $.ajax({
-                    url:'/playListClient/implPlayList',
-                    type:"POST",
-                    data:{playlistID:playlistID,deviceID:deviceID},
-                    success:function (data) {
-                        if(data.result=="success"){
-                            swal("Good!", "操作成功!", "success");
-                        }else{
-                            swal("OMG!", "操作错误!", "error");
-                        }
-                    }
-                });
-            }
+        if(playlistID==null || playlistID==""){
+            swal("请选择预案!");
+            return false;
         }
-        if(deviceID==null){
+        if(deviceList.length==0){
             swal("请选择设备!");
             return false;
         }
+        document.getElementById('cont_b').style.display='block';
+        $("#determine").unbind('click').click(function () {
+            var pwd=$("#pwd").val();
+            if(pwd==null || pwd==""){
+                swal("请输入密码!");
+                return false;
+            }
+            for(var i=0;i<deviceList.length;i++){
+                if(deviceList[i].value!='undefined' && deviceList[i].value!=null){
+                    var deviceID=deviceList[i].value;
+                    $.ajax({
+                        url:'/playListClient/implPlayList',
+                        type:"POST",
+                        data:{playlistID:playlistID,deviceID:deviceID,pwd:pwd},
+                        success:function (data) {
+                            if(data.result=="success"){
+                                $("#pwd").val("");
+                                document.getElementById('cont_b').style.display='none';
+                                swal("Good!", "操作成功!", "success");
+                            }else if(data.result=="passwordError"){
+                                swal("密码错误!");
+                            }else{
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        }
+                    });
+                }
+            }
+        });
     });
 });
 
@@ -384,7 +447,7 @@ function selectPlayList(pageNum) {
             $.each(data.pageUtil.pageData, function (i, item) {
                 var state=null;
                 var summary="";
-                var description=item.description;
+                var description="视频";
                 if(item.state==0){
                     state="未审核";
                 }else if(item.state==1){
@@ -395,9 +458,7 @@ function selectPlayList(pageNum) {
                 if(item.summary!=null){
                     summary=item.summary;
                 }
-                if(description==0){
-                    description="视频";
-                }else{
+                if(item.description==1){
                     description="图片";
                 }
                 $("#planListTable tbody").prepend('<tr><td>'+item.name+'</td>'+
@@ -429,6 +490,17 @@ function selectPlayList(pageNum) {
     });
 }
 
+function getWidthHeight(playID) {
+    $.ajax({
+        url:'/playStyle/getWidthHeight',
+        type:"POST",
+        data:{playID:playID},
+        success:function (data) {
+            $(".width").val(data.width);
+            $(".height").val(data.height);
+        }
+    });
+}
 
 function getStyleContent(playID) {
     $.ajax({

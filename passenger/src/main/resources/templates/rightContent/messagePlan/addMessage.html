@@ -20,7 +20,7 @@
         #msgFodder_right_div li textarea{width: 311px;overflow: auto;resize: none;height: 145px;}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:360px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -109,33 +109,26 @@ $(document).ready(function(){
         var contentCN=$(".content_CN").val();
         var contentEN=$(".content_EN").val();
         var type=$('input[name="type"]:checked').val();
-        if(title.match(/^\s+$/g)||title==""){
-            swal("标题不能为空!");
-            return false;
-        }
-        if(contentCN.match(/^\s+$/g)||contentCN==""){
-            swal("中文内容不能为空!");
-            return false;
-        }
-        $.ajax({
-            url:'/msgFodder/addMsgFodder',
-            type:"POST",
-            data:{title:title,type:type,contentCN:contentCN,contentEN:contentEN},
-            success:function (data) {
-                if (data.result=="exists") {
-                    swal("该标题已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/msgFodder/msgFodderManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(title,contentCN)){
+            $.ajax({
+                url:'/msgFodder/addMsgFodder',
+                type:"POST",
+                data:{title:title,type:type,contentCN:contentCN,contentEN:contentEN},
+                success:function (data) {
+                    if (data.result=="exit") {
+                        swal("该标题已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/msgFodder/msgFodderManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
-
 
     $(":radio").click(function () {
         var type=$(this).val();
@@ -152,31 +145,25 @@ $(document).ready(function(){
             swal("请选择要修改的消息!");
             return false;
         }
-        if(title.match(/^\s+$/g)||title==""){
-            swal("标题不能为空!");
-            return false;
-        }
-        if(contentCN.match(/^\s+$/g)||contentCN==""){
-            swal("中文内容不能为空!");
-            return false;
-        }
-        $.ajax({
-            url:'/msgFodder/updateFodder',
-            type:"POST",
-            data:{id:id,title:title,contentCN:contentCN,contentEN:contentEN},
-            success:function (data) {
-                if (data.result=="exists") {
-                    swal("该标题已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/msgFodder/msgFodderManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(title,contentCN)){
+            $.ajax({
+                url:'/msgFodder/updateFodder',
+                type:"POST",
+                data:{id:id,title:title,contentCN:contentCN,contentEN:contentEN},
+                success:function (data) {
+                    if (data.result=="exit") {
+                        swal("该标题已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/msgFodder/msgFodderManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $(".resetting").click(function () {
@@ -285,43 +272,56 @@ function tableToExcel() {
         type:"POST",
         data:{type:type},
         success:function (data) {
-            const jsonData=data.msgFodderList;
-            //列标题，逗号隔开，每一个逗号就是隔开一个单元格
-            let str = `名称,状态,消息内容,英文消息内容,审核原因\n`;
-            //增加\t为了不让表格显示科学计数法或者其他格式
-            for(let i = 0 ; i < jsonData.length ; i++ ){
-                for(let item in jsonData[i]){
-                    if(item=='id' || item=='type'){
+            if(data.msgFodderList.length!=0){
+                const jsonData=data.msgFodderList;
+                let str = "名称,状态,消息内容,英文消息内容,审核原因\n";
+                //增加\t为了不让表格显示科学计数法或者其他格式
+                for(let i = 0 ; i < jsonData.length ; i++ ){
+                    for(let item in jsonData[i]){
+                        if(item=='id' || item=='type'){
 
-                    }else if(item=='state'){
-                        if(jsonData[i][item]==0){
-                            str+=`未审核,`;
-                        }else if(jsonData[i][item]==1){
-                            str+=`审核通过,`;
+                        }else if(item=='state'){
+                            if(jsonData[i][item]==0){
+                                str+="未审核,";
+                            }else if(jsonData[i][item]==1){
+                                str+="审核通过,";
+                            }else{
+                                str+="审核不通过,";
+                            }
                         }else{
-                            str+=`审核不通过,`;
+                            str+=jsonData[i][item] +",";
                         }
-                    }else{
-                        str+=`${jsonData[i][item] + '\t'},`;
                     }
+                    str+='\n';
                 }
-                str+='\n';
+
+                let isIE = false;
+                if (navigator.userAgent.indexOf("compatible") > -1 && navigator.userAgent.indexOf("MSIE") > -1) { // ie浏览器
+                    isIE = true;
+                }
+                if (navigator.userAgent.indexOf("Trident") > -1) { // edge 浏览器
+                    isIE = true;
+                }
+                if(isIE){
+                    var BOM = "\uFEFF";
+                    var csvData = new Blob([BOM + str], { type: "text/csv" });
+                    navigator.msSaveBlob(csvData, "消息列表.csv");
+                }else{
+                    //encodeURIComponent解决中文乱码
+                    let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
+                    //通过创建a标签实现
+                    let link = document.createElement("a");
+                    link.href = uri;
+                    //对下载的文件命名
+                    link.download =  "消息列表.csv";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
             }
-            //encodeURIComponent解决中文乱码
-            let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str);
-            //通过创建a标签实现
-            let link = document.createElement("a");
-            link.href = uri;
-            //对下载的文件命名
-            link.download =  "json数据表.csv";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
     });
 }
-
-
 
 function selectFodderMsgByType(type,pageNum) {
     $.ajax({
@@ -366,6 +366,18 @@ function selectFodderMsgByType(type,pageNum) {
             }
         }
     });
+}
+
+function isnull(title,contentCN) {
+    if(title.match(/^\s+$/g)||title==""){
+        swal("标题不能为空!");
+        return false;
+    }
+    if(contentCN.match(/^\s+$/g)||contentCN==""){
+        swal("中文内容不能为空!");
+        return false;
+    }
+    return true;
 }
 
 function nextPage(pageNum) {

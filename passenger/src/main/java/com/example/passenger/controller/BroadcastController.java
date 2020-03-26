@@ -6,6 +6,8 @@ import com.example.passenger.service.BroadcastService;
 import com.example.passenger.service.LineService;
 import com.example.passenger.service.StationService;
 import com.example.passenger.utils.PageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RequestMapping("/broadcast")
 @Controller
 public class BroadcastController {
+    private static final Logger logger = LoggerFactory.getLogger(BroadcastController.class);
+
     @Autowired
     BroadcastService broadcastService;
     @Autowired
@@ -29,36 +33,37 @@ public class BroadcastController {
 
 
     @RequestMapping("/videoPlayStatistics")
-    public String videoPlayStatistics(Model model){
-        List<Line> lineList=lineService.selectAllLine();
-        List<Station> stationList=stationService.queryAllStation();
+    public String videoPlayStatistics(Model model) {
+        List<Line> lineList = lineService.selectAllLine();
+        List<Station> stationList = stationService.queryAllStation();
 
-        model.addAttribute("lineList",lineList);
-        model.addAttribute("stationList",stationList);
+        model.addAttribute("lineList", lineList);
+        model.addAttribute("stationList", stationList);
         return "rightContent/reportForm/videoPlay";
     }
 
     @RequestMapping("/textPlayStatistics")
-    public String textPlayStatistics(Model model){
-        List<Line> lineList=lineService.selectAllLine();
-        List<Station> stationList=stationService.queryAllStation();
+    public String textPlayStatistics(Model model) {
+        List<Line> lineList = lineService.selectAllLine();
+        List<Station> stationList = stationService.queryAllStation();
 
-        model.addAttribute("lineList",lineList);
-        model.addAttribute("stationList",stationList);
+        model.addAttribute("lineList", lineList);
+        model.addAttribute("stationList", stationList);
         return "rightContent/reportForm/textPlay";
     }
 
     @RequestMapping("/getBroadcast")
     @ResponseBody
-    public Map<String,Object> getBroadcast(ModelAndView mv,Integer lineID,Integer stationID,
-                                           Integer deviceID,Integer type,String startDate,
-                                           String endDate){
+    public Map<String, Object> getBroadcast(ModelAndView mv, Integer lineID, Integer stationID,
+                                            Integer deviceID, Integer type, String startDate,
+                                            String endDate) {
         try {
-            List<Map<String,String>> broadcastVoList=broadcastService.getBroadcast(lineID,stationID,
-                    deviceID,type,startDate,endDate);
-            mv.addObject("broadcastVoList",broadcastVoList);
-        }catch (Exception e){
+            List<Map<String, String>> broadcastVoList = broadcastService.getBroadcast(lineID, stationID,
+                    deviceID, type, startDate, endDate);
+            mv.addObject("broadcastVoList", broadcastVoList);
+        } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return mv.getModel();
     }
@@ -66,12 +71,12 @@ public class BroadcastController {
 
     @RequestMapping("/selectStatistics")
     @ResponseBody
-    public Map<String,Object> selectStatistics(ModelAndView mv, Integer lineID, Integer stationID, Integer deviceID,
-                                               Integer type, String startDate, String endDate,
-                                               @RequestParam(defaultValue = "1") Integer pageNum){
-        PageUtil pageUtil=broadcastService.broadcastPaging(lineID,stationID,deviceID,type,startDate,
-                endDate,pageNum,10);
-        mv.addObject("pageUtil",pageUtil);
+    public Map<String, Object> selectStatistics(ModelAndView mv, Integer lineID, Integer stationID, Integer deviceID,
+                                                Integer type, String startDate, String endDate,
+                                                @RequestParam(defaultValue = "1") Integer pageNum) {
+        PageUtil pageUtil = broadcastService.broadcastPaging(lineID, stationID, deviceID, type, startDate,
+                endDate, pageNum, 10);
+        mv.addObject("pageUtil", pageUtil);
         return mv.getModel();
     }
 

@@ -3,10 +3,12 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.Broadcast;
 import com.example.passenger.entity.vo.BroadcastVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface BroadcastMapper {
 
     List<Map<String,String>> getBroadcast(@Param("lineID") Integer lineID,

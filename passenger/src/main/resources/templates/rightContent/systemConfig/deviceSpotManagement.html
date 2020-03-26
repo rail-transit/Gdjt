@@ -24,7 +24,7 @@
         .deviceSpotRadio{vertical-align: bottom;height: 15px;margin-left: -3px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:221px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -58,17 +58,17 @@
 <div id="deviceSpot_top_div">
     <p id="deviceSpot_top_p">添加设备测点</p>
     <ul id="deviceSpot_ul">
-        <li><span>测点名称:</span><input type="text" class="name" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>测点参数:</span><input type="text" class="parameter" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>测点名称:</span><input type="text" class="name" ></li>
+        <li><span>测点参数:</span><input type="text" class="parameter" ></li>
         <li><span>测点类型:</span><select class="type">
             <option value="0">设置量</option>
             <option value="1">状态量</option>
             <option value="2">模拟量</option>
             <option value="3">信息量</option>
         </select></li>
-        <li><span>报警下限:</span><input type="text" class="min" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>报警上限:</span><input type="text" class="max" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
-        <li><span>默认值:</span><input type="text" class="value" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>报警下限:</span><input type="text" class="min" ></li>
+        <li><span>报警上限:</span><input type="text" class="max" ></li>
+        <li><span>默认值:</span><input type="text" class="value" ></li>
         <li><span>所属设备类型:</span>
             <select class="deviceType">
                 <option th:each="deviceType:${deviceTypeList}" th:value="${deviceType.id}" th:text="${deviceType.name}"></option>
@@ -127,13 +127,12 @@
     <div id="deviceSpot_footer_div">
         <input type="text" class="id" hidden="hidden">
         <ul id="deviceSpot_footer_ul">
-            <li><span>测点名称:</span><input type="text" class="deviceSpotName"></li>
-            <li><span>测点参数:</span><input type="text" class="deviceSpotParameter"></li>
+            <li><span>测点名称:</span><input type="text" class="deviceSpotName" ></li>
+            <li><span>测点参数:</span><input type="text" class="deviceSpotParameter" ></li>
             <li><span>测点类型:</span><select class="deviceSpotType">
-                <option value="0">设置量</option>
-                <option value="1">状态量</option>
+                <option value="0">开关量</option>
+                <option value="1">字符串</option>
                 <option value="2">模拟量</option>
-                <option value="3">信息量</option>
             </select></li>
             <li><span>控制类型:</span><select class="deviceSpotCtrlType">
                 <option value="0">音量</option>
@@ -141,9 +140,9 @@
                 <option value="2">关机</option>
                 <option value="3">重启</option>
             </select></li>
-            <li><span>最小值:</span><input type="text" class="deviceSpotMin"></li>
-            <li><span>最大值:</span><input type="text" class="deviceSpotMax"></li>
-            <li><span>默认值:</span><input type="text" class="deviceSpotValue"></li>
+            <li><span>报警下限:</span><input type="text" class="deviceSpotMin" ></li>
+            <li><span>报警上限:</span><input type="text" class="deviceSpotMax" ></li>
+            <li><span>默认值:</span><input type="text" class="deviceSpotValue" ></li>
             <li><span>所属设备:</span>
                 <select class="deviceSpotDeviceType">
                     <option th:each="deviceType:${deviceTypeList}" th:value="${deviceType.id}" th:text="${deviceType.name}"></option>
@@ -169,6 +168,10 @@ $(document).ready(function(){
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
     });
 
+    $("#type").change(function () {
+        var type=$(this).val();
+        selectUserByName(type);
+    });
 
     $(".type").change(function () {
         var type=$(this).val();
@@ -201,52 +204,29 @@ $(document).ready(function(){
         if(type==0){
             ctrlType=$(".ctrlType").val();
         }
-        if(name==""){
-            swal("测点名称不能为空");
-            return false;
-        }
-        if(parameter==""){
-            swal("测点参数不能为空");
-            return false;
-        }
-        if(min==""){
-            swal("最小值不能为空");
-            return false;
-        }
-        if(max==""){
-            swal("最大值不能为空");
-            return false;
-        }
-        if(value==""){
-            swal("默认值不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/deviceSpot/addDeviceSpot',
-            type:"POST",
-            data:{name:name,parameter:parameter,type:type,min:min,max:max,value:value,deviceType:deviceType,
-                isShow:isShow,ctrlType:ctrlType},
-            success:function (data) {
-                if(data.result=="exist"){
-                    swal("该设备下的测点已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/deviceSpot/deviceSpotManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if(isnull(name,parameter,min,max,value)){
+            $.ajax({
+                url:'/deviceSpot/addDeviceSpot',
+                type:"POST",
+                data:{name:name,parameter:parameter,type:type,min:min,max:max,value:value,deviceType:deviceType,
+                    isShow:isShow,ctrlType:ctrlType},
+                success:function (data) {
+                    if(data.result=="exist"){
+                        swal("该设备下的测点已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/deviceSpot/deviceSpotManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
-    });
-
-    $("#type").change(function () {
-       var type=$(this).val();
-        selectUserByName(type);
+            });
+        }
     });
 
     $("#updateButton").live("click",function () {
@@ -291,6 +271,45 @@ $(document).ready(function(){
         }
     });
 
+    $("#updateDeviceSpot").click(function () {
+        var id=$(".id").val();
+        var name=$(".deviceSpotName").val();
+        var parameter=$(".deviceSpotParameter").val();
+        var type= $(".deviceSpotType").val();
+        var min=$(".deviceSpotMin").val();
+        var max=$(".deviceSpotMax").val();
+        var value=$(".deviceSpotValue").val();
+        var deviceType=$(".deviceSpotDeviceType").val();
+        var isShow=$('input[name="deviceSpotIsShow"]:checked').val();
+        var ctrlType=0;
+        if(type==0){
+            ctrlType= $(".deviceSpotCtrlType").val();
+        }
+        if(isnull(name,parameter,min,max,value)){
+            $.ajax({
+                url:'/deviceSpot/updateDeviceSpot',
+                type:"POST",
+                data:{id:id,name:name,parameter:parameter,type:type,min:min,max:max,value:value,deviceType:deviceType,
+                    isShow:isShow,ctrlType:ctrlType},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该测点已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/deviceSpot/deviceSpotManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
+                }
+            });
+        }
+    });
+
     $("#deleteButton").live("click",function () {
         var id=$(this).closest("tr").find("td").eq(0).text();
         swal({
@@ -320,62 +339,6 @@ $(document).ready(function(){
                     swal("OMG!", "请求失败!", "error");
                 }
             });
-        });
-    });
-    $("#updateDeviceSpot").click(function () {
-        var id=$(".id").val();
-        var name=$(".deviceSpotName").val();
-        var parameter=$(".deviceSpotParameter").val();
-        var type= $(".deviceSpotType").val();
-        var min=$(".deviceSpotMin").val();
-        var max=$(".deviceSpotMax").val();
-        var value=$(".deviceSpotValue").val();
-        var deviceType=$(".deviceSpotDeviceType").val();
-        var isShow=$('input[name="deviceSpotIsShow"]:checked').val();
-        var ctrlType=0;
-        if(type==0){
-            ctrlType= $(".deviceSpotCtrlType").val();
-        }
-        if(name==""){
-            swal("测点名称不能为空");
-            return false;
-        }
-        if(parameter==""){
-            swal("测点参数不能为空");
-            return false;
-        }
-        if(min==""){
-            alert("最小值不能为空");
-            return false;
-        }
-        if(max==""){
-            swal("最大值不能为空");
-            return false;
-        }
-        if(value==""){
-            swal("默认值不能为空");
-            return false;
-        }
-        $.ajax({
-            url:'/deviceSpot/updateDeviceSpot',
-            type:"POST",
-            data:{id:id,name:name,parameter:parameter,type:type,min:min,max:max,value:value,deviceType:deviceType,
-                isShow:isShow,ctrlType:ctrlType},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该测点已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/deviceSpot/deviceSpotManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
-                }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
         });
     });
 
@@ -411,7 +374,7 @@ function selectUserByName(deviceType,pageNum) {
                     ctrlType="设置音量";
                 }
 
-                $("#deviceSpotTable  tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
+                $("#deviceSpotTable tbody").prepend('<tr><td hidden="hidden">'+item.id+'</td>' +
                     '<td>'+item.name+'</td>' +
                     '<td>'+item.parameter+'</td>' +
                     '<td>'+type+'</td>' +
@@ -444,6 +407,42 @@ function selectUserByName(deviceType,pageNum) {
             }
         }
     });
+}
+
+function isnull(name,parameter,min,max,value) {
+    var reg=new RegExp("^[0-9]*$");
+    if(name==""||name.match(/^\s+$/g)){
+        swal("测点名称不能为空");
+        return false;
+    }
+    if(parameter==""||parameter.match(/^\s+$/g)){
+        swal("测点参数不能为空");
+        return false;
+    }
+    if(min==""||min.match(/^\s+$/g)){
+        swal("报警下限不能为空");
+        return false;
+    }else if(!reg.test(min)){
+        swal("报警下限只能是数值");
+        return false;
+    }
+
+    if(max==""||max.match(/^\s+$/g)){
+        swal("报警上限不能为空");
+        return false;
+    }else if(!reg.test(max)){
+        swal("报警上限只能是数值");
+        return false;
+    }
+
+    if(value==""||value.match(/^\s+$/g)){
+        swal("默认值不能为空");
+        return false;
+    }else if(!reg.test(value)){
+        swal("默认值只能是数值");
+        return false;
+    }
+    return true;
 }
 
 function nextPage(pageNum) {

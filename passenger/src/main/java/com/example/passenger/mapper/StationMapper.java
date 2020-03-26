@@ -2,13 +2,13 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.Station;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface StationMapper {
     Station selectStation(Integer id);
-
-    Station selectTrain(Integer id);
 
     List<Station> selectAllStation(@Param("lineID") Integer lineID);
 

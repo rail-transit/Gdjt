@@ -48,6 +48,7 @@
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 10px;}
         #paging_ul li{display: inline;float:left;width: 69px;}
         .nextPage{margin-left: -32px;}
+        #material_select_div select{vertical-align: middle}
         #content img,video{height: 290px;width: 100%;}
         #content textarea{height: 270px;width: 98%;resize:none;}
         #content embed{height:270px;width: 95%;}
@@ -178,8 +179,6 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-    window.parent.document.getElementById('hidebg').style.display="none";
-    window.parent.document.getElementById('hidebox').style.display="none";
     $(document).on("click","#materialTable tr",function(){
         var trs = $(this).parent().find('tr'); //获取所有tr
         if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
@@ -197,7 +196,7 @@ $(document).ready(function(){
     $("#updateFodderInfo").click(function () {
        var title=$("#title").val();
        var info=$("#infoContent").val();
-       if(title.match(/^\s+$/g)||title==null || title==null){
+       if(title.match(/^\s+$/g)||title=="" || title==null){
             swal("标题不能为空!");
             return false;
         }
@@ -317,18 +316,21 @@ $(document).ready(function(){
             // $("#content").append('<video src="/Path/fodder/'+fileName+'" controls="controls" ' +
             //     'autoplay="autoplay"></video>');
             //接入vlc插件
-            $("#content").append('<object type=\'application/x-vlc-plugin\' id=\'vlc\' events=\'True\' pluginspage="http://www.videolan.org" width="100%">'
-                +'        <param name=\'mrl\' value=\'/Path/fodder/'+fileName+'\'/>'
-                +'        <param name=\'volume\' value=\'50\' />'
-                +'        <param name=\'autoplay\' value=\'true\'/>'
-                +'        <param name=\'loop\' value=\'false\' />'
-                +'        <param name=\'fullscreen\' value=\'false\' />'
-                +'    </object>');
-            $("#content").append('<video src="/Path/fodder/'+fileName+'" controls="controls" ' +
-                'autoplay="autoplay"></video>');
+            $("#content").empty();
+            $("#content").append('<object type=\'application/x-vlc-plugin\'  id=\'vlc\'  width="100%">'
+                +'<param name=\'mrl\'id="testvlc" value=\'/Path/fodder/'+fileName+'\'/>'
+                +'<param name=\'volume\' value=\'50\' />'
+                +'<param name=\'autoplay\' value=\'true\'/>'
+                +'<param name=\'loop\' value=\'false\' />'
+                +'<param name=\'fullscreen\' value=\'false\' />'
+                +'</object>');
+            document.getElementById("vlc").style.width = "100%";
+            document.getElementById("vlc").style.height = "100%";
         }else if(type==1){
+            $("#content").empty();
             $("#content").append('<img src="/Path/fodder/'+fileName+'">');
         }else if(type==2){
+            $("#content").empty();
             // $("#content").append('<textarea id="content3"></textarea>');
             // $("#content3").load("/Path/fodder/"+fileName+"");
             $.ajax({
@@ -341,8 +343,10 @@ $(document).ready(function(){
                 }
             });
         }else if(type==3){
+            $("#content").empty();
             $("#content").append('<textarea id="contentText">'+path+'</textarea>');
         }else if (type==5){
+            $("#content").empty();
             $("#content").append('<embed src="/Path/fodder/'+fileName+'"' +
                 ' type="application/x-shockwave-flash" quality="high" /></span>');
         }
@@ -416,9 +420,7 @@ $(document).ready(function(){
             });
         });
     });
-
 });
-
 
 var start = 0;
 
@@ -505,7 +507,7 @@ function gteFodder(pageNum,type,state,name) {
                 if(item.size!=0){
                     size=bytesToSize(item.size);
                 }
-                if(item.timeLength!=null){
+                if(item.timeLength!=null && item.timeLength!=""){
                     timeLength=item.timeLength;
                 }
                 if(item.note!=null){

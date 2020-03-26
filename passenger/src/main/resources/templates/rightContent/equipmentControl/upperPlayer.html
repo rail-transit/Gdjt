@@ -3,11 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="/css/rightByLeft.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
+        #upperPlayer_volume_control{width: 99%;height: 45px;background-color: white;margin: auto;
+            line-height: 44px;padding: 0; border-top: 2px solid #006c96;}
+        #upperPlayer_volume_control p{margin: auto;padding-left: 10px;}
+        #upperPlayer_equipment_div{height: 130px;}
+        #upperPlayer_equipment_p{font-size: 14px;color: white;font-weight: bolder; padding-left: 10px;}
+        #upperPlayer_player_div{background-color: white;height: 80px;width: 99%;margin: auto}
+        #upperPlayer_player_div p{padding-left: 10px;padding-top: 25px;}
+        #upperPlayer_control_state{width: 99%;height: 335px;background-color: white;margin: 0 auto;overflow: auto}
+        #upperPlayer_control_title{height: 17px;font-size: 14px;color: white;font-weight: bolder;padding-left: 10px;margin-top: 0px;}
+        #upperPlayer_control_state tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
+        .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
+        table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
+        tr {width: 100%; table-layout: fixed;}
+        td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
         #paging_ul{list-style: none;margin: auto;padding: 0px;padding-left: 32px;padding-top: 7px;}
         #paging_ul li{display: inline;float:left;width: 69px;text-align: center}
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 300px;
+            background: -webkit-linear-gradient(#059CFA, #059CFA) no-repeat;
+            /*background-size: 0% 100%;*/
+            border-radius: 10px; /*这个属性设置使填充进度条时的图形为圆角*/
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;/*隐藏滑块*/
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 15px;
+            border-radius: 10px; /*将轨道设为圆角的*/
+            box-shadow: 0 1px 1px #def3f8, inset 0 .125em .125em #0d1112; /*轨道内置阴影效果*/
+        }
+        input[type=range]:focus {
+            outline: none;/*原始的控件获取到焦点时，会显示包裹整个控件的边框，所以还需要把边框取消。*/
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 25px;
+            width: 25px;
+            margin-top: -5px; /*使滑块超出轨道部分的偏移量相等*/
+            background: #ffffff;
+            border-radius: 50%; /*外观设置为圆形*/
+            border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+            box-shadow: 0 .125em .125em #3b4547; /*添加底部阴影*/
+        }
     </style>
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
@@ -20,8 +62,8 @@
 </head>
 <body style="background-color: #006c96;">
 <div id="upperPlayer_volume_control">
-    <p>音量:<span id="upperPlayer_volume"  th:text="${volume}"></span>
-        <input id="range" type="range" min="0" max="100" th:value="${volume}" onchange="setVolume();">
+    <p>音量:<span id="upperPlayer_volume">0</span>
+        <input id="range" type="range" min="0" max="100" value="0">
         <input type="checkbox" id="mute">静音
         <input type="button" id="openPlayer" value="打开播放器">
         <input type="button" id="closePlayer" value="关闭播放器">
@@ -64,9 +106,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     selectUpperPlayer();
-    if ($("#upperPlayer_volume").text()=='-1'){
-        $("#upperPlayer_volume").text(0);
-    }
+    getVolume();
     $("#upperPlayTable tr").live("click",function(){
         var trs = $(this).parent().find('tr'); //获取所有tr
         if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
@@ -75,52 +115,115 @@ $(document).ready(function(){
         $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
     });
 
+    $("#range").mouseup(function () {
+        var volume = document.getElementById('range').value;
+        setVolume(volume);
+    });
+
     $("#mute").change(function () {
-        var deviceID=$("#deviceID").val();
         var type="静音";
         if ($("#mute").is(":checked")==true){
             type="静音";
         } else{
             type="取消静音";
         }
-        operation(deviceID,type);
+        operation(type);
     });
 
     $("#openPlayer").click(function () {
-        var deviceID=$("#deviceID").val();
-        var type=$(this).val();
-        operation(deviceID,type);
+        var type="打开播放器";
+        operation(type);
     });
 
     $("#closePlayer").click(function () {
-        var deviceID=$("#deviceID").val();
-        var type=$(this).val();
-        operation(deviceID,type);
+        var type="关闭播放器";
+        operation(type);
     });
 
     $("#restartPlayer").click(function () {
-        var deviceID=$("#deviceID").val();
-        var type=$(this).val();
-        operation(deviceID,type);
+        var type="重启播放器";
+        operation(type);
     });
 });
 
-function operation(deviceID,type) {
+function getVolume() {
+    var deviceID=$("#deviceID").val();
+    $.ajax({
+        url:'/ctrlEvent/getVolume',
+        type:"POST",
+        data:{deviceID:deviceID},
+        success:function (data) {
+            if (data.result=="success"){
+                if(data.para<0){
+                    $("#mute").attr('checked', true);
+                }
+                document.getElementById('upperPlayer_volume').innerHTML=Math.abs(data.para);
+                document.getElementById('range').value=Math.abs(data.para);
+            }else if (data.result=="interrupt") {
+                swal("OMG!", "设备连接不通!", "error");
+            }else{
+                swal("OMG!", "请求异常!", "error");
+            }
+        },
+        error:function (){
+            swal("OMG!", "请求失败!", "error");
+        }
+    });
+}
+
+function setVolume(volume) {
+    var deviceID=$("#deviceID").val();
+    $.ajax({
+        url:'/ctrlEvent/setVolume',
+        type:"POST",
+        data:{deviceID:deviceID,volume:volume},
+        success:function (data) {
+            if (data.result=="success"){
+                swal("Good!", "操作成功!", "success");
+                $("#mute").attr('checked', false);
+                $(".confirm").click(function () {
+                    document.getElementById('upperPlayer_volume').innerHTML=data.para;
+                    document.getElementById('range').value=data.para;
+                    selectUpperPlayer();
+                });
+            }else if(data.result=="interrupt"){
+                swal("OMG!", "设备连接不通!", "error");
+                document.getElementById('upperPlayer_volume').innerHTML=0;
+                document.getElementById('range').value=0;
+            }else if(data.result=="fail"){
+                swal("OMG!", "操作失败!", "error");
+                document.getElementById('upperPlayer_volume').innerHTML=0;
+                document.getElementById('range').value=0;
+            }else{
+                swal("OMG!", "操作错误!", "error");
+                document.getElementById('upperPlayer_volume').innerHTML=0;
+                document.getElementById('range').value=0;
+            }
+        },
+        error:function (){
+            swal("OMG!", "请求失败!", "error");
+        }
+    });
+}
+
+function operation(type) {
+    var deviceID=$("#deviceID").val();
+    var value = document.getElementById('range').value ;
     $.ajax({
         url:'/ctrlEvent/operation',
         type:"POST",
-        data:{deviceID:deviceID,type:type},
+        async: false,
+        data:{deviceID:deviceID,type:type,volume:value},
         success:function (data) {
-            if (data.result=="interrupt") {
-                swal("OMG!", "设备连接不通!", "error");
-                $(".confirm").click(function () {
-                    selectUpperPlayer();
-                });
-            }else if(data.result=="success"){
+            if (data.result=="success") {
                 swal("Good!", "操作成功!", "success");
                 $(".confirm").click(function () {
                     selectUpperPlayer();
                 });
+            }else if(data.result=="interrupt"){
+                swal("OMG!", "设备连接不通!", "error");
+            }else if(data.result=="fail"){
+                swal("OMG!", "操作失败!", "error");
             }else{
                 swal("OMG!", "操作错误!", "error");
             }
@@ -169,41 +272,7 @@ function selectUpperPlayer(pageNum) {
         }
     });
 }
-    
-function setVolume() {
-    var value = document.getElementById('range').value ;
-    document.getElementById('upperPlayer_volume').innerHTML = value;
-    var deviceID=$("#deviceID").val();
-    var type='设置音量';
-    $.ajax({
-        url:'/ctrlEvent/addEquipmentControl',
-        type:"POST",
-        data:{deviceID:deviceID,type:type,volume:value},
-        success:function (data) {
-            if (data.result=="interrupt"){
-                swal("OMG!", "设备连接不通!", "error");
-                $(".confirm").click(function () {
-                    document.getElementById('upperPlayer_volume').innerHTML=0;
-                    document.getElementById('range').value=0;
-                    selectUpperPlayer();
-                });
-            }else if(data.result=="success"){
-                swal("Good!", "操作成功!", "success");
-                $("#mute").attr('checked', false);
-                $(".confirm").click(function () {
-                    document.getElementById('upperPlayer_volume').innerHTML=data.para;
-                    document.getElementById('range').value=data.para;
-                    selectUpperPlayer();
-                });
-            }else{
-                swal("OMG!", "操作错误!", "error");
-            }
-        },
-        error:function (){
-            swal("OMG!", "请求失败!", "error");
-        }
-    });
-}
+
 function nextPage(pageNum) {
     var num=parseInt(pageNum)+1;
     selectUpperPlayer(num);

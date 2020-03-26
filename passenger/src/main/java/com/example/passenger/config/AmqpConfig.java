@@ -24,7 +24,7 @@ public class AmqpConfig {
     public static final String ROUTINGKEY = "occ.*.*";
     public static final String QUEUEA = "topic.queueA";
     public static final String QUEUEB = "topic.queueB";
-    public static List<Map<String,String>> deviceList=new ArrayList<>();
+    public static List<Map<String, String>> deviceList = new ArrayList<>();
 
     @Value("${spring.rabbitmq.host}")
     private String host;
@@ -63,7 +63,7 @@ public class AmqpConfig {
         return connectionFactory;
     }
 
-    /*@Bean
+   /* @Bean
     public TopicExchange defaultExchange() {
         return new TopicExchange(EXCHANGE);
     }*/
@@ -87,11 +87,6 @@ public class AmqpConfig {
     Binding bindingExchangeMessage() {
         return BindingBuilder.bind(queueB()).to(new TopicExchange(AmqpConfig.EXCHANGE)).with(AmqpConfig.ROUTINGKEY);
     }
-
-    /*  @Bean
-    Binding bindingExchangeMessage(Queue queueMessage, TopicExchange exchange) {
-        return BindingBuilder.bind(queueMessage).to(exchange).with(AmqpConfig.ROUTINGKEY);
-    }*/
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -128,48 +123,47 @@ public class AmqpConfig {
             public void onMessage(Message message, Channel channel) throws Exception {
                 channel.basicQos(1);
                 byte[] body = message.getBody();
-                String msg=new String(body);
-                String routingKey=message.getMessageProperties().getReceivedRoutingKey();
-                //System.out.println("接收处理队列当中的消息:" + msg);
+                String msg = new String(body);
+                String routingKey = message.getMessageProperties().getReceivedRoutingKey();
                 //System.out.println("接收处理:"+routingKey);
 
                 //获取消息头
-                String goOnline=msg.substring(0,5);
+                String goOnline = msg.substring(0, 5);
                 //初始化ip地址
-                String ipPath= null;
+                String ipPath = null;
                 //判断上线
-                if(msg.substring(0,5).equals("ONLI:")){
-                    System.out.println("上线:"+goOnline);
-                    System.out.println("ip截取:"+msg.substring(5,14));
+                if (msg.substring(0, 5).equals("ONLI:")) {
+                    System.out.println("上线:" + goOnline);
+                    System.out.println("ip截取:" + msg.substring(5, 14));
                     //转换ip地址
-                    ipPath= IPUtil.longToIP(Long.valueOf(msg.substring(5,14)));
+                    ipPath = IPUtil.longToIP(Long.valueOf(msg.substring(5, 14)));
                     //初始化map
-                    Map<String,String> map=new HashMap<>();
-                    map.put(ipPath,routingKey);
+                    Map<String, String> map = new HashMap<>();
+                    map.put(ipPath, routingKey);
                     //添加至上线设备列表
                     deviceList.add(map);
                 }
 
                 //判断心跳
-                if(msg.substring(0,5).equals("HRBT:")){
+                if (msg.substring(0, 5).equals("HRBT:")) {
                     //转换ip地址
-                    ipPath= IPUtil.longToIP(Long.valueOf(msg.substring(msg.lastIndexOf(':')+1)));
+                    ipPath = IPUtil.longToIP(Long.valueOf(msg.substring(msg.lastIndexOf(':') + 1)));
                     //初始化map
-                    Map<String,String> map=new HashMap<>();
-                    map.put(ipPath,routingKey);
+                    Map<String, String> map = new HashMap<>();
+                    map.put(ipPath, routingKey);
                     //添加设备信息
                     deviceList.add(map);
                 }
 
                 //判断下线
-                if(msg.substring(0,5).equals("OFLI:")){
-                    System.out.println("下线:"+goOnline);
-                    System.out.println("ip截取:"+msg.substring(5,14));
+                if (msg.substring(0, 5).equals("OFLI:")) {
+                    System.out.println("下线:" + goOnline);
+                    System.out.println("ip截取:" + msg.substring(5, 14));
                     //转换ip地址
-                    ipPath= IPUtil.longToIP(Long.valueOf(msg.substring(5,14)));
+                    ipPath = IPUtil.longToIP(Long.valueOf(msg.substring(5, 14)));
                     //初始化map
-                    Map<String,String> map=new HashMap<>();
-                    map.put(ipPath,routingKey);
+                    Map<String, String> map = new HashMap<>();
+                    map.put(ipPath, routingKey);
                     //删除下线设备
                     deviceList.remove(map);
                 }

@@ -2,9 +2,11 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.Line;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface LineMapper {
     /**
      * 查询线路

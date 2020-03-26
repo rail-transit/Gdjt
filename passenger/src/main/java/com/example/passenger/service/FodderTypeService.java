@@ -16,11 +16,11 @@ public class FodderTypeService {
     @Autowired
     FodderTypeMapper fodderTypeMapper;
 
-    public List<FodderType> selectAllFodderType(){
+    public List<FodderType> selectAllFodderType() {
         return fodderTypeMapper.selectAllFodderType();
     }
 
-    public FodderType selectFodderTypeByName(String name){
+    public FodderType selectFodderTypeByName(String name) {
         return fodderTypeMapper.selectFodderTypeByName(name);
     }
 }

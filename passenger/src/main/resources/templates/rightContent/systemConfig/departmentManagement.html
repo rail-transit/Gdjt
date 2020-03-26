@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/css.css" />
-    <link rel="stylesheet" href="/zTreeStyle/zTreeStyle.css" type="text/css">
+<!--    <link rel="stylesheet" href="/zTreeStyle/zTreeStyle.css" type="text/css">-->
     <link rel="stylesheet" href="/css/contentTree.css" type="text/css">
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/jquery.ztree.all.js"></script>
@@ -85,6 +85,11 @@
         #treeView ul.none {
             display: none;
         }
+        .node_name{
+            position: relative;
+            top: 1px;
+            margin: 0 0 0 25px;
+        }
     </style>
     <script src="/js/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
@@ -94,7 +99,7 @@
     <p id="department_top_p">部门信息</p>
     <ul id="department_ul">
         <input type="text" id="parentID" hidden="hidden">
-        <li><span>部门名称:</span><input type="text" id="name" onkeyup="this.value=this.value.replace(/\s+/g,'')"></li>
+        <li><span>部门名称:</span><input type="text" id="name"></li>
         <li><input id="addDepartment" type="button" value="添加">&nbsp;&nbsp;
             <input id="updateDepartment" type="button" value="修改">&nbsp;&nbsp;
             <input id="deleteDepartment" type="button" value="删除"></li>
@@ -103,7 +108,7 @@
 <!--<div id="department_right_div">-->
 <!--    <div class="f-right"></div>-->
 <!--</div>-->
-<div>
+<div style="padding-left: 2px">
     <ul id="departmentTree" class="ztree tree"></ul>
 
 </div>
@@ -204,71 +209,59 @@ $(document).ready(function(){
     // });
 
     $("#addDepartment").click(function () {
-        var name=$("#name").val();
         var parentID=$("#parentID").val();
-        if (parentID==null || parentID==""){
-            swal("请选择部门级别!");
-            return false;
-        }
-        if(name==""||name.match(/^\s+$/g)){
-            swal("部门名称不能为空!");
-            return false;
-        }
-        $.ajax({
-            url:'/department/addDepartment',
-            type:"POST",
-            data:{name:name,parentID:parentID},
-            success:function (data) {
-                if(data.result=="exist"){
-                    swal("该部门已存在!");
-                }else if (data.result=="beyond"){
-                    swal("下级部门不能超过5级!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/department/departmentManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        var name=$("#name").val();
+        if(isnull(parentID,name)){
+            $.ajax({
+                url:'/department/addDepartment',
+                type:"POST",
+                data:{name:name,parentID:parentID},
+                success:function (data) {
+                    if(data.result=="exist"){
+                        swal("该部门已存在!");
+                    }else if (data.result=="beyond"){
+                        swal("下级部门不能超过5级!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/department/departmentManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#updateDepartment").click(function () {
-        var name=$("#name").val();
         var parentID=$("#parentID").val();
-        if (parentID==null || parentID==""){
-            swal("请选择部门级别!");
-            return false;
-        }
-        if(name==""||name.match(/^\s+$/g)){
-            swal("部门名称不能为空!");
-            return false;
-        }
-        $.ajax({
-            url:'/department/updateDepartment',
-            type:"POST",
-            data:{id:parentID,name:name},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该部门已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/department/departmentManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        var name=$("#name").val();
+        if (isnull(parentID,name)){
+            $.ajax({
+                url:'/department/updateDepartment',
+                type:"POST",
+                data:{id:parentID,name:name},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该部门已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            window.location.href="/department/departmentManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                },
+                error:function (){
+                    swal("OMG!", "请求失败!", "error");
                 }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
+            });
+        }
     });
 
     $("#deleteDepartment").click(function () {
@@ -314,6 +307,18 @@ $(document).ready(function(){
         });
     });
 });
+
+function isnull(parentID,name) {
+    if (parentID==null || parentID==""){
+        swal("请选择部门级别!");
+        return false;
+    }
+    if(name==""||name.match(/^\s+$/g)){
+        swal("部门名称不能为空!");
+        return false;
+    }
+    return true;
+}
 // function getNode(object) {
 //     list.length=0;
 //     var name=object.innerText;

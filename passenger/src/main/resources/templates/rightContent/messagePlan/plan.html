@@ -13,12 +13,10 @@
         .planTD{width: 25%}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:497px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
-        #planManageTable tbody{height:175px;}
-        #planStyleTable tbody{height:215px;}
         ul{list-style: none;padding-left: 20px;margin: auto;}
         li{float: left;width: 32%}
         p{font-size: 14px;font-weight: bolder;padding-left: 8px;
@@ -41,8 +39,8 @@
             left: 18%;
             width: 65%;
             height: 70%;
-            border: 6px solid #d6b6dd47;
-            background-color: #f4f3f7d4;
+            border: 6px solid lightsteelblue /*#d6b6dd47*/;
+            background-color: whitesmoke/*#f4f3f7d4*/;
             z-index:1;
             overflow: auto;
         }
@@ -136,7 +134,7 @@
             <tr><td class="planTD">媒体分辨率</td>
                 <td><input type="text" class="resolution" value="480*560" disabled="disabled"></td></tr>
             <tr><td class="planTD">播放时长</td>
-                <td><input style="width: 160px;" type="time" step="1" class="playTime" value="00:59:10"></td></tr>
+                <td><input style="width: 160px;" type="time" step="1" class="playTime" disabled="disabled"></td></tr>
             <tr><td class="planTD">文件大小</td>
                 <td><input type="text" class="fodderSize" disabled="disabled"></td></tr>
         </table>
@@ -175,16 +173,12 @@ $(document).ready(function(){
         $(".planTD").val($(this).closest("tr").find("td").eq(2).text());
         $(".name").val($(this).closest("tr").find("td").eq(3).text());
         $(".note").val($(this).closest("tr").find("td").eq(4).text());
-        var playID=$(this).closest("tr").find("td").eq(0).text();
-        $.ajax({
-            url:'/playStyle/getWidthHeight',
-            type:"POST",
-            data:{playID:playID},
-            success:function (data) {
-               $(".width").val(data.width);
-               $(".height").val(data.height);
-            }
-        });
+        if($(this).closest("tr").find("td").eq(1).text()==1){
+            $(".playTime").removeAttr("disabled");
+        }else{
+            $(".playTime").attr("disabled","true");
+        }
+        getWidthHeight($(this).closest("tr").find("td").eq(0).text());
         selectFodderType($(this).closest("tr").find("td").eq(1).text());
         getStyleContent($(this).closest("tr").find("td").eq(0).text());
     });
@@ -212,8 +206,22 @@ $(document).ready(function(){
         var fileName=pathArray[pathArray.length-1];
         $("#previewContent img,video").remove();
         if(description==0){
-            $("#previewContent").append('<video src="/Path/fodder/'+fileName+'" controls="controls" ' +
-                'autoplay="autoplay"></video>');
+            // $("#previewContent").append('<video src="/Path/fodder/'+fileName+'" controls="controls" ' +
+            //     'autoplay="autoplay"></video>');
+
+            //接入vlc插件
+            $("#previewContent").empty();
+            $("#previewContent").append('<object type=\'application/x-vlc-plugin\'  id=\'vlc\' width="99.9%" height="99%">'
+                +'<param name=\'mrl\'id="testvlc" value=\'/Path/fodder/'+fileName+'\'/>'
+                +'<param name=\'volume\' value=\'50\' />'
+                +'<param name=\'autoplay\' value=\'true\'/>'
+                +'<param name=\'loop\' value=\'false\' />'
+                +'<param name=\'fullscreen\' value=\'false\' />'
+                +'</object>');
+           //  document.getElementById("vlc").style.width =/* parseInt(document.getElementById("previewContent").getBoundingClientRect().width) */  "900px";
+           //  document.getElementById("vlc").style.height = /*parseInt(document.getElementById("previewContent").getBoundingClientRect().height) */ "300px";
+                // document.getElementById("previewContent").offsetHeight;
+
         }else{
             $("#previewContent").append('<img src="/Path/fodder/'+fileName+'">');
         }
@@ -225,41 +233,27 @@ $(document).ready(function(){
         var height=$(".height").val();
         var description=$(".description").val();
         var note=$(".note").val();
-        if(name.match(/^\s+$/g) || name==""){
-            swal("预案名称不能为空");
-            return false;
-        }
-        if(note.match(/^\s+$/g) || note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        if(width.match(/^\s+$/g) || width=="" || height.match(/^\s+$/g) || height==""){
-            swal("分辨率不能为空");
-            return false;
-        }
-        if(!(/^[0-9]+$/.test(width)) || !(/^[0-9]+$/.test(height))){
-            swal("分辨率只能为数字");
-            return false;
-        }
-        $.ajax({
-            url:'/playList/addPlan',
-            type:"POST",
-            data:{name:name,description:description,note:note,
-                width:width,height:height},
-            success:function (data) {
-                if(data.result=="exit"){
-                    swal("该预案名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        location.href="/playList/planManagement";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
-                }
+        if (isnull(name,note,width,height)){
+            $.ajax({
+                url:'/playList/addPlan',
+                type:"POST",
+                data:{name:name,description:description,note:note,
+                    width:width,height:height},
+                success:function (data) {
+                    if(data.result=="exit"){
+                        swal("该预案名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href="/playList/planManagement";
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
 
-            }
-        });
+                }
+            });
+        }
     });
 
     $("#updatePlan").click(function () {
@@ -273,42 +267,28 @@ $(document).ready(function(){
             swal("请选择需要修改的预案!");
             return false;
         }
-        if(name.match(/^\s+$/g) || name==""){
-            swal("预案名称不能为空");
-            return false;
-        }
-        if(note.match(/^\s+$/g) || note==""){
-            swal("备注不能为空");
-            return false;
-        }
-        if(width.match(/^\s+$/g) || width=="" || height.match(/^\s+$/g) || height==""){
-            swal("分辨率不能为空");
-            return false;
-        }
-        if(!(/^[0-9]+$/.test(width)) || !(/^[0-9]+$/.test(height))){
-            swal("分辨率只能为数字");
-            return false;
-        }
-        $.ajax({
-            url:'/playList/updatePlay',
-            type:"POST",
-            data:{id:id,name:name,description:description,note:note,
-                width:width,height:height},
-            success:function (data) {
-                if(data.result=="not"){
-                    swal("请先删除媒体再修改媒体类型!");
-                }else if(data.result=="exit"){
-                    swal("该预案名称已存在!");
-                }else if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        selectPlayList();
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
+        if (isnull(name,note,width,height)){
+            $.ajax({
+                url:'/playList/updatePlay',
+                type:"POST",
+                data:{id:id,name:name,description:description,note:note,
+                    width:width,height:height},
+                success:function (data) {
+                    if(data.result=="not"){
+                        swal("请先删除媒体再修改媒体类型!");
+                    }else if(data.result=="exit"){
+                        swal("该预案名称已存在!");
+                    }else if(data.result=="success"){
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            selectPlayList();
+                        });
+                    }else{
+                        swal("OMG!", "操作错误!", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $("#deletePlan").click(function () {
@@ -346,6 +326,11 @@ $(document).ready(function(){
 
     $(".description").change(function () {
         selectFodderType($(this).val());
+        if($(this).val()==1){
+            $(".playTime").removeAttr("disabled");
+        }else{
+            $(".playTime").attr("disabled","true");
+        }
     });
 
     $("#fodderType").change(function () {
@@ -475,6 +460,18 @@ function selectPlayList(pageNum) {
     });
 }
 
+function getWidthHeight(playID) {
+    $.ajax({
+        url:'/playStyle/getWidthHeight',
+        type:"POST",
+        data:{playID:playID},
+        success:function (data) {
+            $(".width").val(data.width);
+            $(".height").val(data.height);
+        }
+    });
+}
+
 function getStyleContent(playID) {
     $.ajax({
         url:'/styleContent/getStyleContent',
@@ -522,7 +519,7 @@ function selectFodder() {
             if(data.fodder!=null){
                 $(".path").val(data.fodder.path);
                 $(".resolution").val(data.fodder.resolution);
-                if(data.fodder.timeLength=="00:00:00" ||data.fodder.timeLength==null){
+                if(data.fodder.timeLength=="00:00:00" ||data.fodder.timeLength==null || data.fodder.timeLength==""){
                     $(".playTime").val("00:00:10");
                 }else{
                     $(".playTime").val(data.fodder.timeLength);
@@ -534,6 +531,26 @@ function selectFodder() {
 
         }
     });
+}
+
+function isnull(name,note,width,height) {
+    if(name.match(/^\s+$/g) || name==""){
+        swal("预案名称不能为空");
+        return false;
+    }
+    if(note.match(/^\s+$/g) || note==""){
+        swal("备注不能为空");
+        return false;
+    }
+    if(width.match(/^\s+$/g) || width=="" || height.match(/^\s+$/g) || height==""){
+        swal("分辨率不能为空");
+        return false;
+    }
+    if(!(/^[0-9]+$/.test(width)) || !(/^[0-9]+$/.test(height))){
+        swal("分辨率只能为数字");
+        return false;
+    }
+    return true;
 }
 
 // byte数据单位转换（以B为基底）

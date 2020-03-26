@@ -17,57 +17,57 @@ public class DepartmentService {
     @Autowired
     DepartmentMapper departmentMapper;
 
-    public List<Department> selectAllDepartment(){
+    public List<Department> selectAllDepartment() {
         return departmentMapper.selectAllDepartment();
     }
 
-    public Department selectDepartmentById(Integer id){
+    public Department selectDepartmentById(Integer id) {
         return departmentMapper.selectDepartmentById(id);
     }
 
-    public Integer selectDepartment(String name,Integer id){
-        return departmentMapper.selectDepartment(name,id);
+    public Integer selectDepartment(String name, Integer id) {
+        return departmentMapper.selectDepartment(name, id);
     }
 
     @Transactional
-    public Integer addDepartment(Department department){
+    public Integer addDepartment(Department department) {
         try {
-            if (department.getParentID()==1){
+            if (department.getParentID() == 1) {
                 department.setLevel(1);
-            }else{
-                Department department1=departmentMapper.selectDepartmentById(department.getParentID());
-                if (department1!=null){
-                    if (department1.getLevel()==5){
+            } else {
+                Department department1 = departmentMapper.selectDepartmentById(department.getParentID());
+                if (department1 != null) {
+                    if (department1.getLevel() == 5) {
                         return -2;
-                    }else{
-                        department.setLevel(department1.getLevel()+1);
+                    } else {
+                        department.setLevel(department1.getLevel() + 1);
                     }
                 }
             }
             return departmentMapper.addDepartment(department);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateDepartment(Department department){
+    public Integer updateDepartment(Department department) {
         try {
             return departmentMapper.updateDepartment(department);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteDepartment(Integer id){
+    public Integer deleteDepartment(Integer id) {
         try {
             return departmentMapper.deleteDepartment(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
-            return-1;
+            return -1;
         }
     }
 }

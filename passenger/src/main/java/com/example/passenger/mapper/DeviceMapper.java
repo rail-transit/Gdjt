@@ -2,10 +2,13 @@ package com.example.passenger.mapper;
 
 import com.example.passenger.entity.Device;
 import com.example.passenger.entity.vo.DeviceVo;
+import com.example.passenger.utils.VisitCount;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface DeviceMapper {
 
     Device selectDevice(Integer id);
@@ -47,6 +50,9 @@ public interface DeviceMapper {
                                @Param("name") String name,
                                @Param("id") Integer id);
 
+    List<Device> selectIsBackups(@Param("id") Integer id,
+                                 @Param("stationID") Integer stationID);
+
     Integer addDevice(Device device);
 
     Integer updateDevice(Device device);
@@ -56,4 +62,10 @@ public interface DeviceMapper {
     Integer deleteDeviceByLineId(Integer lineID);
 
     Integer deleteDeviceByStationId(Integer stationID);
+
+    /**
+     * @author suxijian
+     * 获取线路所有设备信息
+     * */
+    List<VisitCount> getAllDeviceByLineId(@Param("lineId") Integer lineId);
 }

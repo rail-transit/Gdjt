@@ -21,7 +21,7 @@
         #listMonitor_ul li select{height: 20px;width: 110px;margin-left: -35px}
         .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
         table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-        tbody {height:415px;overflow-y:auto;width: 100%;table-layout: fixed;}
+        tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
         tr {width: 100%; table-layout: fixed;}
         td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
         tr.on td{ background-color: #BFEFFF; / 背景颜色/}
@@ -121,9 +121,17 @@
 <script language="JavaScript" src="/js/jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    selectMonitor();
     getMap();
+    selectMonitor();
     getTime();
+    $("#Monitor tr").live("click",function(){
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+
     // 改为鼠标移上的事件只需把click改为mousemove
     $(".fortab").click(function(){
         var number=$(".fortab").index(this);
@@ -151,14 +159,6 @@ $(document).ready(function(){
                 });
             }
         })
-    });
-
-    $("#Monitor tr").live("click",function(){
-        var trs = $(this).parent().find('tr'); //获取所有tr
-        if(trs.hasClass('on')){ //判断这些tr 有没有Class ‘on’’
-            trs.removeClass('on');//把class on 移除
-        }
-        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
     });
 
     $("#stationID").change(function () {
@@ -254,31 +254,31 @@ function getMap() {
                 if (equipmentID==item.equipmentID){
                     if(state==1){
                         if(lineID!=null){
-                            images='<img src="/images/fault.png" width="90px" height="20px" onclick="Jump('+item.equipmentID+')" class="img">';
+                            images='<img src="/images/fault.png" width="90px" height="20px" class="img">';
                         }else {
-                            images='<img src="/images/fault.jpg" width="12px" height="12px" class="img">';
+                            images='<img src="/images/fault.jpg" width="12px" height="12px" onclick="Jump('+item.equipmentID+')" class="img">';
                         }
                     }else if(state==2){
                         if(lineID!=null){
-                            images='<img src="/images/alarm.png" width="90px" height="20px" onclick="Jump('+item.equipmentID+')" class="img">';
+                            images='<img src="/images/alarm.png" width="90px" height="20px" class="img">';
                         }else {
-                            images='<img src="/images/alarm.jpg" width="12px" height="12px" class="img">';
+                            images='<img src="/images/alarm.jpg" width="12px" height="12px" onclick="Jump('+item.equipmentID+')" class="img">';
                         }
                     }else{
                         if(lineID!=null){
-                            images='<img src="/images/normal.png" width="90px" height="20px" onclick="Jump('+item.equipmentID+')" class="img">';
+                            images='<img src="/images/normal.png" width="90px" height="20px" class="img">';
                         }else {
-                            images='<img src="/images/normal.jpg" width="12px" height="12px" class="img">';
+                            images='<img src="/images/normal.jpg" width="12px" height="12px" onclick="Jump('+item.equipmentID+')" class="img">';
                         }
                     }
                 }else{
                     if(lineID!=null){
-                        images='<img src="/images/normal.png" width="90px" height="20px" onclick="Jump('+item.equipmentID+')" class="img">';
+                        images='<img src="/images/normal.png" width="90px" height="20px" class="img">';
                     }else {
-                        images='<img src="/images/normal.jpg" width="12px" height="12px" class="img">';
+                        images='<img src="/images/normal.jpg" width="12px" height="12px" onclick="Jump('+item.equipmentID+')" class="img">';
                     }
                 }
-                $("#big").css("background-image","url("+item.mapImg+"");
+                $("#big").css("background-image","url("+item.mapImg+")");
                 $("#big").append('<div class="small" style="left: '+item.divLef+';top: '+item.divTop+';">\n' +
                     images +
                     '<span class="title" style="left: '+item.left+';top: '+item.top+';">'+

@@ -16,7 +16,7 @@ public class Device_PosService {
     @Autowired
     Device_PosMapper device_posMapper;
 
-    public List<Device_Pos> selectAllDevicePos(){
+    public List<Device_Pos> selectAllDevicePos() {
         return device_posMapper.selectAllDevicePos();
     }
 }

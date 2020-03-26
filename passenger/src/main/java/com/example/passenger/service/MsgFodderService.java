@@ -18,71 +18,71 @@ public class MsgFodderService {
     @Autowired
     MsgFodderMapper msgFodderMapper;
 
-    public MsgFodder selectMsgFodder(Integer id){
+    public MsgFodder selectMsgFodder(Integer id) {
         return msgFodderMapper.selectMsgFodder(id);
     }
 
-    public List<MsgFodder> selectMsgFodderByType(Integer type){
+    public List<MsgFodder> selectMsgFodderByType(Integer type) {
         return msgFodderMapper.selectMsgFodderByType(type);
     }
 
-    public Integer selectMsgFodderByTitle(String title,Integer type,Integer id){
-        return msgFodderMapper.selectMsgFodderByTitle(title,type,id);
+    public Integer selectMsgFodderByTitle(String title, Integer type, Integer id) {
+        return msgFodderMapper.selectMsgFodderByTitle(title, type, id);
     }
 
-    public PageUtil selectPaging(Integer type,Integer state,Integer pageNum,Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectPaging(Integer type, Integer state, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
-        pageUtil.setRowCount(msgFodderMapper.count(type,state));
-        pageUtil.setPageData(msgFodderMapper.selectPaging(type,state,pageNum,pageSize));
+        pageUtil.setRowCount(msgFodderMapper.count(type, state));
+        pageUtil.setPageData(msgFodderMapper.selectPaging(type, state, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer updateState(Integer id,Integer state,String note){
+    public Integer updateState(Integer id, Integer state, String note) {
         try {
-            return msgFodderMapper.updateState(id,state,note);
-        }catch (Exception e){
+            return msgFodderMapper.updateState(id, state, note);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer addMsgFodder(MsgFodder msgFodder){
+    public Integer addMsgFodder(MsgFodder msgFodder) {
         try {
-            if(msgFodder.getContentEN()==null){
+            if (msgFodder.getContentEN() == null) {
                 msgFodder.setContentEN("");
             }
             //设置初始状态为0
             msgFodder.setState(0);
             msgFodder.setNote("");
             return msgFodderMapper.addMsgFodder(msgFodder);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateMsgFodder(MsgFodder msgFodder){
+    public Integer updateMsgFodder(MsgFodder msgFodder) {
         try {
-            if(msgFodder.getContentEN()==null){
+            if (msgFodder.getContentEN() == null) {
                 msgFodder.setContentEN("");
             }
             return msgFodderMapper.updateMsgFodder(msgFodder);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteMsgFodder(Integer id){
-        try{
+    public Integer deleteMsgFodder(Integer id) {
+        try {
             return msgFodderMapper.deleteMsgFodder(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }

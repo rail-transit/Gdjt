@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class MsgSend implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback{
+public class MsgSend implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
 
-    public void sendMsg(String routingKey,String content) {
+    public void sendMsg(String routingKey, String content) {
         this.rabbitTemplate.setReturnCallback(this);
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        rabbitTemplate.convertAndSend(AmqpConfig.EXCHANGE, routingKey,content,correlationData);
+        rabbitTemplate.convertAndSend(AmqpConfig.EXCHANGE, routingKey, content, correlationData);
     }
 
     /**

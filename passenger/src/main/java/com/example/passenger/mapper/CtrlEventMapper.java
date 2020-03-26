@@ -3,10 +3,12 @@ package com.example.passenger.mapper;
 import com.example.passenger.entity.CtrlEvent;
 import com.example.passenger.entity.vo.CtrlEventVo;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface CtrlEventMapper {
 
     List<CtrlEventVo> selectAllCtrlEvent(@Param("deviceID") Integer deviceID,

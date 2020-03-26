@@ -93,11 +93,11 @@ $(document).ready(function(){
     $(".add_Line_Button").click(function(){
         $("#trainTable").find("tr").remove();
         $("#trainTable tbody").append('' +
-            '<tr><td>线路编号:</td><td><input class="lineID" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>' +
-            '<tr><td>线路名称:</td><td><input class="lineName" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>' +
-            '<tr><td>英文名称:</td><td><input class="enName" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
-            '<tr><td>服务IP:</td><td><input class="serverIP" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
-            '<tr><td>描述:</td><td><input class="des" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
+            '<tr><td>线路编号:</td><td><input class="lineID" type="text" ></td></tr>' +
+            '<tr><td>线路名称:</td><td><input class="lineName" type="text" ></td></tr>' +
+            '<tr><td>英文名称:</td><td><input class="enName" type="text" ></td></tr>'+
+            '<tr><td>服务IP:</td><td><input class="serverIP" type="text" ></td></tr>'+
+            '<tr><td>描述:</td><td><input class="des" type="text" ></td></tr>'+
             '');
         $(".equipment_Operation").css("display","none");
         $(".add_Line").css("display","block");
@@ -110,18 +110,18 @@ $(document).ready(function(){
     $(".add_Platform_Button").click(function(){
         $("#trainTable").find("tr").remove();
         $("#trainTable tbody").append('' +
-            '<tr><td>车站编号:</td><td><input class="stationID" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
-            '<tr><td>车站名称:</td><td><input class="station_Name" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>' +
-            '<tr><td>英文名称:</td><td><input class="en_Name" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>' +
+            '<tr><td>车站编号:</td><td><input class="stationID" type="text" ></td></tr>'+
+            '<tr><td>车站名称:</td><td><input class="station_Name" type="text" ></td></tr>' +
+            '<tr><td>英文名称:</td><td><input class="en_Name" type="text" ></td></tr>' +
             '<tr><td>是否是中心:</td><td>是:<input class="radio" name="is_Center" type="radio" value="1">&nbsp;' +
             '否:<input class="radio" name="is_Center" type="radio" value="0" checked="checked"></td></tr>'+
-            '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
+            '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" ></td></tr>'+
             '<tr><td>所属线路:</td><td><select id="LineID"><option value="0">请选择</option></select></td></tr>'+
             '<tr><td>上行启运时间:</td><td><input class="upper_first_time" type="time" step="1" value="00:00:00"></td></tr>'+
             '<tr><td>上行停运时间:</td><td><input class="upper_end_time" type="time" step="1" value="00:00:00"></td></tr>'+
             '<tr><td>下行启运时间:</td><td><input class="lower_first_time" type="time" step="1" value="00:00:00"></td></tr>'+
             '<tr><td>下行停运时间:</td><td><input class="lower_end_time" type="time" step="1" value="00:00:00"></td></tr>'+
-            '<tr><td>车站描述:</td><td><input class="des" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
+            '<tr><td>车站描述:</td><td><input class="des" type="text" ></td></tr>'+
             '');
         $.ajax({
             url:'/Line/selectAllLine',
@@ -145,17 +145,17 @@ $(document).ready(function(){
     $(".add_Equipment_Button").click(function(){
         $("#trainTable").find("tr").remove();
         $("#trainTable tbody").append('' +
-            '<tr><td>设备编号:</td><td><input class="equipment_Code" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
-            '<tr><td>设备名称:</td><td><input class="equipment_Name" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>' +
+            '<tr><td>设备编号:</td><td><input class="equipment_Code" type="text" ></td></tr>'+
+            '<tr><td>设备名称:</td><td><input class="equipment_Name" type="text" ></td></tr>' +
             '<tr><td>是否备用:</td><td>否:<input class="radio" name="spare" type="radio" value="0" checked="checked">&nbsp;' +
             '是:<input class="radio" name="spare" type="radio" value="1" ></td></tr>'+
             '<tr><td>设备类型:</td><td><select id="type" ></select></td></tr>' +
             '<tr><td>所属线路:</td><td><select id="LineID"><option value="0">请选择</option>' +
             '</select> <select id="StationID"><option value="0">请选择</option></select></td></tr>'+
-            '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
+            '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" ></td></tr>'+
             '<tr><td>设备位置:</td><td><select id="devicePosID" ></select></td></tr>'+
-            '<tr><td>物理地址:</td><td><input class="mac" type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
-            '<tr><td>描述:</td><td><input class="des " type="text" onkeyup="this.value=this.value.replace(/\\s+/g,\'\')"></td></tr>'+
+            '<tr><td>物理地址:</td><td><input class="mac" type="text" ></td></tr>'+
+            '<tr><td>描述:</td><td><input class="des " type="text" ></td></tr>'+
             '');
         $.ajax({
             url:'/Device/getType',
@@ -202,23 +202,23 @@ $(document).ready(function(){
         var enName=$(".enName").val();
         var serverIP=$(".serverIP").val();
         var des=$(".des").val();
-        if(lineID==""){
+        if(lineID==""||lineID.match(/^\s+$/g)){
             swal("线路编号不能为空");
             return false;
         }
-        if(lineName==""){
+        if(lineName==""||lineName.match(/^\s+$/g)){
             swal("线路名称不能为空");
             return false;
         }
-        if(enName==""){
+        if(enName==""||enName.match(/^\s+$/g)){
             swal("英文名称不能为空");
             return false;
         }
-        if(serverIP==""){
+        if(serverIP==""||serverIP.match(/^\s+$/g)){
             swal("服务IP不能为空");
             return false;
         }
-        if(des==""){
+        if(des==""||des.match(/^\s+$/g)){
             swal("描述不能为空");
             return false;
         }
@@ -256,11 +256,11 @@ $(document).ready(function(){
         var upper_end_time=$(".upper_end_time").val();
         var lower_first_time=$(".lower_first_time").val();
         var lower_end_time=$(".lower_end_time").val();
-        if(stationID==""){
+        if(stationID==""||stationID.match(/^\s+$/g)){
             swal("车站编号不能为空");
             return false;
         }
-        if(station_Name==""){
+        if(station_Name==""||station_Name.match(/^\s+$/g)){
             swal("车站名称不能为空");
             return false;
         }
@@ -268,23 +268,23 @@ $(document).ready(function(){
             swal("请选择线路");
             return false;
         }
-        if(upper_first_time==""){
+        if(upper_first_time==""||upper_first_time.match(/^\s+$/g)){
             swal("上行启运时间不能为空");
             return false;
         }
-        if(upper_end_time==""){
+        if(upper_end_time==""||upper_end_time.match(/^\s+$/g)){
             swal("上行停运时间不能为空");
             return false;
         }
-        if(lower_first_time==""){
+        if(lower_first_time==""||lower_first_time.match(/^\s+$/g)){
             swal("下行启运时间不能为空");
             return false;
         }
-        if(lower_end_time==""){
+        if(lower_end_time==""||lower_end_time.match(/^\s+$/g)){
             swal("下行停运时间不能为空");
             return false;
         }
-        if(des==""){
+        if(des==""||des.match(/^\s+$/g)){
             swal("描述不能为空");
             return false;
         }
@@ -324,15 +324,15 @@ $(document).ready(function(){
         var mac=$(".mac").val();
         var des=$(".des").val();
         var spare=$('input[name="spare"]:checked').val();
-        if(equipment_Name==""){
+        if(equipment_Name==""||equipment_Name.match(/^\s+$/g)){
             swal("设备名称不能为空");
             return false;
         }
-        if(equipment_Code==""){
+        if(equipment_Code==""||equipment_Code.match(/^\s+$/g)){
             swal("设备编号不能为空");
             return false;
         }
-        if(ip_Address==""){
+        if(ip_Address==""||ip_Address.match(/^\s+$/g)){
             swal("IP地址不能为空");
             return false;
         }
@@ -344,11 +344,11 @@ $(document).ready(function(){
             swal("请选择路站");
             return false;
         }
-        if(mac==""){
+        if(mac==""||mac.match(/^\s+$/g)){
             swal("物理位置不能为空");
             return false;
         }
-        if(des==""){
+        if(des==""||des.match(/^\s+$/g)){
             swal("描述不能为空");
             return false;
         }
@@ -420,11 +420,11 @@ function selectLine(obj) {
         success:function (data) {
             $("#trainTable").find("tr").remove();
             $("#trainTable tbody").append('' +
-                '<tr><td>线路编号:</td><td><input class="lineID" type="text" value="'+data.line.lineID+'"></td></tr>' +
-                '<tr><td>线路名称:</td><td><input class="lineName" type="text" value="'+data.line.name+'"></td></tr>' +
-                '<tr><td>英文名称:</td><td><input class="en_Name" type="text" value="'+data.line.enName+'"></td></tr>'+
-                '<tr><td>服务IP:</td><td><input class="server_ip" type="text" value="'+data.line.serverIP+'"></td></tr>'+
-                '<tr><td>备注:</td><td><input class="des" type="text" value="'+data.line.des+'"></td></tr>'+
+                '<tr><td>线路编号:</td><td><input class="lineID" type="text" value="'+data.line.lineID+'" ></td></tr>' +
+                '<tr><td>线路名称:</td><td><input class="lineName" type="text" value="'+data.line.name+'" ></td></tr>' +
+                '<tr><td>英文名称:</td><td><input class="en_Name" type="text" value="'+data.line.enName+'" ></td></tr>'+
+                '<tr><td>服务IP:</td><td><input class="server_ip" type="text" value="'+data.line.serverIP+'" ></td></tr>'+
+                '<tr><td>备注:</td><td><input class="des" type="text" value="'+data.line.des+'" ></td></tr>'+
                 '');
             $(".equipment_Operation").css("display","block");
             $(".add_Line").css("display","none");
@@ -446,17 +446,17 @@ function selectStation(obj) {
         success:function (data) {
             $("#trainTable").find("tr").remove();
             $("#trainTable tbody").append('' +
-                '<tr><td>车站编号:</td><td><input class="stationID" type="text" value="'+data.station.stationID+'"></td></tr>'+
-                '<tr><td>车站名称:</td><td><input class="station_Name" type="text" value="'+data.station.name+'"></td></tr>' +
-                '<tr><td>英文名称:</td><td><input class="en_Name" type="text" value="'+data.station.enName+'"></td></tr>' +
-                '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" value="'+data.station.serverIP+'"></td></tr>'+
+                '<tr><td>车站编号:</td><td><input class="stationID" type="text" value="'+data.station.stationID+'" ></td></tr>'+
+                '<tr><td>车站名称:</td><td><input class="station_Name" type="text" value="'+data.station.name+'" ></td></tr>' +
+                '<tr><td>英文名称:</td><td><input class="en_Name" type="text" value="'+data.station.enName+'" ></td></tr>' +
+                '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" value="'+data.station.serverIP+'" ></td></tr>'+
                 '<tr><td>是否是中心:</td><td>是:<input class="radio" name="is_Center" type="radio" value="1">&nbsp;' +
                 '否:<input class="radio" name="is_Center" type="radio" value="0"></td></tr>'+
                 '<tr><td>所属线路:</td><td><select id="LineID"></select></td></tr>'+
-                '<tr><td>上行启运时间:</td><td><input class="upper_first_time" type="time" step="1" value="'+data.station.upStartTime+'"></td></tr>'+
-                '<tr><td>上行停运时间:</td><td><input class="upper_end_time" type="time" step="1" value="'+data.station.upStopTime+'"></td></tr>'+
-                '<tr><td>下行启运时间:</td><td><input class="lower_first_time" type="time" step="1" value="'+data.station.downStartTime+'"></td></tr>'+
-                '<tr><td>下行停运时间:</td><td><input class="lower_end_time" type="time" step="1" value="'+data.station.downStopTime+'"></td></tr>'+
+                '<tr><td>上行启运时间:</td><td><input class="upper_first_time" type="time" step="1" value="'+data.station.upStartTime+'" ></td></tr>'+
+                '<tr><td>上行停运时间:</td><td><input class="upper_end_time" type="time" step="1" value="'+data.station.upStopTime+'" ></td></tr>'+
+                '<tr><td>下行启运时间:</td><td><input class="lower_first_time" type="time" step="1" value="'+data.station.downStartTime+'" ></td></tr>'+
+                '<tr><td>下行停运时间:</td><td><input class="lower_end_time" type="time" step="1" value="'+data.station.downStopTime+'" ></td></tr>'+
                 '<tr><td>车站描述:</td><td><input class="des" type="text" value="'+data.station.des+'"></td></tr>'+
                 '');
             $(":radio[name='is_Center'][value='" + data.station.isCenter + "']").prop("checked", "checked");
@@ -498,16 +498,16 @@ function selectDevice(obj) {
         success:function (data) {
             $("#trainTable").find("tr").remove();
             $("#trainTable tbody").append('' +
-                '<tr><td>设备编号:</td><td><input class="equipment_Code" type="text" value="'+data.device.deviceID+'"></td></tr>'+
-                '<tr><td>设备名称:</td><td><input class="equipment_Name" type="text" value="'+data.device.name+'"></td></tr>' +
+                '<tr><td>设备编号:</td><td><input class="equipment_Code" type="text" value="'+data.device.deviceID+'" ></td></tr>'+
+                '<tr><td>设备名称:</td><td><input class="equipment_Name" type="text" value="'+data.device.name+'" ></td></tr>' +
                 '<tr><td>是否备用:</td><td>否:<input class="radio" name="spare" type="radio" value="0" checked="checked">&nbsp;' +
                 '是:<input class="radio" name="spare" type="radio" value="1" ></td></tr>'+
                 '<tr><td>设备类型:</td><td><select id="type" ></select></td></tr>' +
                 '<tr><td>所属线路:</td><td><select id="LineID" ></select> <select id="StationID" ></select></td></tr>'+
-                '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" value="'+data.device.ip+'"></td></tr>'+
+                '<tr><td>IP地址:</td><td><input class="ip_Address " type="text" value="'+data.device.ip+'" ></td></tr>'+
                 '<tr><td>设备位置:</td><td><select id="devicePosID" ></select></td></tr>'+
-                '<tr><td>物理地址:</td><td><input class="mac" type="text" value="'+data.device.mac+'"></td></tr>'+
-                '<tr><td>描述:</td><td><input class="des " type="text" value="'+data.device.des+'"></td></tr>'+
+                '<tr><td>物理地址:</td><td><input class="mac" type="text" value="'+data.device.mac+'" ></td></tr>'+
+                '<tr><td>描述:</td><td><input class="des " type="text" value="'+data.device.des+'" ></td></tr>'+
                 '');
             $(":radio[name='spare'][value='" + data.device.isBackups + "']").prop("checked", "checked");
             var lineID=data.device.lineID;
@@ -576,36 +576,6 @@ function selectDevice(obj) {
         }
     })
 }
-function deleteLine(id) {
-    swal({
-        title: "您确定要删除吗？",
-        text: "您确定要删除这条数据？",
-        type: "warning",
-        showCancelButton: true,
-        closeOnConfirm: false,
-        confirmButtonText: "是的，我要删除",
-        confirmButtonColor: "#ec6c62"
-    }, function() {
-        $.ajax({
-            url:'/Line/deleteLine',
-            type:"POST",
-            data:{id:id},
-            success:function (data) {
-                if(data.result=="success"){
-                    swal("Good!", "操作成功!", "success");
-                    $(".confirm").click(function () {
-                        window.location.href="/Line/jumpToDevice";
-                    });
-                }else{
-                    swal("OMG!", "操作错误!", "error");
-                }
-            },
-            error:function (){
-                swal("OMG!", "请求失败!", "error");
-            }
-        });
-    });
-}
 
 function updateLine(id) {
     var lineID=$(".lineID").val();
@@ -613,23 +583,23 @@ function updateLine(id) {
     var en_Name=$(".en_Name").val();
     var server_ip=$(".server_ip").val();
     var des=$(".des").val();
-    if(lineID==""){
+    if(lineID==""||lineID.match(/^\s+$/g)){
         swal("线路编号不能为空");
         return false;
     }
-    if(lineName==""){
+    if(lineName==""||lineName.match(/^\s+$/g)){
         swal("线路名称不能为空");
         return false;
     }
-    if(en_Name==""){
+    if(en_Name==""||en_Name.match(/^\s+$/g)){
         swal("英文名称不能为空");
         return false;
     }
-    if(server_ip==""){
+    if(server_ip==""||server_ip.match(/^\s+$/g)){
         swal("服务IP不能为空");
         return false;
     }
-    if(des==""){
+    if(des==""||des.match(/^\s+$/g)){
         swal("描述不能为空");
         return false;
     }
@@ -668,11 +638,11 @@ function updateStation(id) {
     var lower_first_time=$(".lower_first_time").val();
     var lower_end_time=$(".lower_end_time").val();
     var des=$(".des").val();
-    if(stationID==""){
+    if(stationID==""||stationID.match(/^\s+$/g)){
         swal("车站编号不能为空");
         return false;
     }
-    if(station_Name==""){
+    if(station_Name==""||station_Name.match(/^\s+$/g)){
         swal("车站名称不能为空");
         return false;
     }
@@ -680,23 +650,23 @@ function updateStation(id) {
         swal("请选择线路");
         return false;
     }
-    if(des==""){
+    if(des==""||des.match(/^\s+$/g)){
         swal("描述不能为空");
         return false;
     }
-    if(upper_first_time==""){
+    if(upper_first_time==""||upper_first_time.match(/^\s+$/g)){
         swal("上行启运时间不能为空");
         return false;
     }
-    if(upper_end_time==""){
+    if(upper_end_time==""||upper_end_time.match(/^\s+$/g)){
         swal("上行停运时间不能为空");
         return false;
     }
-    if(lower_first_time==""){
+    if(lower_first_time==""||lower_first_time.match(/^\s+$/g)){
         swal("下行启运时间不能为空");
         return false;
     }
-    if(lower_end_time==""){
+    if(lower_end_time==""||lower_end_time.match(/^\s+$/g)){
         swal("下行停运时间不能为空");
         return false;
     }
@@ -723,6 +693,99 @@ function updateStation(id) {
             swal("OMG!", "请求失败!", "error");
         }
     })
+}
+
+function updateDevice(id) {
+    var equipment_Code=$(".equipment_Code").val();
+    var equipment_Name=$(".equipment_Name").val();
+    var type=$("#type").val();
+    var ip_Address=$(".ip_Address").val();
+    var devicePosID=$("#devicePosID").val();
+    var lineID=$("#LineID").val();
+    var stationID=$("#StationID").val();
+    var mac=$(".mac").val();
+    var des=$(".des").val();
+    var spare=$('input[name="spare"]:checked').val();
+    if(equipment_Name==""||equipment_Name.match(/^\s+$/g)){
+        swal("设备名称不能为空");
+        return false;
+    }
+    if(equipment_Code==""||equipment_Code.match(/^\s+$/g)){
+        swal("设备编号不能为空");
+        return false;
+    }
+    if(ip_Address==""||ip_Address.match(/^\s+$/g)){
+        swal("IP地址不能为空");
+        return false;
+    }
+    if(lineID==0){
+        swal("请选择线路");
+        return false;
+    }
+    if(stationID==0){
+        swal("请选择路站");
+        return false;
+    }
+    if(mac==""||mac.match(/^\s+$/g)){
+        swal("物理位置不能为空");
+        return false;
+    }
+    if(des==""||des.match(/^\s+$/g)){
+        swal("描述不能为空");
+        return false;
+    }
+    $.ajax({
+        url:'/Device/updateDevice',
+        type:"POST",
+        data:{"id":id,"deviceID":equipment_Code,"name":equipment_Name,"type":type,"ip":ip_Address,
+            "devicePosID":devicePosID,"mac":mac,"des":des,"lineID":lineID,"stationID":stationID,isBackups:spare},
+        success:function (data) {
+            if(data.result=="exist"){
+                swal("该设备已存在!");
+            }else if(data.result=="success"){
+                swal("Good!", "操作成功!", "success");
+                $(".confirm").click(function () {
+                    window.location.href="/Line/jumpToDevice";
+                });
+            }else{
+                swal("OMG!", "操作错误!", "error");
+            }
+        },
+        error:function (){
+            swal("OMG!", "请求失败!", "error");
+        }
+    })
+}
+
+function deleteLine(id) {
+    swal({
+        title: "您确定要删除吗？",
+        text: "您确定要删除这条数据？",
+        type: "warning",
+        showCancelButton: true,
+        closeOnConfirm: false,
+        confirmButtonText: "是的，我要删除",
+        confirmButtonColor: "#ec6c62"
+    }, function() {
+        $.ajax({
+            url:'/Line/deleteLine',
+            type:"POST",
+            data:{id:id},
+            success:function (data) {
+                if(data.result=="success"){
+                    swal("Good!", "操作成功!", "success");
+                    $(".confirm").click(function () {
+                        window.location.href="/Line/jumpToDevice";
+                    });
+                }else{
+                    swal("OMG!", "操作错误!", "error");
+                }
+            },
+            error:function (){
+                swal("OMG!", "请求失败!", "error");
+            }
+        });
+    });
 }
 
 function deleteStation(id) {
@@ -754,69 +817,6 @@ function deleteStation(id) {
             }
         });
     });
-}
-
-
-function updateDevice(id) {
-    var equipment_Code=$(".equipment_Code").val();
-    var equipment_Name=$(".equipment_Name").val();
-    var type=$("#type").val();
-    var ip_Address=$(".ip_Address").val();
-    var devicePosID=$("#devicePosID").val();
-    var lineID=$("#LineID").val();
-    var stationID=$("#StationID").val();
-    var mac=$(".mac").val();
-    var des=$(".des").val();
-    var spare=$('input[name="spare"]:checked').val();
-    if(equipment_Name==""){
-        swal("设备名称不能为空");
-        return false;
-    }
-    if(equipment_Code==""){
-        swal("设备编号不能为空");
-        return false;
-    }
-    if(ip_Address==""){
-        swal("IP地址不能为空");
-        return false;
-    }
-    if(lineID==0){
-        swal("请选择线路");
-        return false;
-    }
-    if(stationID==0){
-        swal("请选择路站");
-        return false;
-    }
-    if(mac==""){
-        swal("物理位置不能为空");
-        return false;
-    }
-    if(des==""){
-        swal("描述不能为空");
-        return false;
-    }
-    $.ajax({
-        url:'/Device/updateDevice',
-        type:"POST",
-        data:{"id":id,"deviceID":equipment_Code,"name":equipment_Name,"type":type,"ip":ip_Address,
-            "devicePosID":devicePosID,"mac":mac,"des":des,"lineID":lineID,"stationID":stationID,isBackups:spare},
-        success:function (data) {
-            if(data.result=="exist"){
-                swal("该设备已存在!");
-            }else if(data.result=="success"){
-                swal("Good!", "操作成功!", "success");
-                $(".confirm").click(function () {
-                    window.location.href="/Line/jumpToDevice";
-                });
-            }else{
-                swal("OMG!", "操作错误!", "error");
-            }
-        },
-        error:function (){
-            swal("OMG!", "请求失败!", "error");
-        }
-    })
 }
 
 function deleteDevice(id) {

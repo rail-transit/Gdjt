@@ -45,7 +45,7 @@
         FROM
             Msg_Level
         WHERE
-            LevelCode LIKE CONCAT(CONCAT('%',#{levelCode}),'%')
+            LevelCode LIKE ''+#{levelCode}+'-_'
     </select>
     <select id="selectPaging"  resultType="com.example.passenger.entity.MsgLevel">
         SELECT TOP (#{pageSize}) *

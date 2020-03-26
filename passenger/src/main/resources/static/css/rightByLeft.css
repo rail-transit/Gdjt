@@ -7,7 +7,7 @@
 #core_footer_div{width: 99%;height: 349px;background-color: white;margin: 0 auto;}
 .tips{border:1px solid #ccc;font-weight: bolder;font-size: 14px;height: 30px;}
 table{ table-layout:fixed; border-collapse:collapse;text-align: center;}
-tbody {height:314px;overflow-y:auto;width: 100%;table-layout: fixed;}
+tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
 tr {width: 100%; table-layout: fixed;}
 td{ font-size: 12px;height: 30px; white-space:nowrap;overflow:hidden;text-overflow: ellipsis;}
 
@@ -75,5 +75,5 @@ input[type="range"]::-webkit-slider-thumb { width: 20px;height: 20px; border-rad
 #upperPlayer_player_div p{padding-left: 10px;padding-top: 25px;}
 #upperPlayer_control_state{width: 99%;height: 335px;background-color: white;margin: 0 auto;overflow: auto}
 #upperPlayer_control_title{height: 17px;font-size: 14px;color: white;font-weight: bolder;padding-left: 10px;margin-top: 0px;}
-#upperPlayer_control_state tbody {height:304px;overflow-y:auto;width: 100%;table-layout: fixed;}
+#upperPlayer_control_state tbody {overflow-y:auto;width: 100%;table-layout: fixed;}
 

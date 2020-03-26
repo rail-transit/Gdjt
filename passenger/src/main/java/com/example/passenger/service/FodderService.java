@@ -19,85 +19,87 @@ public class FodderService {
     @Autowired
     FodderMapper fodderMapper;
 
-    public PageUtil selectAllFodder(Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectAllFodder(Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
         pageUtil.setRowCount(fodderMapper.count());
-        pageUtil.setPageData(fodderMapper.selectAllFodder(pageNum,pageSize));
+        pageUtil.setPageData(fodderMapper.selectAllFodder(pageNum, pageSize));
         return pageUtil;
     }
 
-    public Integer selectFodderByName(String name,Integer id,Integer type){
-        return fodderMapper.selectFodderByName(name,id,type);
+    public Integer selectFodderByName(String name, Integer id, Integer type) {
+        return fodderMapper.selectFodderByName(name, id, type);
     }
- /*   public List<Fodder> selectAllFodderMaterial(Fodder fodder){
-        return fodderMapper.selectAllFodderMaterial(fodder);
-    }*/
-    public List<Fodder> selectFodderByType(Integer type){
+
+    /*   public List<Fodder> selectAllFodderMaterial(Fodder fodder){
+           return fodderMapper.selectAllFodderMaterial(fodder);
+       }*/
+    public List<Fodder> selectFodderByType(Integer type) {
         return fodderMapper.selectFodderByType(type);
     }
 
-    public Fodder selectFodderByID(Integer id){
+    public Fodder selectFodderByID(Integer id) {
         return fodderMapper.selectFodderByID(id);
     }
 
-    public PageUtil selectAllFodderMaterial(Integer type,Integer state,String name,Integer pageNum, Integer pageSize){
-        PageUtil pageUtil=new PageUtil();
+    public PageUtil selectAllFodderMaterial(Integer type, Integer state, String name, Integer pageNum, Integer pageSize) {
+        PageUtil pageUtil = new PageUtil();
         pageUtil.setPageNum(pageNum);
         pageUtil.setPageSize(pageSize);
-        pageUtil.setRowCount(fodderMapper.selectAllFodderMaterialCount(type,state,name));
-        pageUtil.setPageData(fodderMapper.selectAllFodderMaterial(type,state,name,pageNum, pageSize));
+        pageUtil.setRowCount(fodderMapper.selectAllFodderMaterialCount(type, state, name));
+        pageUtil.setPageData(fodderMapper.selectAllFodderMaterial(type, state, name, pageNum, pageSize));
         return pageUtil;
     }
 
     @Transactional
-    public Integer addFodder(Fodder fodder){
+    public Integer addFodder(Fodder fodder) {
         try {
             return fodderMapper.addFodder(fodder);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateFodder(Fodder fodder){
+    public Integer updateFodder(Fodder fodder) {
         try {
             return fodderMapper.updateFodder(fodder);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer updateFodderState(Fodder fodder){
+    public Integer updateFodderState(Fodder fodder) {
         try {
             return fodderMapper.updateFodderState(fodder);
-        }catch (Exception  e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
 
     @Transactional
-    public Integer deleteFodder(Fodder fodder){
+    public Integer deleteFodder(Fodder fodder) {
         try {
             return fodderMapper.deleteFodder(fodder);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return -1;
         }
     }
-    
+
     /**
      * 解析普通文本文件  流式文件 如txt
+     *
      * @param path 路径
      * @return
      */
-    public String readTxt(String path){
-        String localPath = path.replace("/Path/","D://ftp/");
+    public String readTxt(String path) {
+        String localPath = path.replace("/Path/", "D://ftp/");
         StringBuilder content = new StringBuilder();
         try {
             String code = resolveCode(localPath);
@@ -123,6 +125,7 @@ public class FodderService {
 
     /**
      * 解析文件内容的编码
+     *
      * @param path
      * @return
      * @throws Exception
@@ -132,13 +135,11 @@ public class FodderService {
         byte[] head = new byte[3];
         inputStream.read(head);
         String code = "gb2312";  //或GBK
-        if (head[0] == -1 && head[1] == -2 ){
+        if (head[0] == -1 && head[1] == -2) {
             code = "UTF-16";
-        }
-        else if (head[0] == -2 && head[1] == -1 ){
+        } else if (head[0] == -2 && head[1] == -1) {
             code = "Unicode";
-        }
-        else if(head[0]==-17 && head[1]==-69 && head[2] ==-65){
+        } else if (head[0] == -17 && head[1] == -69 && head[2] == -65) {
             code = "UTF-8";
         }
         inputStream.close();
