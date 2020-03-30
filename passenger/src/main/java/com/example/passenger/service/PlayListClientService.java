@@ -100,7 +100,7 @@ public class PlayListClientService {
                             for (PlayListClient playListClient : playListClients) {
                                 System.out.println("需要下载的播表:" + playListClient.getId());
                                 //消息体
-                                String content = "UPSC:http://" + IPUtil.ip + ":8080/schedules/getScheduleById?clientid=" +
+                                String content = "UPSC:http://" + IPUtil.IP + ":8080/schedules/getScheduleById?clientid=" +
                                         playListClient.getClientID() + "&idxs=" + playListClient.getPlaylistID();
                                 //ip转换
                                 long ip = IPUtil.ipToLong(device.getIp());

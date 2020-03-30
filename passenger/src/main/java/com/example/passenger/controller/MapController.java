@@ -37,24 +37,24 @@ public class MapController {
     @Autowired
     MapService mapService;
 
-    @RequestMapping("/lineMapManagement")
-    public String mapManagement(Model model, Integer id) {
+    @RequestMapping("/lineMap")
+    public String lineMap(Model model, Integer id) {
         List<Station> stationList = stationService.selectAllStation(id);
         model.addAttribute("id", id);
         model.addAttribute("line", null);
         model.addAttribute("menuList", stationList);
-        return "map";
+        return "rightContent/monitor/map";
     }
 
-    @RequestMapping("/stationMapManagement")
-    public String stationMapManagement(Model model, Integer id) {
+    @RequestMapping("/stationMap")
+    public String stationMap(Model model, Integer id) {
         Station station = stationService.selectStation(id);
         Line line = lineService.selectLine(station.getLineID());
         List<Device> deviceList = deviceService.selectAllDevice(id);
         model.addAttribute("id", id);
         model.addAttribute("line", line);
         model.addAttribute("menuList", deviceList);
-        return "map";
+        return "rightContent/monitor/map";
     }
 
     @RequestMapping("/addMap")

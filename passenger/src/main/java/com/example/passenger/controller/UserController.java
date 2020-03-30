@@ -116,21 +116,21 @@ public class UserController {
         return "register";
     }
 
-    @RequestMapping("/userInformation")
-    public String userInformation(HttpSession session, Model model) {
+    @RequestMapping("/personalInfo")
+    public String personalInfo(HttpSession session, Model model) {
         Users user = (Users) session.getAttribute("user");
         Users users = userService.findUserById(user.getId());
         model.addAttribute("users", users);
-        return "rightContent/systemConfig/userInformation";
+        return "rightContent/system/personalInfo";
     }
 
-    @RequestMapping("/userManagement")
-    public String userManagement(Model model) {
+    @RequestMapping("/userManage")
+    public String userManage(Model model) {
         List<Department> departmentList = departmentService.selectAllDepartment();
         List<Group> groupList = groupService.selectAllGroup();
         model.addAttribute("departmentList", departmentList);
         model.addAttribute("groupList", groupList);
-        return "rightContent/systemConfig/userManagement";
+        return "rightContent/system/userManage";
     }
 
     @RequestMapping("/addUserManagement")
@@ -139,7 +139,7 @@ public class UserController {
         List<Department> departmentList = departmentService.selectAllDepartment();
         model.addAttribute("departmentList", departmentList);
         model.addAttribute("groupList", groupList);
-        return "rightContent/systemConfig/addUser";
+        return "rightContent/system/addUser";
     }
 
     @RequestMapping("/selectUserByName")

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,11 @@ public class MessageService {
         return messageMapper.getMessage(level, deviceID);
     }
 
-    public Message getMessageByCondition(Integer playState, Integer deviceID, String level,String msg) {
-        return messageMapper.getMessageByCondition(playState, deviceID, level,msg);
+    public Message getMessageByCondition(Integer playState, Integer deviceID, String level, String msg) {
+        return messageMapper.getMessageByCondition(playState, deviceID, level, msg);
     }
 
-    public List<Message> queryGroupingMessage(){
+    public List<Message> queryGroupingMessage() {
         return messageMapper.queryGroupingMessage();
     }
 
@@ -76,7 +77,7 @@ public class MessageService {
             if (message.getStartDate().length() != 0) {
                 if (message.getIsPlanMsg() == 1) {
                     Message msg = messageMapper.getMessageByIsPlanMsg(message.getId());
-                    if (msg != null) {
+                    if (StringUtils.isEmpty(msg)) {
                         continue;
                     }
                 }
@@ -102,15 +103,15 @@ public class MessageService {
                 //根据级别设置消息类型(待播,在播,待发布)
                 //获取当前设备最高优先级
                 Integer level = messageMapper.getMaxLevel(message.getDeviceID());
-                if (level != null) {
+                if (!StringUtils.isEmpty(level)) {
                     //根据消息级别代码获取优先级
                     MsgLevel msgLevel = msgLevelMapper.selectMsgLevelByLevel(message.getLevel(), null);
-                    if (msgLevel != null) {
+                    if (!StringUtils.isEmpty(msgLevel)) {
                         //如当前消息优先级大于设备最高优先级
                         if (msgLevel.getLevel() > level) {
                             Message message1 = messageMapper.getMessageByCondition(1,
-                                    message.getDeviceID(), null,null);
-                            if (message1 != null) {
+                                    message.getDeviceID(), null, null);
+                            if (!StringUtils.isEmpty(message1)) {
                                 messageMapper.updateMessage(message1.getId(), null, 2);
                             }
                             messageMapper.updateMessage(message.getId(), null, 1);
@@ -175,12 +176,12 @@ public class MessageService {
 
     public void setBroadcastMsg(Message msg) {
         Integer level = messageMapper.getMaxLevel(msg.getDeviceID());
-        if (level != null) {
+        if (!StringUtils.isEmpty(level)) {
             MsgLevel msgLevel = msgLevelMapper.selectMsgLevelByLevel(null, level);
-            if (msgLevel != null) {
+            if (!StringUtils.isEmpty(msgLevel)) {
                 Message message = messageMapper.getMessageByCondition(2, msg.getDeviceID(),
-                        msgLevel.getLevelCode(),null);
-                if (message != null) {
+                        msgLevel.getLevelCode(), null);
+                if (!StringUtils.isEmpty(message)) {
                     messageMapper.updateMessage(message.getId(), null, 1);
                 }
             }
@@ -190,8 +191,6 @@ public class MessageService {
     @Transactional
     public Integer addMessage(Message message) {
         try {
-            message.setState(0);
-            message.setPlayState(0);
             return messageMapper.addMessage(message);
         } catch (Exception e) {
             logger.error(e.getMessage());

@@ -29,11 +29,11 @@ public class DevicePosController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/devicePosManagement")
-    public String devicePosManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/devPositionManage")
+    public String devPositionManage(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = devicePosService.selectDevicePosPaging(pageNum, 10);
         model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/systemConfig/devicePosManagement";
+        return "rightContent/system/devPositionManage";
     }
 
     @RequestMapping("/addDevicePos")

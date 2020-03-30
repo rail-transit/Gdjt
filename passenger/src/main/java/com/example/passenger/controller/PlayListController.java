@@ -55,34 +55,33 @@ public class PlayListController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/playState")
-    public String playState() {
-        return "rightContent/messagePlan/playState";
+    @RequestMapping("/playList")
+    public String playList() {
+        return "rightContent/format/playList";
     }
 
-    @RequestMapping("/playListManagement")
-    public String playListManagement() {
-        return "rightContent/playStyle/playList";
+    @RequestMapping("/playListRelease")
+    public String playListRelease(Model model) {
+        return "rightContent/format/playListRelease";
     }
 
-
-    @RequestMapping("/releasePlayList")
-    public String releasePlayList(Model model) {
-        return "rightContent/playStyle/releasePlayList";
-    }
-
-    @RequestMapping("/planManagement")
-    public String planManagement(Model model) {
+    @RequestMapping("/planManage")
+    public String planManage(Model model) {
         List<MsgLevel> msgLevelList = msgLevelService.selectMsgLevelAll();
         model.addAttribute("msgLevelList", msgLevelList);
-        return "rightContent/messagePlan/plan";
+        return "rightContent/plan/planManage";
     }
 
-    @RequestMapping("/playReleaseManagement")
-    public String playReleaseManagement(Model model) {
+    @RequestMapping("/planRelease")
+    public String planRelease(Model model) {
         List<MsgLevel> msgLevelList = msgLevelService.selectMsgLevelAll();
         model.addAttribute("msgLevelList", msgLevelList);
-        return "rightContent/messagePlan/playRelease";
+        return "rightContent/plan/planRelease";
+    }
+
+    @RequestMapping("/planState")
+    public String planState() {
+        return "rightContent/plan/planState";
     }
 
     @RequestMapping("/selectPlayList")

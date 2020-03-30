@@ -76,7 +76,7 @@ public class PlayStyleService {
         try {
             Integer i = playStyleMapper.deletePlayStyle(playStyle);
             if (i > 0) {
-                //styleContentMapper.deleteStyleContentByStyleID(playStyle.getId());
+                //styleContentMapper.deleteStyleContentByStyleID(format.getId());
                 playListStyleMapper.deleteByStyleID(playStyle.getId());
             }
             return i;

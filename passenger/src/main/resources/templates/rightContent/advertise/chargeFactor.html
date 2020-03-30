@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        #chargeFactor_content_div {
+            height: 597px;
+            margin: auto;
+            border: 1px solid #d2d2c1;
+        }
+
+        #chargeFactor_title {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        #charge_top_div {
+            height: 55px;
+            border-bottom: 1px solid #d2d2c1;
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #chargeFactor_center_div {
+            padding-top: 10px
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding-left: 32px;
+            padding-top: 7px;
+            text-align: center
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+</head>
+<body>
+<div id="chargeFactor_content_div">
+    <p id="chargeFactor_title">收费要素管理</p>
+    <div id="charge_top_div">
+        <div style="padding-top: 14px;padding-left: 20px">
+            <span>收费要素名称:</span><input type="text">
+        </div>
+    </div>
+    <div id="chargeFactor_center_div">
+        <table width="99.9%" border="0" id="chargeFactorTable">
+            <thead>
+            <tr>
+                <th class="tips">收费要素名称</th>
+                <th class="tips">是否存在可选值</th>
+                <th class="tips">编辑</th>
+                <th class="tips">要素值管理</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $("#chargeFactorTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+        var trs = $(this).parent().find('tr'); //获取所有tr
+        if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+            trs.removeClass('on');//把class on 移除
+        }
+        $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+    });
+</script>
+</body>
+</html>

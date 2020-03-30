@@ -84,11 +84,6 @@ public class DeviceController {
         return mv.getModel();
     }
 
-    @RequestMapping("/videoSurveillanceManagement")
-    public String videoSurveillanceManagement() {
-        return "rightContent/equipmentControl/videoSurveillance";
-    }
-
     @RequestMapping("/addVideoList")
     @ResponseBody
     public Map<String, Object> addVideoList(ModelAndView mv, HttpSession session, String id) {
@@ -189,8 +184,8 @@ public class DeviceController {
     }
 
 
-    @RequestMapping("/equipmentMonitorManagement")
-    public String equipmentMonitorManagement(Model model, Integer id) {
+    @RequestMapping("/deviceMonitor")
+    public String deviceMonitor(Model model, Integer id) {
         Device device = deviceService.selectDevice(id);
         Station station = stationService.selectStation(device.getStationID());
         Line line = lineService.selectLine(station.getLineID());
@@ -204,11 +199,11 @@ public class DeviceController {
         model.addAttribute("lineList", lineList);
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/equipmentControl/equipmentMonitor";
+        return "rightContent/monitor/devMonitor";
     }
 
-    @RequestMapping("/lineManagement")
-    public String lineManagement(Model model, Integer id) {
+    @RequestMapping("/lineMonitor")
+    public String lineMonitor(Model model, Integer id) {
         List<Line> lineList = lineService.selectAllLine();
         List<Station> stationList = stationService.queryAllStation();
         List<DeviceType> deviceTypeList = deviceTypeService.selectAllDeviceType();
@@ -218,11 +213,11 @@ public class DeviceController {
         model.addAttribute("lineList", lineList);
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/equipmentControl/equipmentMonitor";
+        return "rightContent/monitor/devMonitor";
     }
 
-    @RequestMapping("/stationManagement")
-    public String stationManagement(Model model, Integer id) {
+    @RequestMapping("/stationMonitor")
+    public String stationMonitor(Model model, Integer id) {
         List<Line> lineList = lineService.selectAllLine();
         List<Station> stationList = stationService.queryAllStation();
         List<DeviceType> deviceTypeList = deviceTypeService.selectAllDeviceType();
@@ -234,7 +229,7 @@ public class DeviceController {
         model.addAttribute("lineList", lineList);
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/equipmentControl/equipmentMonitor";
+        return "rightContent/monitor/devMonitor";
     }
 
 

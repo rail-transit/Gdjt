@@ -36,13 +36,13 @@ public class DevUpkeepController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/devUpkeepManagement")
-    public String devUpkeepManagement(Model model, Integer id) {
+    @RequestMapping("/devUpkeep")
+    public String devUpkeep(Model model, Integer id) {
         List<DevUpkeep> devUpkeepList = devUpkeepService.selectDevUpkeepByEndTimeIsNull(id);
         Device device = deviceService.selectDevice(id);
         model.addAttribute("device", device);
         model.addAttribute("devUpkeepList", devUpkeepList);
-        return "rightContent/equipmentControl/equipmentMaintain";
+        return "rightContent/monitor/devUpkeep";
     }
 
     @RequestMapping("/maintainStatistics")
@@ -56,7 +56,7 @@ public class DevUpkeepController {
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/reportForm/maintain";
+        return "rightContent/report/maintain";
     }
 
     @RequestMapping("/selectStatistics")

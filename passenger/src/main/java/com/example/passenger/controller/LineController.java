@@ -36,9 +36,9 @@ public class LineController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/jumpToDevice")
-    public String jumpToDevice() {
-        return "rightContent/systemConfig/equipmentInformation";
+    @RequestMapping("/lineInfoManage")
+    public String lineInfoManage() {
+        return "rightContent/system/lineInfoManage";
     }
 
     @RequestMapping("selectAllLine")

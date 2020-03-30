@@ -1,59 +1,62 @@
 ﻿<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>系统登录</title>
     <link href="/css/style.css" rel="stylesheet" type="text/css"/>
     <script language="JavaScript" src="/js/jquery.js"></script>
     <script src="/js/cloud.js" type="text/javascript"></script>
     <script type="text/javascript" src="/js/jsencrypt.min.js"></script> <!--前端jsencrypt加密，后端java解密 RSA不对称加密算法-->
     <style type="text/css">
-        .loginuser{
-            position:absolute;
-            width:299px;
-            height:48px;
-            background:url(/images/loginuser-6bf4d81e2fbddcf0f76fca3a39b07483.png) no-repeat;
-            border:none;
-            line-height:48px;
-            padding-left:44px;
-            font-size:14px;
-            color:#90a2bc;
-        }
-        .select-editable {
-            position:relative;
-            /* border:solid grey 1px; */
-            width:343px;
-            /*overflow: hidden;*/
-            height:48px;
-        }
-        .select-editable select {
-            position:absolute;
-            top:0px;
-            left:0px;
-            font-size:14px;
+        .loginuser {
+            position: absolute;
+            width: 299px;
             height: 48px;
-            border:none;
-            width:360px;
-            background: transparent;
-            margin:0;
+            background: url(/images/loginuser-6bf4d81e2fbddcf0f76fca3a39b07483.png) no-repeat;
+            border: none;
+            line-height: 48px;
+            padding-left: 44px;
+            font-size: 14px;
+            color: #90a2bc;
         }
+
+        .select-editable {
+            position: relative;
+            /* border:solid grey 1px; */
+            width: 343px;
+            /*overflow: hidden;*/
+            height: 48px;
+        }
+
+        .select-editable select {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            font-size: 14px;
+            height: 48px;
+            border: none;
+            width: 360px;
+            background: transparent;
+            margin: 0;
+        }
+
         .select-editable option {
-            font-size:20px;
-            font-family:'宋体';
+            font-size: 20px;
+            font-family: '宋体';
         }
     </style>
     <script language="javascript">
-        if(window != top){
+        if (window != top) {
             top.location.href = location.href;
         }
-        $(function(){
-            $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
-            $(window).resize(function(){
-                $('.loginbox').css({'position':'absolute','left':($(window).width()-692)/2});
+        $(function () {
+            $('.loginbox').css({'position': 'absolute', 'left': ($(window).width() - 692) / 2});
+            $(window).resize(function () {
+                $('.loginbox').css({'position': 'absolute', 'left': ($(window).width() - 692) / 2});
             });
 
             //回车即可登录，无需点击登录按钮
-            $("body").keydown(function(event) {
+            $("body").keydown(function (event) {
                 if (event.keyCode == "13") {//keyCode=13是回车键
                     $('.loginbtn')[0].click();
                 }
@@ -66,21 +69,21 @@
             });
             //账号输入框得到焦点时显示下拉框，同时获取RSA加密算法公钥
             $("#name").focus(function () {
-                if(window.localStorage.length > 0){
+                if (window.localStorage.length > 0) {
                     $("#selectNameId").show();
                 }
 
-                if (!document.getElementById('publicKey')){//未获取公钥
+                if (!document.getElementById('publicKey')) {//未获取公钥
                     //动态获取后端传来的公钥，用于进行对登陆时的密码加密
                     $.ajax({
-                        url:'/user/getRSAPublicKey',
-                        type:"POST",
+                        url: '/user/getRSAPublicKey',
+                        type: "POST",
                         // async:false,//不异步加载，否则在success回调函数里RSApublicKey = data.RSApublicKey;无效
-                        success:function (data) {
+                        success: function (data) {
                             //公钥
                             var RSApublicKey = data.RSApublicKey;
                             //动态添加隐藏的input，用于保存公钥，在表单提交附加参数公钥
-                            $("#userForm").append("<input id='publicKey' type='hidden' name='publicKey' value='"+RSApublicKey+"'></input>");
+                            $("#userForm").append("<input id='publicKey' type='hidden' name='publicKey' value='" + RSApublicKey + "'></input>");
                         }
                     });
 
@@ -89,10 +92,11 @@
         });
     </script>
 </head>
-<body style="background-color:#1c77ac; background-image:url(/images/light.png); background-repeat:no-repeat; background-position:center top; overflow:hidden;" onload="showUserName()">
+<body style="background-color:#1c77ac; background-image:url(/images/light.png); background-repeat:no-repeat; background-position:center top; overflow:hidden;"
+      onload="showUserName()">
 <div id="mainBody">
-  <div id="cloud1" class="cloud"></div>
-  <div id="cloud2" class="cloud"></div>
+    <div id="cloud1" class="cloud"></div>
+    <div id="cloud2" class="cloud"></div>
 </div>
 <div class="loginbody">
     <span class="systemlogo"></span>
@@ -100,13 +104,14 @@
         <form id="userForm" action="/user/login" method="post">
             <ul>
                 <span th:text="${msg}" id="msg" style="color: red;font-size: 10px;height: 15px"></span>
-<!--                <li><input id="name" name="name" type="text" class="loginuser"   placeholder="账号"/></li>-->
+                <!--                <li><input id="name" name="name" type="text" class="loginuser"   placeholder="账号"/></li>-->
                 <li>
                     <div class="select-editable">
                         <select id="selectNameId" onchange="selectChange()">
-                            <option  style="display:none" value=""></option><!--下拉列表的第一项，隐藏的空白项，有该项后选择第一个用户名的时后才会触发onchange事件-->
+                            <option style="display:none" value=""></option>
+                            <!--下拉列表的第一项，隐藏的空白项，有该项后选择第一个用户名的时后才会触发onchange事件-->
                         </select>
-                        <input id="name" name="name" type="text" class="loginuser"   placeholder="账号"/>
+                        <input id="name" name="name" type="text" class="loginuser" placeholder="账号"/>
                     </div>
                 </li>
                 <li><input id="pwd" name="pwd" type="password" class="loginpwd" placeholder="密码"/></li>
@@ -118,58 +123,58 @@
 </div>
 <div class="loginbm">
     <img src="/images/login.png" style="width: 25px;vertical-align: middle;">&nbsp;
-    版权所有  深圳市北海轨道交通技术有限公司 ，勿用于任何商业用途
+    版权所有 深圳市北海轨道交通技术有限公司 ，勿用于任何商业用途
 </div>
 <script type="text/javascript">
     $(".loginbtn").click(function () {
         //if (isnull()){
-            //将密码加密，并将密文替换密码输入框明文
-            //RSA最大加密明文大小
-            /*var maxDataLength = 117;
-            if($('#pwd').val().length >= maxDataLength){
-                $("#msg").html("请输入正确信息");
-                return null;
-            }
-            //公钥
-            var RSApublicKey = $('#publicKey').val();
-            //根据后端传来的公钥，进行对登陆时的密码加密
-            var encrypt = new JSEncrypt();
-            encrypt.setPublicKey(RSApublicKey);
-            var encryptedData = encrypt.encrypt($('#pwd').val());
-            $('#pwd').val(encryptedData);*/
+        //将密码加密，并将密文替换密码输入框明文
+        //RSA最大加密明文大小
+        /*var maxDataLength = 117;
+        if($('#pwd').val().length >= maxDataLength){
+            $("#msg").html("请输入正确信息");
+            return null;
+        }
+        //公钥
+        var RSApublicKey = $('#publicKey').val();
+        //根据后端传来的公钥，进行对登陆时的密码加密
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(RSApublicKey);
+        var encryptedData = encrypt.encrypt($('#pwd').val());
+        $('#pwd').val(encryptedData);*/
 
-            var name = $("#name").val();
-            var pwd = $("#pwd").val();
-            /*var publicKey = $("#publicKey").val();*/
+        var name = $("#name").val();
+        var pwd = $("#pwd").val();
+        /*var publicKey = $("#publicKey").val();*/
 
-            $.ajax({
-                url:'/user/userLogin',
-                type:"POST",
-                // dataType: 'json',
-                // data:$("#userForm").serialize(),
-                data:{
-                    name:name,
-                    pwd:pwd
-                },
-                success:function (data) {
-                    if(data.result=="success"){
-                        window.location.href="/user/index";
-                    }else if(data.result=="notExist"){
-                        $("#msg").html("登录失败,用户不存在");
-                    }else if(data.result=="prohibit"){
-                        $("#msg").html("登录失败,该用户被禁用");
-                    }else if(data.result=="passwordError"){
-                        $("#msg").html("登录失败,密码错误");
-                    }else if(data.result=="noJurisdiction"){
-                        $("#msg").html("登录失败,用户无权限");
-                    }else if(data.result=="error"){
-                        $("#msg").html("登录异常");
-                    }
-                },
-                error: function(data){
-                    $("#msg").html("请求失败");
+        $.ajax({
+            url: '/user/userLogin',
+            type: "POST",
+            // dataType: 'json',
+            // data:$("#userForm").serialize(),
+            data: {
+                name: name,
+                pwd: pwd
+            },
+            success: function (data) {
+                if (data.result == "success") {
+                    window.location.href = "/user/index";
+                } else if (data.result == "notExist") {
+                    $("#msg").html("登录失败,用户不存在");
+                } else if (data.result == "prohibit") {
+                    $("#msg").html("登录失败,该用户被禁用");
+                } else if (data.result == "passwordError") {
+                    $("#msg").html("登录失败,密码错误");
+                } else if (data.result == "noJurisdiction") {
+                    $("#msg").html("登录失败,用户无权限");
+                } else if (data.result == "error") {
+                    $("#msg").html("登录异常");
                 }
-            });
+            },
+            error: function (data) {
+                $("#msg").html("请求失败");
+            }
+        });
         //}
     });
 
@@ -189,19 +194,19 @@
     }*/
 
     function register() {
-        location.href="/user/register";
+        location.href = "/user/register";
     }
 
     //展示用户下拉框数据
     function showUserName() {
-        if(window.localStorage){
+        if (window.localStorage) {
             var options = "";
             // $("#name").val(localStorage.getItem("name"));
             //加载下拉列表数据供选择
             //循环遍历，取key值username的value
             if (localStorage.length >= 1) {
-                for(var i = 0 ; i < localStorage.length; i++){
-                    options = options + "<option value='"+localStorage.getItem(localStorage.key(i))+"'>"+localStorage.getItem(localStorage.key(i))+"</option>";
+                for (var i = 0; i < localStorage.length; i++) {
+                    options = options + "<option value='" + localStorage.getItem(localStorage.key(i)) + "'>" + localStorage.getItem(localStorage.key(i)) + "</option>";
                 }
                 //js去掉字符串两端空白字符
                 // options = options.trim();
@@ -209,6 +214,7 @@
             }
         }
     }
+
     //选择下拉框选项后填值在账号输入框内
     function selectChange() {
         // $("#selectNameId").val("");

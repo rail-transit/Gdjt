@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>待播消息</title>
+    <style>
+        #broadcast_title {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        #broadcast_height_div {
+            width: 99%;
+            height: 545px;
+            border: 1px solid wheat;
+            margin: 0 auto;
+            overflow: auto
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+            text-align: center
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('auditTable');
+        };
+    </script>
+</head>
+<body>
+<div id="broadcast_height_div">
+    <p id="broadcast_title">待播消息</p>
+    <div style="overflow: auto;height: 505px">
+        <table width="100%" border="0" id="auditTable">
+            <thead>
+            <tr>
+                <th class="tips" hidden="hidden"></th>
+                <th class="tips">消息状态</th>
+                <th class="tips">消息类型</th>
+                <th class="tips">消息内容</th>
+                <th class="tips">目的地</th>
+                <th class="tips">开始日期</th>
+                <th class="tips">开始时间</th>
+                <th class="tips">结束日期</th>
+                <th class="tips">结束时间</th>
+            </tr>
+            </thead>
+            <tr th:each="message:${pageUtil.pageData}">
+                <td th:text="${message.id}" hidden="hidden"></td>
+                <td th:if="${message.playState} eq '0'">待发布</td>
+                <td th:if="${message.playState} eq '2'">待播</td>
+                <td th:if="${message.type} eq '11' and ${message.isPlanMsg} eq '0'">滚动消息</td>
+                <td th:if="${message.type} eq '11' and ${message.isPlanMsg} eq '1'">定时消息</td>
+                <td th:if="${message.type} eq '12'">紧急消息</td>
+                <td th:text="${message.msg}"></td>
+                <td th:text="${message.lineName}+'-'+${message.stationName}+'-'+${message.deviceName}"></td>
+                <td th:text="${message.startDate}"></td>
+                <td th:text="${message.startTime}"></td>
+                <td th:text="${message.endDate}"></td>
+                <td th:text="${message.endTime}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+        <li><input th:if="${pageUtil.pageNum} ge '2'" type="button" value="上一页"
+                   th:onclick="'javascript:previousPage(\''+${pageUtil.pageNum-1}+'\')'">
+            <input th:if="${pageUtil.pageNum} le '1'" type="button" value="上一页" disabled="disabled"></li>
+        <li><span>当前页数:</span></li>
+        <li><span th:text="${pageUtil.pageNum}"></span>/<span th:text="${pageUtil.maxPage}"></span></li>
+        <li><input th:if="${pageUtil.pageNum} lt ${pageUtil.maxPage}" type="button" value="下一页" class="nextPage"
+                   th:onclick="'javascript:nextPage(\''+${pageUtil.pageNum+1}+'\')'">
+            <input th:if="${pageUtil.pageNum} ge ${pageUtil.maxPage}" type="button" value="下一页" class="nextPage"
+                   disabled="disabled"></li>
+    </ul>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#auditTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        });
+
+    });
+
+    function nextPage(pageNum) {
+        location.href = "/message/waitBoradcastMessage?pageNum=" + pageNum;
+    }
+
+    function previousPage(pageNum) {
+        location.href = "/message/waitBoradcastMessage?pageNum=" + pageNum;
+    }
+</script>
+</body>
+</html>

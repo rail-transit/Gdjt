@@ -32,11 +32,11 @@ public class StandbyTypeController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/standbyTypeManagement")
-    public String standbyTypeManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/standbyType")
+    public String standbyType(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = standbyTypeService.selectStandbyTypePaging(pageNum, 9);
         model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/equipmentControl/spareTypeManagement";
+        return "rightContent/monitor/standbyType";
     }
 
     @RequestMapping("/addStandbyType")

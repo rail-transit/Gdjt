@@ -29,9 +29,9 @@ public class DepartmentController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/departmentManagement")
+    @RequestMapping("/departmentManage")
     public String departmentManagement() {
-        return "rightContent/systemConfig/departmentManagement";
+        return "rightContent/system/departmentManage";
     }
 
     @RequestMapping("/getDepartment")

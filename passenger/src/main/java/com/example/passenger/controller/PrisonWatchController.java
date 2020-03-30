@@ -44,6 +44,11 @@ public class PrisonWatchController {
     //设备画面观看人数记录 deviceID ----> 观看人数(用户数)
     public static Map<Integer, Integer> deviceVisitPeopleCount = new HashMap<Integer, Integer>();
 
+    @RequestMapping("/videoWatch")
+    public String videoWatch() {
+        return "rightContent/monitor/videoWatch";
+    }
+
     /*@RequestMapping("/openPlay")
     @ResponseBody
     public Map<String,Object> openPlay(ModelAndView mv,String deviceID,Integer state){
@@ -1127,7 +1132,7 @@ public class PrisonWatchController {
                 "<Fps>50</Fps>" +
                 "<FtpUserName>ftp</FtpUserName>" +
                 "<FtpUserPwd>123456</FtpUserPwd>" +
-                "<FtpPath>ftp://" + IPUtil.ip + "</FtpPath>" +
+                "<FtpPath>ftp://" + IPUtil.IP + "</FtpPath>" +
                 "</Info></MSG>";
         send.sendMsg(deviceID, smg);
     }
@@ -1147,7 +1152,7 @@ public class PrisonWatchController {
                 "<Fps>50</Fps>" +
                 "<FtpUserName>ftp</FtpUserName>" +
                 "<FtpUserPwd>123456</FtpUserPwd>" +
-                "<FtpPath>ftp://" + IPUtil.ip + "</FtpPath>" +
+                "<FtpPath>ftp://" + IPUtil.IP + "</FtpPath>" +
                 "</Info></MSG>";
         send.sendMsg(deviceID, smg);
     }

@@ -47,11 +47,11 @@ public class CtrlEventController {
     @Autowired
     DevAlarmLogService devAlarmLogService;
 
-    @RequestMapping("/equipmentControl")
-    public String equipmentControl(Model model, Integer id) {
+    @RequestMapping("/devControl")
+    public String devControl(Model model, Integer id) {
         Device device = deviceService.selectDevice(id);
         model.addAttribute("device", device);
-        return "rightContent/equipmentControl/upperPlayer";
+        return "rightContent/monitor/devControl";
     }
 
     @RequestMapping("/controlStatistics")
@@ -65,7 +65,7 @@ public class CtrlEventController {
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/reportForm/control";
+        return "rightContent/report/control";
     }
 
     @RequestMapping("getEventState")

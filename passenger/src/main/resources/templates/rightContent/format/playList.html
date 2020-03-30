@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>播表管理</title>
+    <style>
+        #playList_left_div {
+            width: 26%;
+            height: 596px;
+            background-color: white;
+            border: 1px solid wheat;
+            float: left;
+        }
+
+        #playList_centre_div {
+            width: 50.5%;
+            height: 596px;
+            background-color: white;
+            border: 1px solid wheat;
+            float: left;
+            border-left: none;
+            border-right: none;
+        }
+
+        #playList_right_div {
+            width: 23%;
+            height: 596px;
+            background-color: white;
+            border: 1px solid wheat;
+            float: left;
+        }
+
+        .planTD {
+            width: 25%
+        }
+
+        .para {
+            width: 14%
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        /*#playListTable tbody{height:507px;}*/
+        /*#planManageTable tbody{height:540px;}*/
+        /*#contentTable tbody {height:316px;}*/
+        /*#playStyleTable tbody{height:105px;}*/
+        ul {
+            list-style: none;
+            padding-left: 20px;
+            margin: auto;
+        }
+
+        li {
+            float: left;
+            width: 32%;
+            height: 34px;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: bolder;
+            padding-left: 8px;
+            padding-top: 5px;
+            color: white;
+            margin: auto;
+        }
+
+        textarea {
+            overflow: auto;
+            resize: none;
+            height: 48px
+        }
+
+        #planManage_top_div {
+            height: 593px
+        }
+
+        .title_div {
+            margin: auto;
+            height: 30px;
+            background-color: #006c96;
+        }
+
+        .cont {
+            display: none;
+            position: fixed;
+            top: 18%;
+            left: 18%;
+            width: 60%;
+            height: 50%;
+            border: 6px solid rgba(101, 171, 243, 0.83);
+            /*-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);*/
+            /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);*/
+            background-color: white;
+            z-index: 1;
+            overflow: auto;
+        }
+
+        #contentTable select {
+            width: 63%;
+            height: 70%;
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 15px;
+            padding-top: 7px;
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 68px;
+        }
+
+        #nextPage {
+            margin-left: -32px;
+        }
+
+        #pagingStyle_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 15px;
+            padding-top: 7px;
+        }
+
+        #pagingStyle_ul li {
+            display: inline;
+            float: left;
+            width: 68px;
+        }
+
+        #playList_operation_div {
+            padding-left: 20px;
+            padding-top: 40px
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript" src="/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('playListTable');
+        };
+    </script>
+</head>
+<body>
+<div id="playList_left_div">
+    <div id="playList_left_table" style="height: 550px;overflow: auto">
+        <table width="100%" border="0" id="playListTable">
+            <thead>
+            <tr>
+                <th class="tips">播放日期</th>
+                <th class="tips">播表名称</th>
+                <th class="tips" style="width: 100px">操作</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+        </ul>
+    </div>
+</div>
+<div id="playList_centre_div">
+    <input type="text" id="playListStyleID" hidden="hidden">
+    <div style="height: 370px">
+        <table width="100%" border="0" id="addPlayStyleTable">
+            <thead>
+            <tr>
+                <th class="tips">开始时间</th>
+                <th class="tips">版式名称</th>
+            </tr>
+            </thead>
+            <tr>
+
+            </tr>
+        </table>
+    </div>
+    <div th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 232}">
+        <input type="button" value="添加版式" id="addPlayStyle">
+        <input type="button" value="删除版式" id="deletePlayStyle">
+    </div>
+    <input type="text" id="playStyleID" hidden="hidden">
+    <input type="text" id="playStyleName" hidden="hidden">
+    <input type="text" id="playStylePath" hidden="hidden">
+    <div style="height: 156px;overflow: auto;">
+        <table width="100%" border="0" id="playStyleTable">
+            <thead>
+            <tr>
+                <th class="tips">版式名称</th>
+            </tr>
+            </thead>
+            <tr>
+
+            </tr>
+        </table>
+    </div>
+    <div>
+        <ul id="pagingStyle_ul">
+        </ul>
+    </div>
+</div>
+<div id="playList_right_div">
+    <div id="planManage_top_div">
+        <div class="title_div">
+            <p>播表属性</p>
+        </div>
+        <table width="100%" border="0" id="planManageTable">
+            <tr>
+                <td class="planTD">播表名称</td>
+                <td><input type="text" id="name" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">编辑者</td>
+                <td><input type="text" id="editName" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">编辑时间</td>
+                <td><input type="text" id="updateTime" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">主题名称</td>
+                <td><input type="text" id="playListSummary" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">开始日期</td>
+                <td><input type="text" id="playListStartDate" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">结束日期</td>
+                <td><input type="text" id="playListEndDate" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">播表状态</td>
+                <td><input type="text" id="playListState" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">播表类型</td>
+                <td><input type="text" id="playListType" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">起始年份</td>
+                <td><input type="text" class="summary" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">结束年份</td>
+                <td><input type="text" class="summary" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">起始星期</td>
+                <td><input type="text" class="summary" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">结束星期</td>
+                <td><input type="text" class="summary" disabled="disabled"></td>
+            </tr>
+            <tr>
+                <td class="planTD">审核意见</td>
+                <td><textarea id="note"></textarea></td>
+            </tr>
+            <tr>
+                <td class="planTD"></td>
+                <td><span>通过</span><input type="radio" value="1" name="state" checked="checked">&nbsp;&nbsp;&nbsp;
+                    <span>不通过</span><input type="radio" value="2" name="state"></td>
+            </tr>
+            <tr>
+                <td class="planTD" th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 233}">
+                    <input style="width: 55px" type="button" value="审核" id="audit">
+                </td>
+                <td th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 232}">
+                    <input style="width: 55px" type="button" value="新建" id="addOperation">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="cont_b" class="cont">
+    <div id="playList_content_div">
+        <input type="text" id="id" hidden="hidden">
+        <table width="100%" border="0" id="contentTable">
+            <tr>
+                <td class="para">播表名称</td>
+                <td><input type="text" id="playListName" style="width: 180px"></td>
+                <td class="para">播放方式</td>
+                <td class="planTD"><select id="type">
+                    <option value="1">轮播</option>
+                    <option value="2">点播</option>
+                    <option value="3">重复</option>
+                    <option value="4">插播</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td class="para">主题名称</td>
+                <td><input type="text" id="summary" style="width: 180px"></td>
+                <td class="para">插播时长</td>
+                <td class="planTD"><input style="width: 60%;" type="text" id="timeLength"></td>
+            </tr>
+            <tr>
+                <td class="para">开始时间</td>
+                <!--                <td><input style="width: 64%;" type="datetime-local" step="1" id="startDate"></td>-->
+                <td>
+                    <!--前端 JavaScript 日期插件 My97DatePicker-->
+                    <input class="Wdate" id="startDate" step="1" type="text" autocomplete="off"
+                           onClick="WdatePicker({el:this,dateFmt:'yyyy/MM/dd HH:mm:ss'/*,minDate:'%y/%M/%d %H:%m:%s'*/,maxDate:'#F{$dp.$D(\'endDate\')}'})"
+                           style="width: 64%;">
+                </td>
+                <td class="para">起始星期</td>
+                <td class="planTD"><select id="startWeek">
+                    <option value="1">星期一</option>
+                    <option value="2">星期二</option>
+                    <option value="3">星期三</option>
+                    <option value="4">星期四</option>
+                    <option value="5">星期五</option>
+                    <option value="6">星期六</option>
+                    <option value="7">星期日</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td class="para">结束时间</td>
+                <!--                <td><input style="width: 64%;" type="datetime-local" step="1" id="endDate"></td>-->
+                <td>
+                    <!--前端 JavaScript 日期插件 My97DatePicker-->
+                    <input class="Wdate" id="endDate" step="1" type="text" autocomplete="off"
+                           onClick="WdatePicker({el:this,dateFmt:'yyyy/MM/dd HH:mm:ss',minDate:'#F{$dp.$D(\'startDate\') || \'%y/%M/%d %H:%m:%s\'}'})"
+                           style="width: 64%;">
+                </td>
+                <td class="para">结束星期</td>
+                <td class="planTD"><select id="endWeek">
+                    <option value="1">星期一</option>
+                    <option value="2">星期二</option>
+                    <option value="3">星期三</option>
+                    <option value="4">星期四</option>
+                    <option value="5">星期五</option>
+                    <option value="6">星期六</option>
+                    <option value="7">星期日</option>
+                </select></td>
+            </tr>
+        </table>
+    </div>
+    <div id="playList_operation_div">
+        <input id="addPlayList" type="button" value="新建保存">
+        <input id="updatePlayList" type="button" value="修改保存">
+        <input type="button" value="取消" onclick="document.getElementById('cont_b').style.display='none'">
+    </div>
+</div>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        getPlayList();
+        getPlayStyle();
+        $("#playStyleTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+            $("#playStyleID").val($(this).closest("tr").find("td").eq(0).text());
+            $("#playStyleName").val($(this).closest("tr").find("td").eq(2).text());
+            $("#playStylePath").val($(this).closest("tr").find("td").eq(1).text());
+        });
+        $("#addPlayStyleTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+            $("#playListStyleID").val($(this).closest("tr").find("td").eq(0).text());
+        });
+        $("#playListTable tbody tr").live("click", function () { //给每个tr 绑定点击事件 主要锁定每个tr
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+            $("#id").val($(this).closest("tr").find("td").eq(0).text());
+            var id = $(this).closest("tr").find("td").eq(0).text();
+            getStyleByPlayID(id);
+            $.ajax({
+                url: '/playList/getPlayList',
+                type: "POST",
+                data: {id: id},
+                success: function (data) {
+                    $("#name").val(data.playList.name);
+                    $("#editName").val(data.users.name);
+                    $("#updateTime").val(data.playList.updateTime);
+                    $("#playListSummary").val(data.playList.summary);
+                    $("#playListStartDate").val(data.playList.startDate);
+                    $("#playListEndDate").val(data.playList.endDate);
+                    var state = null;
+                    if (data.playList.state == 0) {
+                        state = "未审核";
+                    } else if (data.playList.state == 1) {
+                        state = "审核通过";
+                    } else if (data.playList.state == 2) {
+                        state = "不通过";
+                    }
+                    $("#playListState").val(state);
+                    var type = null;
+                    if (data.playList.type == 1) {
+                        type = "轮播";
+                    } else if (data.playList.type == 2) {
+                        type = "点播";
+                    } else if (data.playList.type == 3) {
+                        type = "重复";
+                    } else if (data.playList.type == 4) {
+                        type = "插播";
+                    }
+                    if (data.playList.note != null) {
+                        $("#note").val(data.playList.note);
+                    }
+                    // $("#note").val(data.playList.note);
+                    $("#playListType").val(type);
+                }
+            });
+        });
+
+        if ($("#type").val() == 1) {
+            $("#timeLength").attr("disabled", true);
+            $("#startWeek").attr("disabled", true);
+            $("#endWeek").attr("disabled", true);
+        }
+
+        $("#type").change(function () {
+            if ($(this).val() == 1 || $(this).val() == 2 || $(this).val() == 3) {
+                $("#timeLength").attr("disabled", true);
+            } else if ($(this).val() == 4) {
+                $("#timeLength").attr("disabled", false);
+            }
+            if ($(this).val() == 3) {
+                $("#startWeek").attr("disabled", false);
+                $("#endWeek").attr("disabled", false);
+            }
+        });
+
+        $("#delete").live("click", function () {
+            var id = $(this).closest("tr").find("td").eq(0).text();
+            swal({
+                title: "您确定要删除吗？",
+                text: "您确定要删除这条数据？",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                confirmButtonText: "是的，我要删除",
+                confirmButtonColor: "#ec6c62"
+            }, function () {
+                $.ajax({
+                    url: '/playList/deletePlay',
+                    type: "POST",
+                    data: {id: id},
+                    success: function (data) {
+                        if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                getPlayList();
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    },
+                    error: function () {
+                        swal("OMG!", "请求失败!", "error");
+                    }
+                });
+            });
+
+        });
+
+        $("#update").live("click", function () {
+            document.getElementById('cont_b').style.display = 'block';
+            $("#updatePlayList").attr("hidden", false);
+            $("#addPlayList").attr("hidden", true);
+            var id = $(this).closest("tr").find("td").eq(0).text();
+            $.ajax({
+                url: '/playList/getPlayList',
+                type: "POST",
+                data: {id: id, state: 1},
+                success: function (data) {
+                    //编辑
+                    $("#playListName").val(data.playList.name);
+                    $("#summary").val(data.playList.summary);
+
+                    var starDateObject = new Date(data.playList.startDate);
+                    //将日期对象以yyyy/MM/dd hh:mm:SS格式转为日期字符串
+                    var starDateString = formatDateObjectToDateString(starDateObject);
+                    $("#startDate").val(starDateString);
+
+                    var endDateObject = new Date(data.playList.endDate);
+                    //将日期对象以yyyy/MM/dd hh:mm:SS格式转为日期字符串
+                    var endDateString = formatDateObjectToDateString(endDateObject);
+                    $("#endDate").val(endDateString);
+
+                    $("#type").val(data.playList.type);
+                    if (data.playList.type == 4) {
+                        $("#timeLength").val(data.playList.timeLength);
+                        $("#timeLength").attr("disabled", false);
+                    } else if (data.playList.type == 3) {
+                        $("#startWeek").attr("disabled", false);
+                        $("#endWeek").attr("disabled", false);
+                    } else {
+                        $("#timeLength").attr("disabled", true);
+                        $("#startWeek").attr("disabled", true);
+                        $("#endWeek").attr("disabled", true);
+                    }
+                }
+            });
+        });
+
+        $("#addOperation").click(function () {
+            document.getElementById('cont_b').style.display = 'block';
+            $("#updatePlayList").attr("hidden", true);
+            $("#addPlayList").attr("hidden", false);
+        });
+
+        $("#addPlayList").click(function () {
+            var name = $("#playListName").val();
+            var timeLength = $("#timeLength").val();
+            var startDate = $("#startDate").val().replace(/\//g, "-");
+            var endDate = $("#endDate").val().replace(/\//g, "-");
+            var summary = $("#summary").val();
+            var description = $("#description").val();
+            var type = $("#type").val();
+            var startWeek = $("#startWeek").val();
+            var endWeek = $("#endWeek").val();
+            if (isnull(name, startDate, endDate, type, timeLength)) {
+                $.ajax({
+                    url: '/playList/addPlayList',
+                    type: "POST",
+                    data: {
+                        name: name, timeLength: timeLength, startDate: startDate, endDate: endDate, summary: summary,
+                        description: description, startWeek: startWeek, endWeek: endWeek, type: type
+                    },
+                    success: function (data) {
+                        if (data.result == "exit") {
+                            swal("该播表名称已存在!");
+                        } else if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                location.href = "/playList/playListManagement";
+                                getPlayList();
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#updatePlayList").click(function () {
+            var id = $("#id").val();
+            var name = $("#playListName").val();
+            var timeLength = $("#timeLength").val();
+            var startDate = $("#startDate").val().replace(/\//g, "-");
+            var endDate = $("#endDate").val().replace(/\//g, "-");
+            var summary = $("#summary").val();
+            var type = $("#type").val();
+            var startWeek = $("#startWeek").val();
+            var endWeek = $("#endWeek").val();
+            if (isnull(name, startDate, endDate, type, timeLength)) {
+                $.ajax({
+                    url: '/playList/updatePlayList',
+                    type: "POST",
+                    data: {
+                        id: id, name: name, timeLength: timeLength, startDate: startDate, endDate: endDate,
+                        summary: summary, startWeek: startWeek, endWeek: endWeek, type: type
+                    },
+                    success: function (data) {
+                        if (data.result == "exit") {
+                            swal("该播表已存在!");
+                        } else if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                location.href = "/playList/playListManagement";
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#audit").click(function () {
+            var id = $("#id").val();
+            var state = $('input[name="state"]:checked').val();
+            var note = $("#note").val();
+            if (id == null || id == "") {
+                swal("请选择需要审核的播表!");
+                return false;
+            }
+            if (state == 2) {
+                if (note == "" || note == null || note.match(/^\s+$/g)) {
+                    swal("请填写审核意见!");
+                    return false;
+                }
+            }
+            $.ajax({
+                url: '/playList/auditPlayList',
+                type: "POST",
+                data: {id: id, note: note, state: state},
+                success: function (data) {
+                    if (data.result == "success") {
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href = "/playList/playListManagement";
+                        });
+                    } else {
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                }
+            });
+        });
+
+        $("#addPlayStyle").click(function () {
+            var playListID = $("#id").val();
+            var styleID = $("#playStyleID").val();
+            var styleName = $("#playStyleName").val();
+            var stylePath = $("#playStylePath").val();
+            if (playListID == null || playListID == "") {
+                swal("请选择需要添加版式的播表!");
+                return true;
+            }
+            if (styleID == null || styleID == "") {
+                swal("请选择需要添加的版式!");
+                return true;
+            }
+            $.ajax({
+                url: '/playStyle/addPlayListStyle',
+                type: "POST",
+                data: {playlistID: playListID, styleID: styleID, styleName: styleName, stylePath: stylePath},
+                success: function (data) {
+                    if (data.result == "success") {
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href = "/playList/playListManagement";
+                        });
+                    } else {
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                }
+            });
+        });
+
+        $("#deletePlayStyle").click(function () {
+            var playListID = $("#id").val();
+            var playListStyleID = $("#playListStyleID").val();
+            if (playListID == null || playListID == "") {
+                swal("请选择需要删除版式的播表!");
+                return true;
+            }
+            if (playListStyleID == null || playListStyleID == "") {
+                swal("请选择需要删除的版式!");
+                return true;
+            }
+            $.ajax({
+                url: '/playStyle/deletePlayListStyle',
+                type: "POST",
+                data: {id: playListStyleID, playListID: playListID},
+                success: function (data) {
+                    if (data.result == "success") {
+                        swal("Good!", "操作成功!", "success");
+                        $(".confirm").click(function () {
+                            location.href = "/playList/playListManagement";
+                        });
+                    } else {
+                        swal("OMG!", "操作错误!", "error");
+                    }
+                }
+            });
+        });
+
+        $("#addPlayStyleTable tbody tr").live("click", function () {
+            var object = $(this);
+            $(this).closest("tr").find(".time").dblclick(function () {
+                var para = $(this).text();
+                if (para != "") {
+                    var input = "<input type='time' step='1' id='temp' value='" + para + "' >";
+                    $(this).text("");
+                    $(this).append(input);
+                    $("input#temp").focus();
+                    $("input").blur(function () {
+                        if ($(this).val() == "") {
+                            swal("时间不能为空");
+                            return false;
+                        } else {
+                            var time = $(this).val();
+                            if (time.length == 5) {
+                                time = time + ":00";
+                            }
+                            $(this).closest("td").text(time);
+                            var id = $(object).closest("tr").find("td").eq(0).text();
+                            var time = $(object).closest("tr").find("td").eq(1).text();
+                            $.ajax({
+                                url: '/playList/updatePlayListStyleTime',
+                                type: "POST",
+                                data: {id: id, time: time},
+                                success: function (data) {
+                                    if (data.result == "error") {
+                                        swal("OMG!", "操作错误!", "error");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+
+    //日期对象转为 yyyy/MM/dd hh:mm:ss 格式日期字符串
+    function formatDateObjectToDateString(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ((h == 0) ? '00' : ('0' + h)) : h;
+        var minute = date.getMinutes();
+        minute = minute < 10 ? ((minute == 0) ? '00' : ('0' + minute)) : minute;
+        // minute = minute < 10 ? ('0' + minute) : minute;
+        var second = date.getSeconds();
+        second = second < 10 ? ((second == 0) ? '00' : ('0' + second)) : second;
+        // second = minute < 10 ? ('0' + second) : second;
+        return y + '/' + m + '/' + d + ' ' + h + ':' + minute + ':' + second;
+    }
+
+    function getPlayList(pageNum) {
+        var type = 1;
+        $.ajax({
+            url: '/playList/selectPlayList',
+            type: "POST",
+            data: {type: type, pageNum: pageNum},
+            success: function (data) {
+                var operation = "";
+                $.each(data.rightsList, function (i, item) {
+                    if (item.id == 232) {
+                        operation = '<input type="button" value="修改" id="update">' +
+                            '<input type="button" value="删除" id="delete">';
+                    }
+                });
+                $("#playListTable tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    var startDate = item.startDate.split(" ")[0]; // yyyy-MM-dd
+                    $("#playListTable tbody").prepend('<tr><td hidden="hidden">' + item.id + '</td>' +
+                        '<td>' + startDate + '</td>' +
+                        '<td>' + item.name + '</td>' +
+                        '<td>' + operation + '</td></tr>');
+                });
+                $("#paging_ul li").remove();
+                $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li style="width: 40px;"><span>' + data.pageUtil.pageNum + '</span>/<span>' + data.pageUtil.maxPage + '</span></li>');
+                if (data.pageUtil.pageNum >= 2) {
+                    $(".notPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+                }
+
+                if (data.pageUtil.pageNum < data.pageUtil.maxPage) {
+                    $(".notNextPage").remove();
+                    $("#paging_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isNextPage").remove();
+                    $("#paging_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function getStyleByPlayID(id) {
+        $.ajax({
+            url: '/playStyle/getPlayListStyle',
+            type: "POST",
+            data: {playListID: id},
+            success: function (data) {
+                $("#addPlayStyleTable tbody tr").remove();
+                $.each(data.listStyleList, function (i, item) {
+                    $("#addPlayStyleTable tbody").prepend('<tr><td hidden="hidden">' + item.id + '</td>' +
+                        '<td class="time">' + item.playType + '</td>' +
+                        '<td>' + item.styleName + '</td></tr>');
+                });
+            }
+        });
+    }
+
+    function getPlayStyle(pageNum) {
+        $.ajax({
+            url: '/playStyle/selectPlayStyle',
+            type: "POST",
+            data: {state: 1, isTemplate: 0, pageNum: pageNum},
+            success: function (data) {
+                $("#playStyleTable tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    $("#playStyleTable tbody").prepend('<tr><td hidden="hidden">' + item.id + '</td>' +
+                        '<td hidden="hidden">' + item.path + '</td>' +
+                        '<td>' + item.name + '</td></tr>');
+                });
+                $("#pagingStyle_ul li").remove();
+                $("#pagingStyle_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li style="width: 40px;"><span>' + data.pageUtil.pageNum + '</span>/<span>' + data.pageUtil.maxPage + '</span></li>');
+                if (data.pageUtil.pageNum >= 2) {
+                    $(".notPreviousPages").remove();
+                    $("#pagingStyle_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPages" onclick="previousPageTwo(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isPreviousPages").remove();
+                    $("#pagingStyle_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPages" disabled="disabled"></li>');
+                }
+
+                if (data.pageUtil.pageNum < data.pageUtil.maxPage) {
+                    $(".notNextPages").remove();
+                    $("#pagingStyle_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="isNextPages" id="nextPage" onclick="nextPageTwo(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isNextPages").remove();
+                    $("#pagingStyle_ul").append('<li style="margin-left: 29px;width: 0px;"><input type="button" value="下一页" class="notNextPages" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function isnull(name, startDate, endDate, type, timeLength) {
+        if (name.match(/^\s+$/g) || name == "") {
+            swal("播表不能为空!");
+            return false;
+        }
+        if (startDate == "" || endDate == "") {
+            swal("开始时间和结束时间不能为空!");
+            return false;
+        }
+        if (type == 4) {
+            if (timeLength.match(/^\s+$/g) || timeLength == "") {
+                swal("请输入播放时长!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function nextPage(pageNum) {
+        var num = parseInt(pageNum) + 1;
+        getPlayList(num);
+    }
+
+    function previousPage(pageNum) {
+        var num = parseInt(pageNum) - 1;
+        getPlayList(num);
+    }
+
+    function nextPageTwo(pageNum) {
+        var num = parseInt(pageNum) + 1;
+        getPlayStyle(num);
+    }
+
+    function previousPageTwo(pageNum) {
+        var num = parseInt(pageNum) - 1;
+        getPlayStyle(num);
+    }
+</script>
+</body>
+</html>

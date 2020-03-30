@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>设备位置</title>
+    <style type="text/css">
+        #devicePos_top_div {
+            height: 140px;
+            width: 99%;
+            border: 1px solid wheat;
+            margin: auto
+        }
+
+        #devicePos_right_div {
+            height: 453px;
+            width: 99%;
+            border: 1px solid wheat;
+            margin: auto
+        }
+
+        #devicePos_ul {
+            list-style: none;
+            padding-top: 23px;
+        }
+
+        #devicePos_ul li {
+            display: inline;
+            float: left;
+            width: 32%;
+            font-size: 14px;
+        }
+
+        #devicePos_ul li span {
+            padding-right: 10px;
+        }
+
+        #devicePos_top_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        #devicePos_right_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        #devicePos_footer_ul {
+            list-style: none;
+            padding-top: 23px;
+        }
+
+        #devicePos_footer_ul li {
+            display: inline;
+            float: left;
+            width: 100%;
+            font-size: 14px;
+            height: 60px;
+        }
+
+        #devicePos_footer_ul li span {
+            padding-right: 10px;
+        }
+
+        #devicePos_operation_div {
+            padding-left: 90px;
+        }
+
+        #devicePos_operation_div input {
+            height: 25px;
+            width: 90px;
+        }
+
+        .radioOne {
+            vertical-align: bottom;
+            height: 15px;
+            margin-left: 5px
+        }
+
+        .devicePosRadio {
+            vertical-align: bottom;
+            height: 15px;
+            margin-left: 5px
+        }
+
+        .devicePosRadio {
+            vertical-align: bottom;
+            height: 15px;
+            margin-left: 5px
+        }
+
+        .radioTwo {
+            vertical-align: bottom;
+            height: 15px;
+            margin-left: 5px
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        .cont {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 30%;
+            width: 35%;
+            height: 53%;
+            border: 6px solid #d6b6dd47;
+            background-color: white;
+            z-index: 1;
+            overflow: auto;
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+            text-align: center
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+
+        #devicePos_table_div {
+            overflow: auto;
+            height: 360px;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('devicePosTable');
+        };
+    </script>
+</head>
+<body>
+<div id="devicePos_top_div">
+    <p id="devicePos_top_p">添加设备位置</p>
+    <ul id="devicePos_ul">
+        <li><span>设备位置名称:</span><input type="text" class="name"></li>
+        <li><span>设备位置描述:</span><input type="text" class="note"></li>
+        <li><input id="addDevicePos" type="button" value="添加"></li>
+    </ul>
+</div>
+<div id="devicePos_right_div">
+    <p id="devicePos_right_p">设备位置信息</p>
+    <div id="devicePos_table_div">
+        <table width="100%" border="0" id="devicePosTable">
+            <thead>
+            <tr>
+                <th class="tips">设备位置名称</th>
+                <th class="tips">设备描述</th>
+                <th class="tips">操作</th>
+            </tr>
+            </thead>
+            <tr th:each="devicePos:${pageUtil.pageData}">
+                <td th:text="${devicePos.id}" hidden="hidden"></td>
+                <td th:text="${devicePos.name}"></td>
+                <td th:text="${devicePos.note}"></td>
+                <td><input type="button" value="修改" id="updateButton">&nbsp;<input type="button" value="删除"
+                                                                                   id="deleteButton"></td>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+            <li><input th:if="${pageUtil.pageNum} ge '2'" type="button" value="上一页"
+                       th:onclick="'javascript:previousPage(\''+${pageUtil.pageNum-1}+'\')'">
+                <input th:if="${pageUtil.pageNum} le '1'" type="button" value="上一页" disabled="disabled"></li>
+            <li><span>当前页数:</span></li>
+            <li><span th:text="${pageUtil.pageNum}"></span>/<span th:text="${pageUtil.maxPage}"></span></li>
+            <li><input th:if="${pageUtil.pageNum} lt ${pageUtil.maxPage}" type="button" value="下一页" class="nextPage"
+                       th:onclick="'javascript:nextPage(\''+${pageUtil.pageNum+1}+'\')'">
+                <input th:if="${pageUtil.pageNum} ge ${pageUtil.maxPage}" type="button" value="下一页" class="nextPage"
+                       disabled="disabled"></li>
+        </ul>
+    </div>
+</div>
+
+<div id="cont_b" class="cont">
+    <div id="devicePos_footer_div">
+        <input type="text" class="id" hidden="hidden">
+        <ul id="devicePos_footer_ul">
+            <li><span>设备位置名称:</span><input type="text" class="devicePosName"></li>
+            <li><span>设备位置描述:</span><input type="text" class="devicePosNote"></li>
+        </ul>
+    </div>
+    <div id="devicePos_operation_div">
+        <input id="updateDevicePos" type="button" value="保存">
+        <input type="button" value="取消" onclick="document.getElementById('cont_b').style.display='none'">
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#devicePosTable tbody tr").live("click", function () {
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        });
+
+        $("#addDevicePos").click(function () {
+            var name = $(".name").val();
+            var note = $(".note").val();
+            if (isnull(name, note)) {
+                $.ajax({
+                    url: '/devicePos/addDevicePos',
+                    type: "POST",
+                    data: {name: name, note: note},
+                    success: function (data) {
+                        if (data.result == "exit") {
+                            swal("该设备位置已存在!");
+                        } else if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                window.location.href = "/devicePos/devicePosManagement";
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    },
+                    error: function () {
+                        swal("OMG!", "请求失败!", "error");
+                    }
+                });
+            }
+        });
+
+        $("#updateButton").live("click", function () {
+            document.getElementById('cont_b').style.display = 'block';
+            //获取选中的值,传入输入框
+            $(".id").val($(this).closest("tr").find("td").eq(0).text());
+            $(".devicePosName").val($(this).closest("tr").find("td").eq(1).text());
+            $(".devicePosNote").val($(this).closest("tr").find("td").eq(2).text());
+        });
+
+        $("#updateDevicePos").click(function () {
+            var id = $(".id").val();
+            var name = $(".devicePosName").val();
+            var note = $(".devicePosNote").val();
+            if (isnull(name, note)) {
+                $.ajax({
+                    url: '/devicePos/updateDevicePos',
+                    type: "POST",
+                    data: {id: id, name: name, note: note},
+                    success: function (data) {
+                        if (data.result == "exit") {
+                            swal("该位置名称已存在!");
+                        } else if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                window.location.href = "/devicePos/devicePosManagement";
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    },
+                    error: function () {
+                        swal("OMG!", "请求失败!", "error");
+                    }
+                });
+            }
+        });
+
+        $("#deleteButton").live("click", function () {
+            var id = $(this).closest("tr").find("td").eq(0).text();
+            swal({
+                title: "您确定要删除吗？",
+                text: "您确定要删除这条数据？",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                confirmButtonText: "是的，我要删除",
+                confirmButtonColor: "#ec6c62"
+            }, function () {
+                $.ajax({
+                    url: '/devicePos/deleteDevicePos',
+                    type: "POST",
+                    data: {id: id},
+                    success: function (data) {
+                        if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                window.location.href = "/devicePos/devicePosManagement";
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    },
+                    error: function () {
+                        swal("OMG!", "请求失败!", "error");
+                    }
+                });
+            });
+        });
+    });
+
+    function isnull(name, note) {
+        if (name == "" || name.match(/^\s+$/g)) {
+            swal("设备位置不能为空");
+            return false;
+        }
+        if (note == "" || note.match(/^\s+$/g)) {
+            swal("设备描述不能为空");
+            return false;
+        }
+        return true;
+    }
+
+    function nextPage(pageNum) {
+        location.href = "/devicePos/devicePosManagement?pageNum=" + pageNum;
+    }
+
+    function previousPage(pageNum) {
+        location.href = "/devicePos/devicePosManagement?pageNum=" + pageNum;
+    }
+</script>
+</body>
+</html>

@@ -36,7 +36,7 @@ public class PathController {
     @RequestMapping("/left")
     public String left(HttpSession session) {
         List<Rights> rightsList = (ArrayList<Rights>) session.getAttribute("rightsList");
-        String content = "leftByTop/monitorLeft";
+        String content = "leftMenu/monitorLeft";
         List<Integer> list = new ArrayList<>();
         for (Rights rights : rightsList) {
             if (rights.getId() == 1 || rights.getId() == 2 || rights.getId() == 3
@@ -46,15 +46,15 @@ public class PathController {
         }
         if (list.size() > 0) {
             if (list.get(0) == 1) {
-                content = "leftByTop/monitorLeft";
+                content = "leftMenu/monitorLeft";
             } else if (list.get(0) == 2) {
-                content = "leftByTop/messageLeft";
+                content = "leftMenu/formatLeft";
             } else if (list.get(0) == 3) {
-                content = "leftByTop/scmLeft";
+                content = "leftMenu/systemLeft";
             } else if (list.get(0) == 5) {
-                content = "leftByTop/journalLeft";
+                content = "leftMenu/planLeft";
             } else if (list.get(0) == 6) {
-                content = "leftByTop/messageAuditLeft";
+                content = "leftMenu/reportLeft";
             }
         }
         return content;
@@ -72,57 +72,57 @@ public class PathController {
 
     @RequestMapping("/contractStatistics")
     public String contractStatistics() {
-        return "rightContent/advertisement/contractStatistics";
+        return "rightContent/advertise/contractStatistics";
     }
 
     @RequestMapping("/customerStatistics")
     public String customerStatistics() {
-        return "rightContent/advertisement/customerStatistics";
+        return "rightContent/advertise/customerStatistics";
     }
 
     @RequestMapping("/chargeFactor")
     public String chargeFactor() {
-        return "rightContent/advertisement/chargeFactor";
+        return "rightContent/advertise/chargeFactor";
     }
 
     @RequestMapping("/chargeStatistics")
     public String chargeStatistics() {
-        return "rightContent/advertisement/chargeStatistics";
+        return "rightContent/advertise/chargeStatistics";
     }
 
     @RequestMapping("/chargeType")
     public String chargeType() {
-        return "rightContent/advertisement/chargeType";
+        return "rightContent/advertise/chargeType";
     }
 
     @RequestMapping("/customerInfor")
     public String customerInfor() {
-        return "rightContent/advertisement/customerInfor";
+        return "rightContent/advertise/customerInfor";
     }
 
     @RequestMapping("/customerTemplate")
     public String customerTemplate() {
-        return "rightContent/advertisement/customerTemplate";
+        return "rightContent/advertise/customerTemplate";
     }
 
     @RequestMapping("/customerAttribute")
     public String customerAttribute() {
-        return "rightContent/advertisement/customerAttribute";
+        return "rightContent/advertise/customerAttribute";
     }
 
     @RequestMapping("/contractInfor")
     public String contractInfor() {
-        return "rightContent/advertisement/contractInfor";
+        return "rightContent/advertise/contractInfor";
     }
 
     @RequestMapping("/contractTemplate")
     public String contractTemplate() {
-        return "rightContent/advertisement/contractTemplate";
+        return "rightContent/advertise/contractTemplate";
     }
 
     @RequestMapping("/contractAttribute")
     public String contractAttribute() {
-        return "rightContent/advertisement/contractAttribute";
+        return "rightContent/advertise/contractAttribute";
     }
 
     @RequestMapping("/getDate")
@@ -144,34 +144,34 @@ public class PathController {
      *
      * @return
      */
-    @RequestMapping("/advertisement")
-    public String advertisement() {
-        return "leftByTop/advertisementLeft";
+    @RequestMapping("/advertise")
+    public String advertise() {
+        return "leftMenu/advertiseLeft";
     }
 
-    @RequestMapping("/monitorLeft")
-    public String monitorLeft() {
-        return "leftByTop/monitorLeft";
+    @RequestMapping("/monitor")
+    public String monitor() {
+        return "leftMenu/monitorLeft";
     }
 
-    @RequestMapping("/messageLeft")
-    public String messageLeft() {
-        return "leftByTop/messageLeft";
+    @RequestMapping("/format")
+    public String format() {
+        return "leftMenu/formatLeft";
     }
 
-    @RequestMapping("/scmLeft")
-    public String scmLeft() {
-        return "leftByTop/scmLeft";
+    @RequestMapping("/system")
+    public String system() {
+        return "leftMenu/systemLeft";
     }
 
-    @RequestMapping("/journalLeft")
-    public String journalLeft() {
-        return "leftByTop/journalLeft";
+    @RequestMapping("/plan")
+    public String plan() {
+        return "leftMenu/planLeft";
     }
 
-    @RequestMapping("/messageAuditLeft")
+    @RequestMapping("/report")
     public String messageAuditLeft() {
-        return "leftByTop/messageAuditLeft";
+        return "leftMenu/reportLeft";
     }
 
 }

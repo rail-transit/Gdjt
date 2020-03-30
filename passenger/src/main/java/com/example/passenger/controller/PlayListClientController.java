@@ -52,7 +52,7 @@ public class PlayListClientController {
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("stationList", stationList);
         model.addAttribute("lineList", lineList);
-        return "rightContent/reportForm/videoRelease";
+        return "rightContent/report/videoRelease";
     }
 
     @RequestMapping("/getDownloadSpeed")

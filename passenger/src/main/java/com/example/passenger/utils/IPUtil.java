@@ -1,7 +1,7 @@
 package com.example.passenger.utils;
 
 public class IPUtil {
-    public static String ip = "10.1.9.11";
+    public static String IP = "10.1.9.11";
 
     /**
      *  * ip地址转成long型数字

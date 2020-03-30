@@ -32,6 +32,11 @@ public class StationController {
     @Autowired
     DeviceService deviceService;
 
+    @RequestMapping("/trainInfoManage")
+    public String trainInfoManage() {
+        return "rightContent/system/trainInfoManage";
+    }
+
     @RequestMapping("selectStation")
     @ResponseBody
     public Map<String, Object> selectStation(ModelAndView mv, Integer id) {
@@ -64,11 +69,6 @@ public class StationController {
             logger.error(e.getMessage());
         }
         return mv.getModel();
-    }
-
-    @RequestMapping("/trainManagement")
-    public String trainManagement() {
-        return "rightContent/systemConfig/trainManagement";
     }
 
     @RequestMapping("addStation")

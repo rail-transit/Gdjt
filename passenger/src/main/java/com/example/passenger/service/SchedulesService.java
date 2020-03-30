@@ -42,7 +42,7 @@ public class SchedulesService {
                         "</program>";
                 styleBuffer.append(styleContent);
             }
-            String path = "<url>http://" + IPUtil.ip + ":8080/schedules/getProgramById?idxs=</url>";
+            String path = "<url>http://" + IPUtil.IP + ":8080/schedules/getProgramById?idxs=</url>";
             stringBuffer.append(playList.getContentText());
             stringBuffer.replace(stringBuffer.indexOf("<start>") + 7,
                     stringBuffer.indexOf("</start>"), playList.getStartDate());
@@ -128,11 +128,11 @@ public class SchedulesService {
 
     /*public String getPlayerFile(Integer idxs){
         //根据id获取版式信息
-        PlayStyle playStyle=playStyleMapper.selectPlayStyle(idxs);
+        PlayStyle format=playStyleMapper.selectPlayStyle(idxs);
         String content="";
         try {
             //根据版式xml拆分layout存入数组
-            String[] array=playStyle.getContentText().split("</layout>");
+            String[] array=format.getContentText().split("</layout>");
             //初始化结果集合
             List<String> contentList=new ArrayList<>();
             for (int i=0;i<array.length;i++){
@@ -144,7 +144,7 @@ public class SchedulesService {
                     String layoutID=layout.substring(layout.indexOf("<id>")+4,layout.indexOf("</id>"));
                     //根据版式id以及layoutID查询控件类容信息
                     List<StyleContent> styleContentList=
-                            styleContentMapper.selectStyleContent(playStyle.getId(),layoutID);
+                            styleContentMapper.selectStyleContent(format.getId(),layoutID);
 
                     //初始化StringBuffer用于存储类容
                     StringBuffer contentBuffer=new StringBuffer(layout);

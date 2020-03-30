@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #interfaceLog_top {
+            height: 125px;
+            margin: auto;
+        }
+
+        #interfaceLog_top div {
+            float: left;
+            padding-top: 32px;
+            padding-left: 70px;
+        }
+
+        #interfaceLog_title {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        #interfaceLog_ul {
+            list-style: none;
+        }
+
+        #interfaceLog_ul li {
+            display: inline;
+            float: left;
+            width: 25%;
+            font-size: 14px;
+            height: 35px;
+        }
+
+        #interfaceLog_ul li span {
+            padding-right: 10px;
+        }
+
+        #interfaceLog_ul select {
+            height: 24px;
+            width: 135px;
+        }
+
+        #interfaceLog_height {
+            height: 451px;
+            width: 99%;
+            border: 1px solid #ebf2f5;
+            margin-top: 10px;
+            margin-left: 5px;
+        }
+
+        #interfaceLog_height p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 20px;
+            padding-left: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody { /*height:376px;*/
+            display: block;
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+
+        #nextPage {
+            margin-left: -32px;
+        }
+    </style>
+</head>
+<body>
+<div id="interfaceLog_top">
+    <p id="interfaceLog_title">接口日志统计</p>
+    <ul id="interfaceLog_ul">
+        <li><span>线路名称:</span><select id="lineID"></select></li>
+        <li><span>车站名称:</span><select id="stationID"></select></li>
+        <li><span>设备名称:</span><select id="deviceID"></select></li>
+        <li><input type="button" value="查询" id="select"></li>
+        <li><span>开始时间:</span><input type="date" id="startDate"></li>
+        <li><span>结束时间:</span><input type="date" id="endDate"></li>
+        <li><input type="button" value="导出" id="export"></li>
+    </ul>
+</div>
+<div id="interfaceLog_height">
+    <table width="100%" border="0" id="interfaceLogTable">
+        <thead>
+        <tr>
+            <th class="tips">设备名称</th>
+            <th class="tips">所属车站</th>
+            <th class="tips">所属线路</th>
+            <th class="tips">开始日期</th>
+            <th class="tips">结束日期</th>
+            <th class="tips">报警详细说明</th>
+            <th class="tips">报警总次数</th>
+        </tr>
+        </thead>
+        <tr>
+        </tr>
+    </table>
+    <div id="paging_div">
+        <ul id="paging_ul">
+
+        </ul>
+    </div>
+</div>
+</body>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var time = new Date();
+        var day = ('0' + time.getDate()).slice(-2);
+        var month = ('0' + (time.getMonth() + 1)).slice(-2);
+        var today = time.getFullYear() + '-' + month + '-' + day;
+        $('#startDate').val(today);
+        $('#endDate').val(today);
+        /*  selectMaintain();
+          $("#select").click(function () {
+              var lineID=$("#lineID").val();
+              var stationID=$("#stationID").val();
+              var deviceID=$("#deviceID").val();
+              var startDate=$("#startDate").val();
+              var endDate=$("#endDate").val();
+              selectMaintain(1,startDate,endDate,lineID,stationID,deviceID);
+          });*/
+
+    });
+    /*function selectMaintain(pageNum,startDate,endDate,lineID,stationID,deviceID) {
+        $.ajax({
+            url:'/message/selectStatistics',
+            type:"POST",
+            data:{pageNum:pageNum,startDate:startDate,endDate:endDate,lineID:lineID,
+                stationID:stationID,deviceID:deviceID},
+            success:function (data) {
+                $("#textPlayTable tbody tr").remove();
+                $("#lineID option").remove();
+                $("#lineID").prepend('<option>所有线路</option>');
+                $.each(data.lineList, function (i, line) {
+                    $("#lineID").append('<option value="'+line.id+'">'+line.name+'</option>');
+                });
+
+                $("#stationID option").remove();
+                $("#stationID").prepend('<option>所有站点</option>');
+                $.each(data.stationList, function (i, station) {
+                    $("#stationID").append('<option value="'+station.id+'">'+station.name+'</option>');
+                });
+
+                $("#deviceID option").remove();
+                $("#deviceID").prepend('<option>所有设备</option>');
+                $.each(data.deviceList, function (i, device) {
+                    $("#deviceID").append('<option value="'+device.id+'">'+device.name+'</option>');
+                });
+
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    var deviceName=null;
+                    var stationID=null;
+                    var stationName=null;
+                    $.each(data.deviceList, function (j, device) {
+                        if (item.deviceID==device.id){
+                            deviceName=device.name;
+                            stationID=device.stationID;
+                        }
+                    });
+                    $.each(data.stationList, function (k, station) {
+                        if (stationID==station.id){
+                            stationName=station.name;
+                        }
+                    });
+                    $("#textPlayTable tbody").prepend('<tr><td>'+deviceName+'</td>' +
+                        '<td>'+stationName+'</td>' +
+                        '<td>'+item.msg+'</td>' +
+                        '<td>'+item.msg+'</td>' +
+                        '<td>'+item.msg+'</td>' +
+                        '<td>'+item.msg+'</td>' +
+                        '<td>'+item.startDate+'</td></tr>');
+                });
+                $("#paging_ul li").remove();
+                $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li><span>'+data.pageUtil.pageNum+'</span>/<span>'+data.pageUtil.maxPage+'</span></li>');
+                if(data.pageUtil.pageNum>=2){
+                    $(".notPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage('+data.pageUtil.pageNum+')"></li>');
+                }else{
+                    $(".isPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+                }
+
+                if(data.pageUtil.pageNum<data.pageUtil.maxPage){
+                    $(".notNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage('+data.pageUtil.pageNum+')"></li>');
+                }else{
+                    $(".isNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function nextPage(pageNum) {
+        var num=parseInt(pageNum)+1;
+        var lineID=$("#lineID").val();
+        var stationID=$("#stationID").val();
+        var deviceID=$("#deviceID").val();
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        selectMaintain(num,startDate,endDate,lineID,stationID,deviceID);
+    }
+    function previousPage(pageNum) {
+        var num=parseInt(pageNum)-1;
+        var lineID=$("#lineID").val();
+        var stationID=$("#stationID").val();
+        var deviceID=$("#deviceID").val();
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        selectMaintain(num,startDate,endDate,lineID,stationID,deviceID);
+    }*/
+</script>
+</html>

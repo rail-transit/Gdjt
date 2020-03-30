@@ -216,22 +216,20 @@
         </where>
     </select>
     <insert id="addMessage" parameterType="com.example.passenger.entity.Message">
-        INSERT INTO Message
+        INSERT INTO Message ( Msg, [Level], Type, StartDate, EndDate, StartTime, EndTime, DeviceID, CtrlID, Operator, IsPlanMsg )
         VALUES
             (
-                #{msg},
-                #{state},
-                #{playState},
-             #{level},
-             #{type},
-             #{startDate},
-             #{endDate},
-             #{startTime},
-             #{endTime},
-             #{deviceID},
-             #{ctrlID},
-             #{operator},
-             #{isPlanMsg})
+                #{ msg },
+                #{ level },
+                #{ type },
+                #{ startDate },
+                #{ endDate },
+                #{ startTime },
+                #{ endTime },
+                #{ deviceID },
+                #{ ctrlID },
+            #{ operator },
+            #{ isPlanMsg })
     </insert>
     <update id="updateMessage" parameterType="java.lang.Integer">
         UPDATE Message

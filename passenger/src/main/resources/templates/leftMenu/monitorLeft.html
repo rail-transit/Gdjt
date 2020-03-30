@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="/css/css.css" type="text/css"/>
+    <style type="text/css">
+        .f-treeList-titleP {
+            margin-left: -5px
+        }
+
+        .f-iconEnd {
+            width: 16px
+        }
+
+        .f-treeList-lineEnd {
+            width: 17px
+        }
+    </style>
+
+</head>
+
+<body style="background:#f0f9fd;">
+<div class="lefttop"><span></span>设备监控</div>
+
+<dl class="leftmenu">
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 11}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>设备控制</div>
+        <ul class="menuson">
+            <div class="f-tree"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 12}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>设备维护</div>
+        <ul class="menuson">
+            <div class="f-control"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 13}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>地图管理</div>
+        <ul class="menuson">
+            <div class="f-map"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 14}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>设备监视</div>
+        <ul class="menuson">
+            <div class="f-maintenance"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 397}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>设备保养</div>
+        <ul class="menuson">
+            <div class="f-maintain"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 399}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>播出监看</div>
+        <ul class="menuson">
+            <div class="f-video"></div>
+        </ul>
+    </dd>
+
+    <dd th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 400}">
+        <div class="title"><span><img src="/images/leftico04.png"/></span>备件管理</div>
+        <ul class="menuson">
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 405}">
+                <div><cite></cite><a href="/standbyType/standbyType" target="rightFrame">备件类型管理</a><i></i></div>
+            </li>
+            <li th:each="rightsList:${session.rightsList}" th:if="${rightsList.id eq 406}">
+                <div><cite></cite><a href="/lineStandby/standby" target="rightFrame">备件管理</a><i></i></div>
+            </li>
+        </ul>
+    </dd>
+</dl>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/config.js"></script>
+<script>
+    $(document).ready(function () {
+        $(function () {
+            //导航切换
+            $(".menuson li").click(function () {
+                $(".menuson li.active").removeClass("active");
+                $(this).addClass("active");
+            });
+
+            $('.title').click(function () {
+                var $ul = $(this).next('ul');
+                $('dd').find('ul').slideUp();
+                if ($ul.is(':visible')) {
+                    $(this).next('ul').slideUp();
+                } else {
+                    $(this).next('ul').slideDown();
+                }
+            });
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            success: function (data) {
+                var treeData = [
+                    /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+                ];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({id: count, title: item.name, oid: item.id, route: 'javascript:void(0);', pid: 0});
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        var two = count;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: 'javascript:void(0);',
+                                pid: one
+                            });
+                        }
+                        $.each(itemOne.deviceList, function (k, itemTwo) {
+                            count++;
+                            if (itemOne.id == itemTwo.stationID) {
+                                treeData.push({
+                                    id: count,
+                                    title: itemTwo.name,
+                                    oid: itemTwo.id,
+                                    route: '/ctrlEvent/devControl?id=' + itemTwo.id,
+                                    pid: two
+                                });
+                            }
+                        });
+                    });
+                });
+                config.tree({
+                    type: 0,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-tree',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            success: function (data) {
+                var treeData = [
+                    /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+                ];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({id: count, title: item.name, oid: item.id, route: 'javascript:void(0);', pid: 0});
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        var two = count;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: 'javascript:void(0);',
+                                pid: one
+                            });
+                        }
+                        $.each(itemOne.deviceList, function (k, itemTwo) {
+                            count++;
+                            if (itemOne.id == itemTwo.stationID) {
+                                treeData.push({
+                                    id: count,
+                                    title: itemTwo.name,
+                                    oid: itemTwo.id,
+                                    route: '/devRepair/devRepair?id=' + itemTwo.id,
+                                    pid: two
+                                });
+                            }
+                        });
+                    });
+                });
+                config.tree({
+                    type: 1,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-control',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            success: function (data) {
+                var treeData = [];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({
+                        id: count,
+                        title: item.name,
+                        oid: item.id,
+                        route: '/map/lineMap?id=' + item.id,
+                        pid: 0
+                    });
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: '/map/stationMap?id=' + itemOne.id,
+                                pid: one
+                            });
+                        }
+                    });
+                });
+                config.tree({
+                    type: 1,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-map',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            success: function (data) {
+                var treeData = [
+                    /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+                ];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({
+                        id: count,
+                        title: item.name,
+                        oid: item.id,
+                        route: '/Device/lineMonitor?id=' + item.id,
+                        pid: 0
+                    });
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        var two = count;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: '/Device/stationMonitor?id=' + itemOne.id,
+                                pid: one
+                            });
+                        }
+                        $.each(itemOne.deviceList, function (k, itemTwo) {
+                            count++;
+                            if (itemOne.id == itemTwo.stationID) {
+                                treeData.push({
+                                    id: count,
+                                    title: itemTwo.name,
+                                    oid: itemTwo.id,
+                                    route: '/Device/deviceMonitor?id=' + itemTwo.id,
+                                    pid: two
+                                });
+                            }
+                        });
+                    });
+                });
+                config.tree({
+                    type: 1,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-maintenance',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            success: function (data) {
+                var treeData = [
+                    /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+                ];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({id: count, title: item.name, oid: item.id, route: 'javascript:void(0);', pid: 0});
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        var two = count;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: 'javascript:void(0);',
+                                pid: one
+                            });
+                        }
+                        $.each(itemOne.deviceList, function (k, itemTwo) {
+                            count++;
+                            if (itemOne.id == itemTwo.stationID) {
+                                treeData.push({
+                                    id: count,
+                                    title: itemTwo.name,
+                                    oid: itemTwo.id,
+                                    route: '/devUpkeep/devUpkeep?id=' + itemTwo.id,
+                                    pid: two
+                                });
+                            }
+                        });
+                    });
+                });
+                config.tree({
+                    type: 1,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-maintain',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+
+        $.ajax({
+            url: '/Line/getMenu',
+            type: "POST",
+            data: {type: 1},
+            success: function (data) {
+                var treeData = [
+                    /*{id:1,title:'轨道交通乘客信息系统',route:'javascript:void(0);',pid:0}*/
+                ];
+                var count = 0;
+                $.each(data.lineVoList, function (i, item) {
+                    count++;
+                    var one = count;
+                    treeData.push({
+                        id: count,
+                        title: item.name,
+                        oid: item.id,
+                        route: '/prisonWatch/videoWatch',
+                        pid: 0
+                    });
+                    $.each(item.stationVoList, function (j, itemOne) {
+                        count++;
+                        var two = count;
+                        if (item.id == itemOne.lineID) {
+                            treeData.push({
+                                id: count,
+                                title: itemOne.name,
+                                oid: itemOne.id,
+                                route: 'javascript:void(0);',
+                                pid: one
+                            });
+                        }
+                        $.each(itemOne.deviceList, function (k, itemTwo) {
+                            count++;
+                            if (itemOne.id == itemTwo.stationID) {
+                                treeData.push({
+                                    id: count,
+                                    title: itemTwo.name,
+                                    oid: itemTwo.id,
+                                    route: 'javascript:void(0);',
+                                    click: 'addVideoList(' + itemTwo.id + ')',
+                                    pid: two
+                                });
+                            }
+                        });
+                    });
+                });
+                config.tree({
+                    type: 1,//1有选择框，没有则不传type或传0
+                    wrapper: '.f-video',//容器
+                    data: treeData,//数据
+                });
+            }
+        });
+    });
+
+    function addVideoList(id) {
+        $.ajax({
+            url: '/Device/addVideoList',
+            type: "POST",
+            data: {id: id},
+            success: function (data) {
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

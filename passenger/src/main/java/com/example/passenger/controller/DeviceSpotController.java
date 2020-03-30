@@ -34,11 +34,11 @@ public class DeviceSpotController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/deviceSpotManagement")
-    public String deviceSpotManagement(Model model) {
+    @RequestMapping("/devMeasuringPoint")
+    public String devMeasuringPoint(Model model) {
         List<DeviceType> deviceTypeList = deviceTypeService.selectAllDeviceType();
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/systemConfig/deviceSpotManagement";
+        return "rightContent/system/devMeasuringPoint";
     }
 
     @RequestMapping("/getDeviceSpot")

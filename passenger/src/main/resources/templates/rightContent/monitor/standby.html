@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>备件管理</title>
+    <style type="text/css">
+        #lineStandby_top_div {
+            height: 90px;
+            width: 100%;
+            border: 1px solid wheat;
+            margin: auto
+        }
+
+        #lineStandby_top_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 15px;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        #lineStandby_top_title {
+            margin-top: 15px;
+            padding-left: 4%;
+        }
+
+        #lineStandby_top_title span {
+            font-size: 12px
+        }
+
+        #lineStandby_right_div {
+            height: 430px;
+            width: 100%;
+            border: 1px solid wheat;
+            margin: auto;
+            overflow: auto
+        }
+
+        #lineStandby_right_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 15px;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+
+        #standbyEvent_top_div {
+            height: 150px;
+            width: 99%;
+            border: 1px solid wheat;
+            margin: auto
+        }
+
+        #standbyEvent_top_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 15px;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        #standbyEvent_top_Button span {
+            font-size: 13px
+        }
+
+        #standbyEvent_right_div {
+            height: 415px;
+            width: 99%;
+            border: 1px solid wheat;
+            margin: auto;
+            overflow: auto
+        }
+
+        #standbyEvent_right_p {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 15px;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        #standbyEvent_ul {
+            list-style: none;
+            margin-top: 10px;
+            margin-left: -20px;
+        }
+
+        #standbyEvent_ul li {
+            display: inline;
+            float: left;
+            width: 25%;
+            font-size: 12px;
+            height: 35px;
+        }
+
+        #standbyEvent_ul li span {
+            padding-right: 10px;
+        }
+
+        .availableNumber, .faultNumber, .reworkingNumber, .scrapNumber {
+            width: 30px
+        }
+
+        #addStandbyEvent {
+            height: 30px;
+            width: 95px
+        }
+
+        #standbyType {
+            width: 90px
+        }
+
+        .event {
+            width: 80%
+        }
+
+        #lineStandby {
+            width: 35%;
+            float: left;
+        }
+
+        #standbyEvent {
+            width: 65%;
+            float: left;
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 23px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+
+        #nextPage {
+            margin-left: -32px;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('fodderTable');
+            tabSize.init('standbyEventTable');
+        };
+    </script>
+</head>
+<body>
+<div id="lineStandby">
+    <div id="lineStandby_top_div">
+        <p id="lineStandby_top_p">备件管理</p>
+        <div id="lineStandby_top_title">
+            <span>线路名称:</span>
+            <select id="lineID">
+                <option>所有线路</option>
+                <option th:each="line:${lineList}" th:value="${line.id}" th:text="${line.name}"></option>
+            </select>
+        </div>
+    </div>
+    <div style="width: 101%;margin: auto">
+        <p id="lineStandby_right_p">备件信息</p>
+    </div>
+    <div id="lineStandby_right_div">
+        <table width="100%" border="0" id="fodderTable">
+            <thead>
+            <tr>
+                <th class="tips">线路名称</th>
+                <th class="tips">备件名称</th>
+                <th class="tips">可用数量</th>
+                <th class="tips">故障数量</th>
+                <th class="tips">返修数量</th>
+                <th class="tips">报废数量</th>
+            </tr>
+            </thead>
+            <tr>
+            </tr>
+        </table>
+    </div>
+    <div id="paging_div">
+        <ul id="paging_ul">
+
+        </ul>
+    </div>
+</div>
+
+<div id="standbyEvent">
+    <div id="standbyEvent_top_div">
+        <p id="standbyEvent_top_p">事件管理</p>
+        <input type="text" class="id" hidden="hidden">
+        <input type="text" class="lin" hidden="hidden">
+        <ul id="standbyEvent_ul">
+            <li><span>备件名称:</span><select id="standbyType">
+                <option th:each="standbyType:${standbyTypeList}" th:value="${standbyType.id}"
+                        th:text="${standbyType.standbyName}">
+                </option>
+            </select></li>
+            <li><span>库存数量:</span><input type="text" class="availableNumber"></li>
+            <li><span>故障数量:</span><input type="text" class="faultNumber"></li>
+            <li><span>返修数量:</span><input type="text" class="reworkingNumber"></li>
+            <li><span>操作类型:</span><input type="radio" value="1" name="type" class="type" checked="checked">
+                <table>&nbsp;新增</table>
+            </li>
+            <li><input type="radio" value="2" name="type" class="type">
+                <table>&nbsp;修改</table>
+            </li>
+            <li><input type="radio" value="3" name="type" class="type">
+                <table>&nbsp;删除</table>
+            </li>
+            <li><span>报废数量:</span><input type="text" class="scrapNumber"></li>
+            <li style="width: 75%"><span>事件描述:</span><input type="text" class="event"></li>
+            <li><input type="button" value="确定" id="addStandbyEvent"></li>
+        </ul>
+    </div>
+    <div style="width: 99.2%;margin: auto">
+        <p id="standbyEvent_right_p">事件信息</p>
+    </div>
+    <div id="standbyEvent_right_div">
+        <table width="100%" border="0" id="standbyEventTable">
+            <thead>
+            <tr>
+                <th class="tips">事件时间</th>
+                <th class="tips">事件内容</th>
+            </tr>
+            </thead>
+            <tr></tr>
+        </table>
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        selectLineStandby();
+        $("#fodderTable tr").live("click", function () {
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+
+            $(".id").val($(this).closest("tr").find('td').eq(0).text());
+            $(".lin").val($(this).closest("tr").find('td').eq(1).text());
+            $("#standbyType").val($(this).closest("tr").find('td').eq(2).text());
+            $(".availableNumber").val($(this).closest("tr").find('td').eq(5).text());
+            $(".faultNumber").val($(this).closest("tr").find('td').eq(6).text());
+            $(".reworkingNumber").val($(this).closest("tr").find('td').eq(7).text());
+            $(".scrapNumber").val($(this).closest("tr").find('td').eq(8).text());
+
+            var lineID = $(this).closest("tr").find('td').eq(1).text();
+            $.ajax({
+                url: '/lineStandby/selectStandbyEvent',
+                type: "POST",
+                data: {lineID: lineID},
+                success: function (data) {
+                    $("#standbyEventTable tbody tr").remove();
+                    $.each(data.standbyEventList, function (i, item) {
+                        $("#standbyEventTable tbody").prepend('<tr><td>' + item.timestamp + '</td>' + '<td>' + item.event + '</td>');
+                    })
+                }
+            });
+        });
+
+        $("#addStandbyEvent").click(function () {
+            var availableNumber = $(".availableNumber").val();
+            var faultNumber = $(".faultNumber").val();
+            var reworkingNumber = $(".reworkingNumber").val();
+            var scrapNumber = $(".scrapNumber").val();
+            var type = $('input[name="type"]:checked').val();
+            var event = $(".event").val();
+            if (isnull(availableNumber, faultNumber, reworkingNumber, scrapNumber)) {
+                if (type == '1') {
+                    if (event == "" || event.match(/^\s+$/g)) {
+                        swal("事件描述不能为空");
+                        return false;
+                    }
+                    var lineIDA = $(".lin").val();
+                    var lineIDB = $("#lineID").val();
+                    var standbyType = $("#standbyType").val();
+                    var lineID;
+                    if (lineIDA == "" || lineIDA == null) {
+                        if (lineIDB == "" || lineIDB == null) {
+                            swal("请选择线路");
+                            return false;
+                        }
+                        lineID = lineIDB;
+                    } else {
+                        lineID = lineIDA;
+                    }
+                    $.ajax({
+                        url: '/lineStandby/addLineStandby',
+                        type: "POST",
+                        data: {
+                            id: id,
+                            lineID: lineID,
+                            standbyType: standbyType,
+                            availableNumber: availableNumber,
+                            faultNumber: faultNumber,
+                            reworkingNumber: reworkingNumber,
+                            scrapNumber: scrapNumber,
+                            event: event
+                        },
+                        success: function (data) {
+                            if (data.result == "success") {
+                                swal("Good!", "操作成功!", "success");
+                                $(".confirm").click(function () {
+                                    window.location.href = "/lineStandby/lineStandbyManagement";
+                                });
+                            } else if (data.result == "existing") {
+                                swal("备件已存在请勿重复添加!");
+                            } else {
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        },
+                        error: function () {
+                            swal("OMG!", "请求失败!", "error");
+                        }
+                    });
+                } else if (type == '2') {
+                    if (event == "" || event.match(/^\s+$/g)) {
+                        swal("事件描述不能为空");
+                        return false;
+                    }
+                    var id = $(".id").val();
+                    var lineID = $(".lin").val();
+                    if (id == "" || id == null) {
+                        swal("请选则需要修改的备件");
+                        return false;
+                    }
+                    $.ajax({
+                        url: '/lineStandby/updateLineStandby',
+                        type: "POST",
+                        data: {
+                            id: id, lineID: lineID, availableNumber: availableNumber, faultNumber: faultNumber,
+                            reworkingNumber: reworkingNumber, scrapNumber: scrapNumber, event: event
+                        },
+                        success: function (data) {
+                            if (data.result == "success") {
+                                swal("Good!", "操作成功!", "success");
+                                $(".confirm").click(function () {
+                                    window.location.href = "/lineStandby/lineStandbyManagement";
+                                });
+                            } else {
+                                swal("OMG!", "操作错误!", "error");
+                            }
+                        },
+                        error: function () {
+                            swal("OMG!", "请求失败!", "error");
+                        }
+                    });
+                } else if (type == '3') {
+                    var id = $(".id").val();
+                    var lineID = $(".lin").val();
+                    if (id == "" || id == null) {
+                        swal("请选则要删除的备件");
+                        return false;
+                    }
+                    swal({
+                        title: "您确定要删除吗？",
+                        text: "您确定要删除这条数据？",
+                        type: "warning",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        confirmButtonText: "是的，我要删除",
+                        confirmButtonColor: "#ec6c62"
+                    }, function () {
+                        $.ajax({
+                            url: '/lineStandby/deleteLineStandby',
+                            type: "POST",
+                            data: {id: id, lineID: lineID},
+                            success: function (data) {
+                                if (data.result == "success") {
+                                    swal("Good!", "操作成功!", "success");
+                                    $(".confirm").click(function () {
+                                        window.location.href = "/lineStandby/lineStandbyManagement";
+                                    });
+                                } else {
+                                    swal("OMG!", "操作错误!", "error");
+                                }
+                            },
+                            error: function () {
+                                swal("OMG!", "请求失败!", "error");
+                            }
+                        });
+                    });
+                }
+            }
+        });
+
+        $("#lineID").change(function () {
+            var lineID = $(this).val();
+            selectLineStandby(1, lineID)
+        });
+    });
+
+    function selectLineStandby(pageNum, lineID) {
+        $.ajax({
+            url: '/lineStandby/selectLineStandby',
+            type: "POST",
+            data: {pageNum: pageNum, lineID: lineID},
+            success: function (data) {
+                $("#fodderTable tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    $("#fodderTable tbody").prepend('<tr><td hidden="hidden">' + item.id + '</td>' +
+                        '<td hidden="hidden">' + item.lineID + '</td>' +
+                        '<td hidden="hidden">' + item.standbyType + '</td>' +
+                        '<td>' + item.lineName + '</td>' +
+                        '<td>' + item.standbyName + '</td>' +
+                        '<td>' + item.availableNumber + '</td>' +
+                        '<td>' + item.faultNumber + '</td>' +
+                        '<td>' + item.reworkingNumber + '</td>' +
+                        '<td>' + item.scrapNumber + '</td>');
+                })
+                $("#paging_ul li").remove();
+                $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li><span>' + data.pageUtil.pageNum + '</span>/<span>' + data.pageUtil.maxPage + '</span></li>');
+                if (data.pageUtil.pageNum >= 2) {
+                    $(".notPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+                }
+
+                if (data.pageUtil.pageNum < data.pageUtil.maxPage) {
+                    $(".notNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function isnull(availableNumber, faultNumber, reworkingNumber, scrapNumber) {
+        if (availableNumber == "" || availableNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(availableNumber))) {
+            swal("库存数量只能为数字");
+            return false;
+        }
+        if (faultNumber == "" || faultNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(faultNumber))) {
+            swal("故障数量只能为数字");
+            return false;
+        }
+        if (reworkingNumber == "" || reworkingNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(reworkingNumber))) {
+            swal("返修数量只能为数字");
+            return false;
+        }
+        if (scrapNumber == "" || scrapNumber.match(/^\s+$/g) || !(/^[0-9]+$/.test(scrapNumber))) {
+            swal("报废数量只能为数字");
+            return false;
+        }
+        return true;
+    }
+
+    function nextPage(pageNum) {
+        var num = parseInt(pageNum) + 1;
+        var lineID = $("#lineID").val();
+        selectLineStandby(num, lineID);
+    }
+
+    function previousPage(pageNum) {
+        var num = parseInt(pageNum) - 1;
+        var lineID = $("#lineID").val();
+        selectLineStandby(num, lineID);
+    }
+</script>
+</body>
+</html>

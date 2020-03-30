@@ -28,9 +28,9 @@ public class MsgLevelController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/msgLevelManagement")
-    public String msgLevelManagement() {
-        return "rightContent/messagePlan/priority";
+    @RequestMapping("/priority")
+    public String priority() {
+        return "rightContent/plan/priority";
     }
 
     @RequestMapping("/getMsgLevel")

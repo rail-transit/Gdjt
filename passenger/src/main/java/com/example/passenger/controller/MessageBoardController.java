@@ -23,11 +23,11 @@ public class MessageBoardController {
     @Autowired
     MessageBoardService messageBoardService;
 
-    @RequestMapping("/messageBoardManagement")
-    public String messageBoardManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/commentsManagement")
+    public String commentsManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = messageBoardService.messageBoardPaging(pageNum, 10);
         model.addAttribute("pageUtil", pageUtil);
-        return "messageBoard";
+        return "comments";
     }
 
 

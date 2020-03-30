@@ -36,13 +36,13 @@ public class DevRepairController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/devRepairManagement")
-    public String devRepairManagement(Model model, Integer id) {
+    @RequestMapping("/devRepair")
+    public String devRepair(Model model, Integer id) {
         List<DevRepair> devRepairList = devRepairService.selectDevRepairByEndTimeIsNull(id);
         Device device = deviceService.selectDevice(id);
         model.addAttribute("devRepairList", devRepairList);
         model.addAttribute("device", device);
-        return "rightContent/equipmentControl/equipmentRepair";
+        return "rightContent/monitor/devRepair";
     }
 
     @RequestMapping("/repairStatistics")
@@ -56,7 +56,7 @@ public class DevRepairController {
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/reportForm/repair";
+        return "rightContent/report/repair";
     }
 
     @RequestMapping("/selectStatistics")

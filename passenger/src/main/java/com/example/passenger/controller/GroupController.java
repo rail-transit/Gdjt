@@ -39,11 +39,11 @@ public class GroupController {
     OperationLogService operationLogService;
 
 
-    @RequestMapping("/groupManagement")
-    public String groupManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/roleManage")
+    public String roleManage(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = groupService.selectGroupPaging(pageNum, 10);
         model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/systemConfig/groupManagement";
+        return "rightContent/system/roleManage";
     }
 
     @RequestMapping("/getRights")

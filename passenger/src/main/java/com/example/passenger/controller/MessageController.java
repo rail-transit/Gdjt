@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,16 +44,47 @@ public class MessageController {
     @Autowired
     MsgSend msgSend;
 
-    @RequestMapping("/auditManagement")
-    public String auditManagement() {
-        return "rightContent/messagePlan/auditMessage";
+    @RequestMapping("/auditMsg")
+    public String auditMsg() {
+        return "rightContent/plan/auditMsg";
+    }
+
+    @RequestMapping("/waitMsg")
+    public String waitMsg(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
+                null, 1, null, 2, pageNum, 14);
+        model.addAttribute("pageUtil", pageUtil);
+        return "rightContent/plan/waitMsg";
+    }
+
+    @RequestMapping("/playMsg")
+    public String playMsg(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
+                null, 1, null, 1, pageNum, 14);
+        model.addAttribute("pageUtil", pageUtil);
+        return "rightContent/plan/playMsg";
+    }
+
+    @RequestMapping("/revokeMsg")
+    public String revokeMsg(Model model) {
+        List<Message> messageList = messageService.queryGroupingMessage();
+        model.addAttribute("messageList", messageList);
+        return "rightContent/plan/revokeMsg";
+    }
+
+    @RequestMapping("/historyMsg")
+    public String historyMsg(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
+                null, null, null, -1, pageNum, 14);
+        model.addAttribute("pageUtil", pageUtil);
+        return "rightContent/plan/historyMsg";
     }
 
     @RequestMapping("/releaseStatistics")
     public String releaseStatistics(Model model) {
         List<Line> lineList = lineService.selectAllLine();
         model.addAttribute("lineList", lineList);
-        return "rightContent/reportForm/release";
+        return "rightContent/report/release";
     }
 
     @RequestMapping("/getMessage")
@@ -64,37 +96,6 @@ public class MessageController {
                 null, state, msg, 0, pageNum, 10);
         mv.addObject("pageUtil", pageUtil);
         return mv.getModel();
-    }
-
-    @RequestMapping("/messageRevokeManagement")
-    public String messageRevokeManagement(Model model) {
-        List<Message> messageList = messageService.queryGroupingMessage();
-        model.addAttribute("messageList", messageList);
-        return "rightContent/messagePlan/messageRevoke";
-    }
-
-    @RequestMapping("/historyManagement")
-    public String historyManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
-        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
-                null, null, null, -1, pageNum, 14);
-        model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/messagePlan/historyMessage";
-    }
-
-    @RequestMapping("/broadcastMessageManagement")
-    public String broadcastMessageManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
-        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
-                null, 1, null, 1, pageNum, 14);
-        model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/messagePlan/broadcastMessage";
-    }
-
-    @RequestMapping("/waitPlayMsgManagement")
-    public String waitPlayMsgManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
-        PageUtil pageUtil = messageService.selectPaging(null, null, null, null,
-                null, 1, null, 2, pageNum, 14);
-        model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/messagePlan/waitPlayMsg";
     }
 
     @RequestMapping("/selectStatistics")
@@ -130,38 +131,40 @@ public class MessageController {
 
     @RequestMapping("/revokeMessage")
     @ResponseBody
-    public Map<String, Object> revokeMessage(ModelAndView mv, Integer deviceID,String msg) {
+    public Map<String, Object> revokeMessage(ModelAndView mv, Integer deviceID, String msg) {
         try {
-            Message message=messageService.getMessageByCondition(null,deviceID,
-                    null,msg);
-            String content = "PMSG:<MSG>" +
-                    "<Type>" + message.getType() + "</Type>" +
-                    "<Info>" +
-                    "<ID>" + message.getId() + "</ID>" +
-                    "<CtrlID>" + message.getCtrlID() + "</CtrlID>" +
-                    "<Level>" + message.getLevel() + "</Level>" +
-                    "<State>0</State>" +
-                    "<Text>" + message.getMsg() + "</Text>" +
-                    "</Info></MSG>";
-            Device device = deviceService.selectDevice(message.getDeviceID());
-            long ip = IPUtil.ipToLong(device.getIp());
-            msgSend.sendMsg("pisplayer.occ." + ip, content);
-            Integer i = messageService.updateMessage(message.getId(), null, -1);
-            if (i > 0) {
-                Integer level = messageService.getMaxLevel(message.getDeviceID());
-                if (level != null) {
-                    MsgLevel msgLevel = msgLevelService.selectMsgLevelByLevel(null, level);
-                    if (msgLevel != null) {
-                        Message message1 = messageService.getMessageByCondition(2, message.getDeviceID(),
-                                msgLevel.getLevelCode(),null);
-                        if (message1 != null) {
-                            messageService.updateMessage(message1.getId(), null, 1);
+            Message message = messageService.getMessageByCondition(null, deviceID,
+                    null, msg);
+            if (!StringUtils.isEmpty(message)) {
+                String content = "PMSG:<MSG>" +
+                        "<Type>" + message.getType() + "</Type>" +
+                        "<Info>" +
+                        "<ID>" + message.getId() + "</ID>" +
+                        "<CtrlID>" + message.getCtrlID() + "</CtrlID>" +
+                        "<Level>" + message.getLevel() + "</Level>" +
+                        "<State>0</State>" +
+                        "<Text>" + message.getMsg() + "</Text>" +
+                        "</Info></MSG>";
+                Device device = deviceService.selectDevice(message.getDeviceID());
+                long ip = IPUtil.ipToLong(device.getIp());
+                msgSend.sendMsg("pisplayer.occ." + ip, content);
+                Integer i = messageService.updateMessage(message.getId(), null, -1);
+                if (i > 0) {
+                    Integer level = messageService.getMaxLevel(message.getDeviceID());
+                    if (!StringUtils.isEmpty(level)) {
+                        MsgLevel msgLevel = msgLevelService.selectMsgLevelByLevel(null, level);
+                        if (!StringUtils.isEmpty(msgLevel)) {
+                            Message message1 = messageService.getMessageByCondition(2, message.getDeviceID(),
+                                    msgLevel.getLevelCode(), null);
+                            if (!StringUtils.isEmpty(message1)) {
+                                messageService.updateMessage(message1.getId(), null, 1);
+                            }
                         }
                     }
+                    mv.addObject("result", "success");
+                } else {
+                    mv.addObject("result", "error");
                 }
-                mv.addObject("result", "success");
-            } else {
-                mv.addObject("result", "error");
             }
         } catch (Exception e) {
             e.printStackTrace();

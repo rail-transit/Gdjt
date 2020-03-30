@@ -35,19 +35,19 @@ public class MsgFodderController {
     OperationLogService operationLogService;
 
 
-    @RequestMapping("/msgFodderManagement")
-    public String msgFodderManagement() {
-        return "rightContent/messagePlan/addMessage";
+    @RequestMapping("/enterMsg")
+    public String enterMsg() {
+        return "rightContent/plan/enterMsg";
     }
 
-    @RequestMapping("/realTimeMsgManagement")
-    public String realTimeMsgManagement(Model model) {
-        return "rightContent/messagePlan/realTimeMsg";
+    @RequestMapping("/realTimeMsg")
+    public String realTimeMsg(Model model) {
+        return "rightContent/plan/realTimeMsg";
     }
 
-    @RequestMapping("/timingMsgManagement")
-    public String timingMsgManagement(Model model) {
-        return "rightContent/messagePlan/timingMsg";
+    @RequestMapping("/timingMsg")
+    public String timingMsg(Model model) {
+        return "rightContent/plan/timingMsg";
     }
 
     @RequestMapping("/getMgsLevel")

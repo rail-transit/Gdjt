@@ -29,11 +29,11 @@ public class DeviceTypeController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/deviceTypeManagement")
-    public String deviceTypeManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/devTypeManage")
+    public String devTypeManage(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = deviceTypeService.selectDeviceTypePaging(pageNum, 8);
         model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/systemConfig/deviceTypeManagement";
+        return "rightContent/system/devTypeManage";
     }
 
     @RequestMapping("/addDeviceType")

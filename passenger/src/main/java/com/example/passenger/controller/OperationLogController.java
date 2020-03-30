@@ -24,7 +24,7 @@ public class OperationLogController {
 
     @RequestMapping("/journalStatistics")
     public String journalStatistics() {
-        return "rightContent/reportForm/journal";
+        return "rightContent/report/journal";
     }
 
     @RequestMapping("/selectStatistics")

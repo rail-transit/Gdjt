@@ -36,20 +36,20 @@ public class LineStandbyController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/lineStandbyManagement")
-    public String lineStandbyManagement(Model model) {
+    @RequestMapping("/standby")
+    public String standby(Model model) {
         List<Line> lineList = lineService.selectAllLine();
         List<StandbyType> standbyTypeList = standbyTypeService.selectAllStandbyType();
         model.addAttribute("lineList", lineList);
         model.addAttribute("standbyTypeList", standbyTypeList);
-        return "rightContent/equipmentControl/lineStandby";
+        return "rightContent/monitor/standby";
     }
 
     @RequestMapping("/sparePartStatistics")
     public String sparePartStatistics(Model model) {
         List<Line> lineList = lineService.selectAllLine();
         model.addAttribute("lineList", lineList);
-        return "rightContent/reportForm/sparePart";
+        return "rightContent/report/sparePart";
     }
 
     @RequestMapping("/selectStatistics")

@@ -41,18 +41,18 @@ public class FodderController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/fodderManagement")
-    public String fodderManagement(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
+    @RequestMapping("/liveBroadcastMaterial")
+    public String liveBroadcastMaterial(Model model, @RequestParam(defaultValue = "1") Integer pageNum) {
         PageUtil pageUtil = fodderService.selectAllFodder(pageNum, 8);
         List<Line> lineList = lineService.selectAllLine();
         model.addAttribute("lineList", lineList);
         model.addAttribute("pageUtil", pageUtil);
-        return "rightContent/systemConfig/fodderManagement";
+        return "rightContent/system/liveBroadcastMaterial";
     }
 
-    @RequestMapping("/materialManagement")
-    public String materialManagement(Model model) {
-        return "rightContent/systemConfig/materialManagement";
+    @RequestMapping("/material")
+    public String material(Model model) {
+        return "rightContent/format/material";
     }
 
     @RequestMapping("/getFodder")

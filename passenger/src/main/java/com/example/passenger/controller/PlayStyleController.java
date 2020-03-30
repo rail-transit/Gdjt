@@ -38,14 +38,14 @@ public class PlayStyleController {
     @Autowired
     OperationLogService operationLogService;
 
-    @RequestMapping("/playStyleManagement")
-    public String playStyleManagement(Model model) {
-        return "rightContent/playStyle/playStyle";
+    @RequestMapping("/format")
+    public String format(Model model) {
+        return "rightContent/format/format";
     }
 
-    @RequestMapping("/releasePlayStyle")
-    public String releasePlayStyle(Model model) {
-        return "rightContent/playStyle/releasePlayStyle";
+    @RequestMapping("/formatRelease")
+    public String formatRelease(Model model) {
+        return "rightContent/format/formatRelease";
     }
 
     @RequestMapping("/selectPlayStyle")

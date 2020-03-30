@@ -46,7 +46,7 @@ public class DevAlarmLogController {
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/reportForm/warning";
+        return "rightContent/report/warning";
     }
 
     @RequestMapping("/faultStatistics")
@@ -60,7 +60,7 @@ public class DevAlarmLogController {
         model.addAttribute("stationList", stationList);
         model.addAttribute("deviceList", deviceList);
         model.addAttribute("deviceTypeList", deviceTypeList);
-        return "rightContent/reportForm/fault";
+        return "rightContent/report/fault";
     }
 
     @RequestMapping("/selectStatistics")

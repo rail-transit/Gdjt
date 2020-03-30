@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.passenger.mapper.PlayStatsMapper">
+    <select id="getPlayStats" resultType="java.util.LinkedHashMap">
+        SELECT
+        Row_Number()over(ORDER BY a.id DESC) as id,
+        d.Name as lineName,
+        c.Name as stationName,
+        b.Name as deviceName,
+        a.name,
+        a.duration,
+        a.playCount
+        FROM
+        Play_Stats a
+        LEFT JOIN Device b ON a.DeviceID= b.ID
+        LEFT JOIN Station c ON a.StationID= c.ID
+        LEFT JOIN Line d ON a.LineID= d.ID
+        WHERE
+        convert(char(10),PlayDate,20) between #{startDate} and #{endDate}
+        AND a.Type=#{type}
+        <if test="lineID!=null and lineID!=''">
+            AND a.LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=''">
+            AND a.StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=''">
+            AND a.DeviceID =#{deviceID}
+        </if>
+    </select>
+    <select id="playStatsPaging" resultType="com.example.passenger.entity.vo.PlayStatsVo">
+        SELECT TOP
+        (#{pageSize}) RowNumber as id,b.Name as deviceName,c.Name as stationName,d.Name as lineName,
+        a.Name,a.Duration,PlayCount
+        FROM
+        (
+        SELECT
+        ROW_NUMBER () OVER ( ORDER BY id DESC) AS RowNumber,*
+        FROM
+        Play_Stats
+        WHERE
+        convert(char(10),PlayDate,20) between #{startDate} and #{endDate}
+        AND Type=#{type}
+        <if test="lineID!=null and lineID!=''">
+            AND LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=''">
+            AND StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=''">
+            AND DeviceID =#{deviceID}
+        </if>
+        ) AS A
+        LEFT JOIN Device b on a.DeviceID=b.ID
+        LEFT JOIN Station c on a.StationID=c.ID
+        LEFT JOIN Line d on a.LineID=d.id
+        WHERE
+        RowNumber > #{pageSize} * (
+        #{pageNum}-1)
+    </select>
+    <select id="playStatsCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        Play_Stats
+        WHERE
+        convert(char(10),PlayDate,20) between #{startDate} and #{endDate}
+        AND Type=#{type}
+        <if test="lineID!=null and lineID!=''">
+            AND LineID =#{lineID}
+        </if>
+        <if test="stationID!=null and stationID!=''">
+            AND StationID =#{stationID}
+        </if>
+        <if test="deviceID!=null and deviceID!=''">
+            AND DeviceID =#{deviceID}
+        </if>
+    </select>
+    <insert id="addPlayStats" parameterType="com.example.passenger.entity.PlayStats">
+        INSERT INTO Play_Stats
+        VALUES
+            (
+                #{name},
+                #{duration},
+                #{playCount},
+                #{lineID},
+                #{stationID},
+            #{deviceID},
+            #{type},
+            #{playDate})
+    </insert>
+</mapper>

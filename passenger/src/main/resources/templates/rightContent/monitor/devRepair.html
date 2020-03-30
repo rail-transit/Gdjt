@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>设备维护</title>
+    <style>
+        #repair_top_div {
+            height: 150px;
+        }
+
+        #repair_top_p {
+            font-size: 14px;
+            color: white;
+            font-weight: bolder;
+            padding-left: 10px;
+            margin: auto;
+            padding-top: 5px;
+        }
+
+        #repair_title_div {
+            background-color: white;
+            height: 25px;
+            width: 99%;
+            margin-top: 7px;
+            margin-left: 5px;
+        }
+
+        #repair_title_div p {
+            padding-left: 100px;
+            padding-top: 2px;
+            margin: auto;
+        }
+
+        #repair_top_height {
+            height: 80px;
+            width: 99%;
+            background-color: white;
+            margin-top: 7px;
+            margin-left: 5px;
+        }
+
+        .repair_add_height {
+            padding-left: 10px;
+            padding-top: 10px
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        #repairOpenTable tbody { /*height:115px;*/
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        #repairEndTable tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #repair_height_div {
+            width: 99%;
+            background-color: white;
+            margin: 0 auto;
+            height: 145px;
+            overflow: auto
+        }
+
+        #repair_footer_div {
+            width: 99%;
+            height: 230px;
+            background-color: white;
+            margin: 0 auto;
+            overflow: auto
+        }
+
+        .repair_footer_title {
+            font-size: 14px;
+            font-weight: bolder;
+            background-color: #006c96;
+            color: white;
+            margin: auto;
+            height: 15px;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+
+        #nextPage {
+            margin-left: -32px;
+        }
+    </style>
+    <script src="/js/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/sweetalert.css">
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('repairOpenTable');
+            tabSize.init('repairEndTable');
+        };
+    </script>
+</head>
+<body style="background-color: #006c96;">
+<div id="repair_top_div">
+    <p id="repair_top_p">设备</p>
+    <div id="repair_title_div">
+        <input hidden="hidden" type="text" th:value="${device.id}" id="deviceID">
+        <p th:text="${device.name}"></p>
+    </div>
+    <div id="repair_top_height">
+        <div class="repair_add_height">
+            <input type="button" value="添加维修信息" id="addRepair">
+            <label>提交人员:</label>
+            <input type="text" id="accendant">
+            <label>维修人员:</label>
+            <input type="text" id="repairPeople" disabled="disabled">
+            <label>故障说明:</label>
+            <input type="text" style="width: 25%;" id="note">
+            <input type="radio" name="repairResult" checked="checked" value="1"><label>成功</label>
+        </div>
+        <div class="repair_add_height">
+            <input type="text" id="id" hidden="hidden">
+            <input type="button" value="结束维修信息" id="updateRepair" disabled="disabled">
+            <label>联系电话:</label>
+            <input type="text" id="tel">
+            <label>联系电话:</label>
+            <input type="text" id="repairTel" disabled="disabled">
+            <label>维修方案:</label>
+            <input type="text" style="width: 25%;" id="scheme" disabled="disabled">
+            <input type="radio" name="repairResult" value="0"><label>失败</label>
+        </div>
+    </div>
+</div>
+<div id="repair_height_div">
+    <table width="100%" border="0" id="repairOpenTable">
+        <thead>
+        <tr>
+            <th class="tips">设备名称</th>
+            <th class="tips">提交人员</th>
+            <th class="tips">联系电话</th>
+            <th class="tips">故障描述</th>
+            <th class="tips">开始维修时间</th>
+            <th class="tips">维修方案</th>
+        </tr>
+        </thead>
+        <tr th:each="devRepair:${devRepairList}">
+            <td th:text="${devRepair.id}" hidden="hidden"></td>
+            <td th:text="${device.name}"></td>
+            <td th:text="${devRepair.accendant}"></td>
+            <td th:text="${devRepair.tel}"></td>
+            <td th:text="${devRepair.note}"></td>
+            <td th:text="${devRepair.startTime}"></td>
+            <td th:text="${devRepair.scheme}"></td>
+        </tr>
+    </table>
+</div>
+<p class="repair_footer_title">设备维修历史</p>
+<div id="repair_footer_div">
+    <table width="100%" border="0" id="repairEndTable">
+        <thead>
+        <tr>
+            <th class="tips">设备名称</th>
+            <th class="tips">提交人员</th>
+            <th class="tips">联系电话</th>
+            <th class="tips">故障描述</th>
+            <th class="tips">开始维修时间</th>
+            <th class="tips">维修结束时间</th>
+            <th class="tips">维修人员</th>
+            <th class="tips">联系电话</th>
+            <th class="tips">维修方案</th>
+            <th class="tips">维修结果</th>
+        </tr>
+        </thead>
+        <tr>
+        </tr>
+    </table>
+</div>
+<div id="paging_div">
+    <ul id="paging_ul">
+
+    </ul>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        selectDevRepair();
+        $("#repairOpenTable tbody tr").click(function () { //给每个tr 绑定点击事件 主要锁定每个tr
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+
+            $("#id").val($(this).closest("tr").find('td').eq(0).text());
+            $("#accendant").val($(this).closest("tr").find('td').eq(2).text());
+            $("#tel").val($(this).closest("tr").find('td').eq(3).text());
+            $("#note").val($(this).closest("tr").find('td').eq(4).text());
+            $("#scheme").val($(this).closest("tr").find('td').eq(6).text());
+            $("#addRepair").attr("disabled", "true");
+            $("#updateRepair").removeAttr("disabled");
+            $("#repairPeople").removeAttr("disabled");
+            $("#repairTel").removeAttr("disabled");
+            $("#scheme").removeAttr("disabled");
+        });
+
+        $("#addRepair").click(function () {
+            var accendant = $("#accendant").val();
+            var note = $("#note").val();
+            var tel = $("#tel").val();
+            var scheme = $("#scheme").val();
+            var deviceID = $("#deviceID").val();
+            if (addIsnull(accendant, note, tel)) {
+                $.ajax({
+                    url: '/devRepair/addDevRepair',
+                    type: "POST",
+                    data: {accendant: accendant, note: note, tel: tel, scheme: scheme, deviceID: deviceID},
+                    success: function (data) {
+                        if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                location.href = "/devRepair/devRepairManagement?id=" + deviceID;
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#updateRepair").click(function () {
+            var id = $("#id").val();
+            var scheme = $("#scheme").val();
+            var deviceID = $("#deviceID").val();
+            var repairPeople = $("#repairPeople").val();
+            var repairTel = $("#repairTel").val();
+            var repairResult = $('input[name="repairResult"]:checked').val();
+            if (updateIsnull(repairPeople, repairTel, scheme)) {
+                $.ajax({
+                    url: '/devRepair/updateDevRepair',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        scheme: scheme,
+                        repairResult: repairResult,
+                        deviceID: deviceID,
+                        repairPeople: repairPeople,
+                        repairTel: repairTel
+                    },
+                    success: function (data) {
+                        if (data.result == "success") {
+                            swal("Good!", "操作成功!", "success");
+                            $(".confirm").click(function () {
+                                location.href = "/devRepair/devRepairManagement?id=" + deviceID;
+                            });
+                        } else {
+                            swal("OMG!", "操作错误!", "error");
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    function selectDevRepair(pageNum) {
+        var deviceID = $("#deviceID").val();
+        $.ajax({
+            url: '/devRepair/selectDevRepair',
+            type: "POST",
+            data: {id: deviceID, pageNum: pageNum},
+            success: function (data) {
+                $("#repairEndTable tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    var repairResult = "失败";
+                    if (item.repairResult == '1') {
+                        repairResult = "成功";
+                    }
+                    $("#repairEndTable tbody").append('<tr><td>' + data.device.name + '</td>' +
+                        '<td>' + item.accendant + '</td>' +
+                        '<td>' + item.tel + '</td>' +
+                        '<td>' + item.note + '</td>' +
+                        '<td>' + item.startTime + '</td>' +
+                        '<td>' + item.endTime + '</td>' +
+                        '<td>' + item.repairPeople + '</td>' +
+                        '<td>' + item.repairTel + '</td>' +
+                        '<td>' + item.scheme + '</td>' +
+                        '<td>' + repairResult + '</td></tr>');
+                });
+                $("#paging_ul li").remove();
+                $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li><span>' + data.pageUtil.pageNum + '</span>/<span>' + data.pageUtil.maxPage + '</span></li>');
+                if (data.pageUtil.pageNum >= 2) {
+                    $(".notPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+                }
+
+                if (data.pageUtil.pageNum < data.pageUtil.maxPage) {
+                    $(".notNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function addIsnull(accendant, note, tel) {
+        if (accendant.match(/^\s+$/g) || accendant == "") {
+            swal("提交人员不能为空!");
+            return false;
+        }
+        if (note.match(/^\s+$/g) || note == "") {
+            swal("故障说明不能为空!");
+            return false;
+        }
+
+        if (tel.match(/^\s+$/g) || tel == "") {
+            swal("联系电话不能为空!");
+            return false;
+        }
+        var tle_reg = new RegExp("^1(3|4|5|7|8)\\d{9}$");
+        if (!tle_reg.test(tel)) {
+            swal("手机号码不正确，请重新输入!");
+            return false;
+        }
+        return true;
+    }
+
+    function updateIsnull(repairPeople, repairTel, scheme) {
+        if (repairPeople.match(/^\s+$/g) || repairPeople == "") {
+            swal("维修人员不能为空!");
+            return false;
+        }
+        if (scheme.match(/^\s+$/g) || scheme == "") {
+            swal("维修方案不能为空!");
+            return false;
+        }
+
+        if (repairTel.match(/^\s+$/g) || repairTel == "") {
+            swal("联系电话不能为空!");
+            return false;
+        }
+        var tle_reg = new RegExp("^1(3|4|5|7|8)\\d{9}$");
+        if (!tle_reg.test(repairTel)) {
+            swal("手机号码不正确，请重新输入!");
+            return false;
+        }
+        return true;
+    }
+
+    function nextPage(pageNum) {
+        var num = parseInt(pageNum) + 1;
+        selectDevRepair(num);
+    }
+
+    function previousPage(pageNum) {
+        var num = parseInt(pageNum) - 1;
+        selectDevRepair(num);
+    }
+</script>
+</body>
+</html>

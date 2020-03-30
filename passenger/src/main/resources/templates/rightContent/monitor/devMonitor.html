@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>设备监视</title>
+    <style type="text/css">
+        .order_details {
+            margin-top: 25px;
+        }
+
+        .order_details ul {
+            margin: 0px;
+            padding: 0px;
+            border-bottom: 1px solid #b4b4b4;
+            position: relative;
+        }
+
+        .order_details ul li {
+            float: left;
+            display: block;
+            width: 118px;
+            position: absolute;
+            top: -24px;
+            text-align: center;
+            font-size: 17px;
+            color: #2077d6
+        }
+
+        .order_details .checked {
+            background-color: #fff;
+            color: #636363;
+            border: 1px solid #b4b4b4;
+            border-bottom: 0;
+        }
+
+        .prepaids {
+            position: absolute;
+        }
+
+        .prepaids2 {
+            position: absolute;
+            left: 122px;
+        }
+
+        .hidedomdiv {
+            display: none
+        }
+
+        .showdomdiv {
+            display: block;
+        }
+
+        .showsss {
+            margin: auto;
+            padding: 0px;
+        }
+
+        #mapMonitor_div {
+            height: 570px;
+            width: 100%;
+        }
+
+        #listMonitor_div {
+            height: 570px;
+            width: 100%;
+        }
+
+        #listMonitor_top {
+            height: 80px;
+            width: 99%;
+            border: 1px solid #46657b;
+            margin: auto
+        }
+
+        #listMonitor_ul {
+            list-style: none;
+            padding-top: 2px;
+        }
+
+        #listMonitor_ul li {
+            display: inline;
+            float: left;
+            width: 11%;
+            font-size: 14px;
+        }
+
+        #listMonitor_ul li select {
+            height: 20px;
+            width: 110px;
+            margin-left: -35px
+        }
+
+        .tips {
+            border: 1px solid #ccc;
+            font-weight: bolder;
+            font-size: 14px;
+            height: 30px;
+        }
+
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        tbody {
+            overflow-y: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tr {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        td {
+            font-size: 12px;
+            height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        tr.on td {
+            background-color: #BFEFFF;
+        / 背景颜色 /
+        }
+
+        #paging_ul {
+            list-style: none;
+            margin: auto;
+            padding: 0px;
+            padding-left: 32px;
+            padding-top: 7px;
+        }
+
+        #paging_ul li {
+            display: inline;
+            float: left;
+            width: 69px;
+        }
+
+        #nextPage {
+            margin-left: -32px;
+        }
+
+        #big {
+            border: 1px solid #FF3300;
+            width: 99%;
+            height: 570px;
+            position: relative;
+            background-size: 100% 100%;
+        }
+
+        .small {
+            width: auto;
+            height: auto;
+            position: absolute;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .title {
+            position: relative;
+        }
+
+        #listMonitor_height {
+            width: 100%;
+            margin: auto;
+            overflow: auto;
+            height: 440px;
+        }
+    </style>
+    <script type="text/javascript" src="/js/tabSize.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            tabSize.init('Monitor');
+        };
+    </script>
+</head>
+<body>
+<div class="order_details">
+    <ul>
+        <li class="fortab prepaids checked">地图显示</li>
+        <li class="fortab prepaids2">列表显示</li>
+    </ul>
+</div>
+<div>
+    <div class="tablelist showdomdiv showsss">
+        <input type="text" hidden="hidden" id="id" th:value="${id}">
+        <input type="text" hidden="hidden" id="lineID" th:if="${line}!=null" th:value="${line.id}">
+        <div id="mapMonitor_div">
+            <div id="big"></div>
+        </div>
+    </div>
+    <div class="tablelist hidedomdiv showsss">
+        <div id="listMonitor_div">
+            <div id="listMonitor_top">
+                <ul id="listMonitor_ul">
+                    <li>线路选择</li>
+                    <li><select id="line">
+                        <option value="0">所有站点</option>
+                        <option th:each="line:${lineList}" th:value="${line.id}"
+                                th:text="${line.name}"></option>
+                    </select></li>
+                    <li>站点选择</li>
+                    <li><select id="stationID">
+                        <option>所有站点</option>
+                        <option th:each="station:${stationList}" th:value="${station.id}"
+                                th:text="${station.name}"></option>
+                    </select></li>
+                    <li>设备类型</li>
+                    <li><select id="type">
+                        <option value="0">所有类型</option>
+                        <option th:each="deviceType:${deviceTypeList}" th:value="${deviceType.id}"
+                                th:text="${deviceType.name}"></option>
+                    </select></li>
+                    <li>设备选择</li>
+                    <li><select id="deviceID">
+                        <option value="0">所有设备</option>
+                    </select></li>
+                </ul>
+            </div>
+            <div id="listMonitor_height">
+                <table width="100%" border="0" id="Monitor">
+                    <thead>
+                    <tr>
+                        <th class="tips">线路名称</th>
+                        <th class="tips">车站名称</th>
+                        <th class="tips">设备名称</th>
+                        <th class="tips">状态</th>
+                        <th class="tips">IP地址</th>
+                        <th class="tips">位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+
+                    </tr>
+                </table>
+            </div>
+            <div id="paging_div">
+                <ul id="paging_ul">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        getMap();
+        selectMonitor();
+        getTime();
+        $("#Monitor tr").live("click", function () {
+            var trs = $(this).parent().find('tr'); //获取所有tr
+            if (trs.hasClass('on')) { //判断这些tr 有没有Class ‘on’’
+                trs.removeClass('on');//把class on 移除
+            }
+            $(this).addClass('on');//点击的tr 添加 on class 用于改变样式
+        });
+
+        // 改为鼠标移上的事件只需把click改为mousemove
+        $(".fortab").click(function () {
+            var number = $(".fortab").index(this);
+            $(this).addClass("checked");
+            $(this).siblings().removeClass("checked");
+            $(".tablelist:eq(" + number + ")").show();
+            $(".tablelist:eq(" + number + ")").siblings().hide();
+        });
+
+        $("#line").change(function () {
+            var stationID = $("#stationID").val();
+            var deviceID = $("#deviceID").val();
+            var type = $("#type").val();
+            getDevice($(this).val(), stationID, type);
+            selectMonitor($(this).val(), stationID, type, deviceID);
+            $.ajax({
+                url: '/Station/selectAllStation',
+                type: "POST",
+                data: {lineID: $(this).val()},
+                success: function (data) {
+                    $("#stationID option").remove();
+                    $("#stationID").prepend('<option>所有站点</option>');
+                    $.each(data.stationList, function (i, station) {
+                        $("#stationID").append('<option value="' + station.id + '">' + station.name + '</option>');
+                    });
+                }
+            })
+        });
+
+        $("#stationID").change(function () {
+            var type = $("#type").val();
+            var deviceID = $("#deviceID").val();
+            var lineID = $("#line").val();
+            getDevice(lineID, $(this).val(), type);
+            selectMonitor(lineID, $(this).val(), type, deviceID);
+        });
+
+        $("#type").change(function () {
+            var stationID = $("#stationID").val();
+            var type = $(this).val();
+            var deviceID = $("#deviceID").val();
+            var lineID = $("#line").val();
+            getDevice(lineID, stationID, type);
+            selectMonitor(lineID, stationID, type, deviceID);
+        });
+
+        $("#deviceID").change(function () {
+            var lineID = $("#line").val();
+            var type = $("#type").val();
+            var stationID = $("#stationID").val();
+            selectMonitor(lineID, stationID, type, $(this).val());
+        });
+    });
+
+    function getDevice(lineID, stationID, type) {
+        $.ajax({
+            url: '/Device/getDevice',
+            type: "POST",
+            data: {lineID: lineID, stationID: stationID, type: type},
+            success: function (data) {
+                $("#deviceID option").remove();
+                $("#deviceID").prepend('<option>所有设备</option>');
+                $.each(data.deviceList, function (i, device) {
+                    $("#deviceID").append('<option value="' + device.id + '">' + device.name + '</option>');
+                });
+            }
+        });
+    }
+
+    function getTime() {
+        $.ajax({
+            url: '/ctrlEvent/getEventTime',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                objTimer = window.setInterval(function () {
+                    getMap();
+                }, data.time);
+            }
+        });
+    }
+
+    function getMap() {
+        var lineID = $("#lineID").val();
+        var stationID = $("#id").val();
+        var id = null;
+        var content = null;
+        var img = "/images/normal.jpg";
+        if (lineID != null) {
+            id = lineID + "-" + stationID;
+        } else {
+            id = stationID;
+        }
+        $.ajax({
+            url: '/map/selectMap',
+            type: "POST",
+            data: {id: id},
+            success: function (data) {
+                $.each(data.list, function (i, item) {
+                    var equipmentID = null;
+                    var state = 0;
+                    var images = null;
+                    $.each(data.deviceState, function (j, device) {
+                        if (lineID == null) {
+                            if (item.equipmentID == device.stationID) {
+                                equipmentID = device.stationID;
+                                if (device.state != 0) {
+                                    state = device.state;
+                                }
+                            }
+                        } else {
+                            if (item.equipmentID == device.deviceID) {
+                                equipmentID = device.deviceID;
+                                if (device.state != 0) {
+                                    state = device.state;
+                                }
+                            }
+                        }
+                    });
+                    if (equipmentID == item.equipmentID) {
+                        if (state == 1) {
+                            if (lineID != null) {
+                                images = '<img src="/images/fault.png" width="90px" height="20px" class="img">';
+                            } else {
+                                images = '<img src="/images/fault.jpg" width="12px" height="12px" onclick="Jump(' + item.equipmentID + ')" class="img">';
+                            }
+                        } else if (state == 2) {
+                            if (lineID != null) {
+                                images = '<img src="/images/alarm.png" width="90px" height="20px" class="img">';
+                            } else {
+                                images = '<img src="/images/alarm.jpg" width="12px" height="12px" onclick="Jump(' + item.equipmentID + ')" class="img">';
+                            }
+                        } else {
+                            if (lineID != null) {
+                                images = '<img src="/images/normal.png" width="90px" height="20px" class="img">';
+                            } else {
+                                images = '<img src="/images/normal.jpg" width="12px" height="12px" onclick="Jump(' + item.equipmentID + ')" class="img">';
+                            }
+                        }
+                    } else {
+                        if (lineID != null) {
+                            images = '<img src="/images/normal.png" width="90px" height="20px" class="img">';
+                        } else {
+                            images = '<img src="/images/normal.jpg" width="12px" height="12px" onclick="Jump(' + item.equipmentID + ')" class="img">';
+                        }
+                    }
+                    $("#big").css("background-image", "url(" + item.mapImg + ")");
+                    $("#big").append('<div class="small" style="left: ' + item.divLef + ';top: ' + item.divTop + ';">\n' +
+                        images +
+                        '<span class="title" style="left: ' + item.left + ';top: ' + item.top + ';">' +
+                        item.equipmentName + '</span>\n' +
+                        '</div>');
+                });
+            }
+        });
+    }
+
+    function Jump(id) {
+        location.href = "/Device/stationManagement?id=" + id;
+    }
+
+    function selectMonitor(lineID, stationID, type, deviceID, pageNum) {
+        $.ajax({
+            url: '/Device/selectMonitor',
+            type: "POST",
+            data: {lineID: lineID, stationID: stationID, type: type, id: deviceID, pageNum: pageNum},
+            success: function (data) {
+                $("#Monitor tbody tr").remove();
+                $.each(data.pageUtil.pageData, function (i, item) {
+                    $("#Monitor tbody").prepend('<tr><td hidden="hidden">' + item.id + '</td>' +
+                        '<td>' + item.lineName + '</td>' +
+                        '<td>' + item.stationName + '</td>' +
+                        '<td>' + item.name + '</td>' +
+                        '<td>-1</td>' +
+                        '<td>' + item.ip + '</td>' +
+                        '<td>' + item.devicePosName + '</td></tr>');
+                });
+
+                $("#Monitor thead tr .sopt").remove();
+                $.each(data.deviceSpotList, function (j, line) {
+                    $("#Monitor thead tr").append('<th class="tips sopt">' + line.name + '</th>');
+                });
+
+                $('#Monitor tbody tr').each(function (i) {
+                    var object = $(this);
+                    $.each(data.list, function (t, list) {
+                        if (list.deviceID == $(object).children('td').eq(0).text()) {
+                            $.each(list, function (k, v) {
+                                if (k != "deviceID") {
+                                    if (k == "state") {
+                                        $(object).children('td').eq(4).text(v);
+                                    } else {
+                                        $(object).append('<td>' + v + '</td>');
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                $("#paging_ul li").remove();
+                $("#paging_ul").prepend('<li><span>当前页数:</span></li>' +
+                    '<li><span>' + data.pageUtil.pageNum + '</span>/<span>' + data.pageUtil.maxPage + '</span></li>');
+                if (data.pageUtil.pageNum >= 2) {
+                    $(".notPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="isPreviousPage" onclick="previousPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isPreviousPage").remove();
+                    $("#paging_ul").prepend('<li><input type="button" value="上一页" class="notPreviousPage" disabled="disabled"></li>');
+                }
+
+                if (data.pageUtil.pageNum < data.pageUtil.maxPage) {
+                    $(".notNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="isNextPage" id="nextPage" onclick="nextPage(' + data.pageUtil.pageNum + ')"></li>');
+                } else {
+                    $(".isNextPage").remove();
+                    $("#paging_ul").append('<li><input type="button" value="下一页" class="notNextPage" id="nextPage" disabled="disabled"></li>');
+                }
+            }
+        });
+    }
+
+    function selectMonitorType() {
+        $('#Monitor tbody tr').each(function (i) {
+            var object = $(this);
+            var deviceID = $(this).children('td').eq(0).text();
+            $.ajax({
+                url: '/Device/selectMonitorType',
+                type: "POST",
+                data: {id: deviceID},
+                success: function (data) {
+                    var count = 0;
+                    $(object).children('td').each(function (j) {
+                        if (j == 4) {
+                            if (data.map.state == 1) {
+                                $(this).text("正常");
+                                $(this).css("color", "black");
+                            } else {
+                                $(this).text("异常");
+                                $(this).css("color", "red");
+                            }
+                            $(this).text();
+                        }
+
+                        if (j >= 7) {
+                            var Subnode = $(this);
+                            $.each(data.map, function (k, v) {
+                                if ("para" + count == k) {
+                                    $(Subnode).text(v);
+                                    $(Subnode).css("color", "black");
+                                }
+                            });
+                            count++;
+                            if ($(this).text() == -1) {
+                                $(this).text("出现异常");
+                                $(this).css("color", "red");
+                            }
+                        }
+
+                    });
+                }
+            });
+
+        });
+    }
+
+    objTimer = window.setInterval(function () {
+        selectMonitorType();
+    }, 10000);
+
+    function nextPage(pageNum) {
+        var lineID = $("#line").val();
+        var stationID = $("#stationID").val();
+        var type = $("#type").val();
+        var deviceID = $("#deviceID").val();
+        var num = parseInt(pageNum) + 1;
+        selectMonitor(lineID, stationID, type, deviceID, num);
+    }
+
+    function previousPage(pageNum) {
+        var lineID = $("#line").val();
+        var stationID = $("#stationID").val();
+        var type = $("#type").val();
+        var deviceID = $("#deviceID").val();
+        var num = parseInt(pageNum) - 1;
+        selectMonitor(lineID, stationID, type, deviceID, num);
+    }
+</script>
+</body>
+</html>
